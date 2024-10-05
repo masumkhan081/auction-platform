@@ -19,13 +19,8 @@ async function createProduct(data) {
 
 async function getSingleProduct(id) {
   try {
-    const fetchResult = await Product.findById(id)
-      .populate("brand")
-      .populate("color")
-      .populate("category")
-      .populate("sub_category")
-      .populate("size")
-      .populate("unit");
+    const fetchResult = await Product.findById(id).populate("category");
+    console.log(JSON.stringify(fetchResult));
     return fetchResult;
   } catch (error) {
     return error;
@@ -99,22 +94,12 @@ async function deleteProduct(id) {
 async function updateApprovalByAdmin({ id, data }) {
   try {
     const { approval, reviewNote } = data;
-    // const existingProduct = await Product.findById(id);
-
-    // if (existingProduct) {
     const editResult = await Product.findByIdAndUpdate(
       id,
       { approval, reviewNote },
       { new: true }
     );
-    sendUpdateResponse({
-      res,
-      what: operableEntities.product,
-      data: editResult,
-    });
-    // } else {
-    //   return responseMap.id_not_found;
-    // }
+    return editResult;
   } catch (error) {
     return error;
   }

@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 const { sendErrorResponse } = require("../../utils/responseHandler");
 const crypto = require("crypto-js");
 const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
-const BidderSeller = require("../seller/seller.model");
+const Profile = require("../profile/profile.model");
 
 async function register({ res, data }) {
   try {
@@ -23,7 +23,7 @@ async function register({ res, data }) {
     };
     //
     try {
-      const profile = await new BidderSeller({
+      const profile = await new Profile({
         full_name,
         phone,
         addresses,
@@ -39,7 +39,7 @@ async function register({ res, data }) {
       flows.user = true;
     } catch (error) {
       if (flows.profile) {
-        BidderSeller.findByIdAndDelete(profile.id);
+        Profile.findByIdAndDelete(profile.id);
       }
       if (flows.user) {
         userModel.findByIdAndDelete(user.id);

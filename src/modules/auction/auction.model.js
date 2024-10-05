@@ -1,18 +1,16 @@
-/* eslint-disable no-unused-vars */
-const { ref } = require("joi");
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
 
 const auctionSchema = new Schema(
   {
-    productName: { type: String, required: true },
-    category: {
+    product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "categories",
+      ref: "products",
     },
-    prodImages: [{ type: String }],
-    prodDetail: { type: String, required: true },
     startPrice: { type: Number, required: true },
+    timeZone: {
+      type: String,
+    },
     currentPrice: { type: Number, default: 0 },
     auctionStart: { type: Date, required: true }, // Auction start time
     auctionEnd: { type: Date, required: true }, // Auction end time

@@ -50,4 +50,19 @@ const adminApprovalSchema = z.object({
     .optional(),
 });
 
-module.exports = { createProductSchema, adminApprovalSchema };
+const updateProdStatusSchema = z.object({
+  approval: z.enum(
+    ["APPROVED", "DISAPPROVED", "CANCELLED", "PENDING", "UNDER_REVIEW"],
+    {
+      required_error: "Approval status is required",
+      invalid_type_error: "Approval status must be one of the specified values",
+    }
+  ),
+  approvalNote: z
+    .string()
+    .max(500, "Approval note must be at most 500 characters long")
+    .optional(),
+});
+
+
+module.exports = { createProductSchema, adminApprovalSchema,updateProdStatusSchema };

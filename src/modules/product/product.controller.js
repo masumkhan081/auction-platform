@@ -7,6 +7,7 @@ const {
   sendErrorResponse,
   sendFetchResponse,
   sendUpdateResponse,
+  responseMap,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const Product = require("./product.model");
@@ -161,13 +162,21 @@ async function getProducts(req, res) {
 async function getSingleProduct(req, res) {
   try {
     const result = await productService.getSingleProduct(req.params.id);
+
     if (result instanceof Error) {
       sendErrorResponse({ res, error: result, what: operableEntities.product });
+    } else if (!result) {
+      console.log("going this way --");
+      sendErrorResponse({
+        res,
+        error: responseMap.id_not_found,
+        what: operableEntities.product,
+      });
     } else {
       sendFetchResponse({ res, data: result, what: operableEntities.product });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error fetching single product" });
+    res.status(400).send({ message: "Error fetching the product" });
   }
 }
 //
@@ -188,47 +197,14 @@ async function deleteProduct(req, res) {
   }
 }
 
-async function updateStatusBySeller(req, res, next) {
-  try {
-    console.log("role from updateStatusBySeller : " + req.role);
-    const updatableId = req.params.id;
-    const { is_active } = req.body;
-    const existingProduct = await Product.findById(updatableId);
-    //
-    if (existingProduct) {
-      if (is_active === true || is_active === false) {
-        const editResult = await Product.findByIdAndUpdate(
-          updatableId,
-          {
-            is_active,
-          },
-          { new: true }
-        );
-        sendUpdateResponse({
-          res,
-          what: operableEntities.product,
-          data: editResult,
-        });
-      } else {
-        res
-          .status(400)
-          .send({ message: "Invalid request for change of status" });
-      }
-    } else {
-      res.status(400).send({ message: "Id not found" });
-    }
-  } catch (error) {
-    res.status(400).send({ message: "Error updating status" });
-  }
-}
-
 async function updateApprovalByAdmin(req, res) {
   try {
     // console.log("role from updateStatusBySeller : " + req.role);
-    const updateResult = productService.updateApprovalByAdmin({
-      id,
+    const updateResult = await productService.updateApprovalByAdmin({
+      id: req.params.id,
       data: req.body,
     });
+    console.log(updateProduct);
     if (updateResult instanceof Error) {
       sendErrorResponse({
         res,
@@ -254,6 +230,5 @@ module.exports = {
   deleteProduct,
   getProducts,
   updateApprovalByAdmin,
-  updateStatusBySeller,
   getSingleProduct,
 };

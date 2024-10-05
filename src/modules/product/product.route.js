@@ -28,21 +28,13 @@ router.delete(
   // accessControl(allowedRoles.seller),
   productController.deleteProduct
 );
-//
-router.patch(
-  "/status/:id",
-  // accessControl(allowedRoles.seller),
-  productController.updateStatusBySeller
-);
+
 //
 router.patch(
   "/admin-approval/:id",
-
   // accessControl(allowedRoles.admin),
   validateRequest(adminApprovalSchema),
   productController.updateApprovalByAdmin
 );
-//
-
 //
 module.exports = router;

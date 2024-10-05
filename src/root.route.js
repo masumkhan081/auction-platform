@@ -5,6 +5,7 @@ const router = Router();
 const authRoutes = require("./modules/auth/auth.route");
 const categoryRoutes = require("./modules/category/category.route");
 const productRoutes = require("./modules/product/product.route");
+const auctionRoutes = require("./modules/auction/auction.route")
 
 //
 const routes = [
@@ -20,6 +21,10 @@ const routes = [
   {
     path: "/products",
     route: productRoutes,
+  },
+  {
+    path: "/auction",
+    route: auctionRoutes,
   },
 ];
 

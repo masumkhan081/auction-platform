@@ -2,7 +2,7 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
 
-const profile_schema = new Schema(
+const profileSchema = new Schema(
   {
     full_name: {
       type: String,
@@ -28,4 +28,4 @@ const profile_schema = new Schema(
   }
 );
 
-module.exports = model("seller_profiles", profile_schema);
+module.exports = model("profiles", profileSchema);
