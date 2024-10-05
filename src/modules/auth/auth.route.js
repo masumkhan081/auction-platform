@@ -10,7 +10,7 @@ const {
 } = require("./auth.validate.js");
 const config = require("../../config/index.js");
 const { verifyToken } = require("../../utils/tokenisation.js");
-const User = require("./user.model.js");
+const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
 
 //  1

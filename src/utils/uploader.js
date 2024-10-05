@@ -4,10 +4,10 @@ const { storageMap } = require("./fileHandle");
 const { operableEntities } = require("../config/constants");
 const fs = require("fs");
 const path = require("path");
-
+//
 const fieldsMap = {
   [operableEntities.product]: [
-    { name: "product_thumbnail", maxCount: 1, required: true },
+    { name: "productImages", maxCount: 3, required: true },
   ],
 };
 //

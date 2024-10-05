@@ -1,4 +1,4 @@
-const profileService = require("./profile.service");
+const profileService = require("./seller.service");
 const httpStatus = require("http-status");
 //
 const {
@@ -7,11 +7,11 @@ const {
   sendErrorResponse,
   sendFetchResponse,
   sendUpdateResponse,
-} = require("../../../utils/responseHandler");
-const { operableEntities } = require("../../../config/constants");
+} = require("../../utils/responseHandler");
+const { operableEntities } = require("../../config/constants");
 //
-async function createProfile(req, res) {
-  const result = await profileService.createProfile(req.body);
+async function createSeller(req, res) {
+  const result = await profileService.createSeller(req.body);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
   } else {
@@ -19,8 +19,8 @@ async function createProfile(req, res) {
   }
 }
 //
-async function getProfiles(req, res) {
-  const result = await profileService.getProfiles(req.query);
+async function getSellers(req, res) {
+  const result = await profileService.getSellers(req.query);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
   } else {
@@ -28,8 +28,8 @@ async function getProfiles(req, res) {
   }
 }
 //
-async function updateProfile(req, res) {
-  const result = await profileService.updateProfile({
+async function updateSeller(req, res) {
+  const result = await profileService.updateSeller({
     id: req.params.id,
     data: req.body,
   });
@@ -40,8 +40,8 @@ async function updateProfile(req, res) {
   }
 }
 //
-async function deleteProfile(req, res) {
-  const result = await profileService.deleteProfile(req.params.id);
+async function deleteSeller(req, res) {
+  const result = await profileService.deleteSeller(req.params.id);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
   } else {
@@ -50,8 +50,8 @@ async function deleteProfile(req, res) {
 }
 //
 module.exports = {
-  createProfile,
-  updateProfile,
-  deleteProfile,
-  getProfiles,
+  createSeller,
+  updateSeller,
+  deleteSeller,
+  getSellers,
 };

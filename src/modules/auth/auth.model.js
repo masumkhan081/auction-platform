@@ -11,7 +11,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ["ADMIN", "SELLER", "CUSTOMER", "RIDER"],
+      enum: ["ADMIN", "SELLER", "BIDDER"],
     },
     is_verified: { type: Boolean, default: false },
     is_active: { type: Boolean, default: false },
@@ -27,5 +27,4 @@ const userSchema = new Schema(
   }
 );
 
-const User = model("users", userSchema);
-module.exports = User;
+module.exports = model("users", userSchema);

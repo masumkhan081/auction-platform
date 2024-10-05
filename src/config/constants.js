@@ -1,12 +1,11 @@
-/* eslint-disable no-unused-vars */
-
 const allowedRoles = {
   admin: "ADMIN",
   seller: "SELLER",
-  user: "BUYER",
+  bidder: "BIDDER",
 };
 
 const operableEntities = {
+  category: "Category",
   product: "Products",
   auction: "Auction",
 };
@@ -17,13 +16,15 @@ const defaultSortOrder = "desc";
 
 // may be changed based on the outcome expected
 const map_default_sort_by = {
-  [operableEntities.product]: "products",
-  [operableEntities.auction]: "product_category",
+  [operableEntities.category]: "",
+  [operableEntities.product]: "",
+  [operableEntities.auction]: "",
 };
 
 const map_searchables = {
-  [operableEntities.product]: ["name", "brand", "color", "category"],
-  [operableEntities.auction]: ["name"],
+  [operableEntities.category]: ["name"],
+  [operableEntities.product]: ["name", "category"],
+  [operableEntities.auction]: [],
 };
 
 module.exports = {

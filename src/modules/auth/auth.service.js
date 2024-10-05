@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const userModel = require("./user.model");
+const userModel = require("./auth.model");
 const bcrypt = require("bcrypt");
 const { sendOTPMail, sendResetMail } = require("../../utils/mail");
 const config = require("../../config");
@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 const { sendErrorResponse } = require("../../utils/responseHandler");
 const crypto = require("crypto-js");
 const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
-const CustomerProfile = require("../profile/customer/customer.model");
+const BidderSeller = require("../seller/seller.model");
 
 async function register({ res, data }) {
   try {
@@ -23,7 +23,7 @@ async function register({ res, data }) {
     };
     //
     try {
-      const profile = await new CustomerProfile({
+      const profile = await new BidderSeller({
         full_name,
         phone,
         addresses,
@@ -39,12 +39,12 @@ async function register({ res, data }) {
       flows.user = true;
     } catch (error) {
       if (flows.profile) {
-        CustomerProfile.findByIdAndDelete(profile.id);
+        BidderSeller.findByIdAndDelete(profile.id);
       }
       if (flows.user) {
         userModel.findByIdAndDelete(user.id);
       }
-      res.status.send({ message: "Error creating customer profile" });
+      res.status.send({ message: "Error creating bidder profile" });
     }
 
     sendOTPMail({

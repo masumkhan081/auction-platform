@@ -2,19 +2,21 @@ const httpStatus = require("http-status");
 //
 //
 function sendFetchResponse({ res, data, what }) {
-  res.send({
-    statusCode: data === null ? httpStatus[404] : 200,
-    success: data === null ? false : true,
-    message: data ? success_msg.fetch(what) : err_msg.no_data,
+  let statusCode = responseMap.fetch.code;
+  res.status(statusCode).send({
+    statusCode,
+    success: true,
+    message: responseMap.fetch.message(what),
     data,
   });
 }
 
 function sendCreateResponse({ res, data, what }) {
-  res.send({
-    statusCode: data === null ? httpStatus[404] : 200,
-    success: data === null ? false : true,
-    message: data === null ? err_msg.id_not_found : success_msg.create(what),
+  let statusCode = responseMap.create.code;
+  res.status(statusCode).send({
+    statusCode,
+    success: true,
+    message: responseMap.create.message(what),
     data,
   });
 }
@@ -46,7 +48,7 @@ function sendErrorResponse({ res, error, what }) {
   let type;
   //
   console.log("error:  " + JSON.stringify(error));
-  //  in case of error based on mongoose schema
+  //  in case of errors based on mongoose schema fields
   if (error?.name == "ValidationError") {
     let errors = error.errors;
     let keys = Object.keys(errors);
@@ -57,15 +59,18 @@ function sendErrorResponse({ res, error, what }) {
     statusCode = 400;
     type = "mongoose-error";
   }
-  // Duplicate key error
-  else if (error?.code === 11000 || error?.code === 11001) {
-    statusCode = 409;
-    message = err_msg.conflict(what);
+  // Duplicate key error code from mongoose
+  else if (error?.code === 11000) {
+    statusCode = responseMap.already_exist.code;
+    message = responseMap.already_exist.message(what); // already exist message relating with the entity
+  } else if (error?.code === responseMap.already_used.code) {
+    statusCode = error.code;
+    message = error.message(what); // already used message relating with the entity
   }
   // all the other cases
   else {
-    statusCode = 500;
-    message = err_msg.server_error;
+    statusCode = responseMap.server_error.code;
+    message = responseMap.server_error.message;
   }
   res.status(statusCode).send({
     statusCode,
@@ -76,31 +81,39 @@ function sendErrorResponse({ res, error, what }) {
   });
 }
 
-const success_msg = {
-  create: (what) => `${what} created successfully`,
-  delete: (what) => `${what} deleted successfully`,
-  update: (what) => `${what} updated successfully`,
-  fetch: (what) => `${what} fetched successfully`,
-};
+const responseMap = {
+  create: {
+    code: 201,
+    message: (what) => `${what}  created successfully`,
+  },
+  delete: { code: 200, message: (what) => `${what} deleted successfully` },
+  update: { code: 200, message: (what) => `${what} updated successfully` },
+  fetch: { code: 200, message: (what) => `${what} fetched successfully` },
+  //
+  creation_failed: { code: 1000, message: "Creation failed" },
+  id_not_found: {
+    status: 404,
+    message: "ID not found. Update operation failed.",
+  },
+  invalid: { code: 1000, message: "Invalid Request" },
+  bad_req: { code: 1000, message: "Bad Request" },
+  not_found: { code: 1000, message: (what) => `${what} not found` },
+  server_error: { code: 500, message: "Internal Server Error" },
+  something_went_wrong: { code: 1000, message: "Something went wrong" },
+  unauthorized: { code: 1000, message: "Unauthorized Access" },
+  forbidden: { code: 1000, message: "Forbidden Access" },
 
-const err_msg = {
-  creation_failed: "Creation failed",
-  id_not_found: "id not found",
-  invalid: "Invalid Request",
-  bad_req: "Bad Request",
-  not_found: (what) => `${what} not found`,
-  server_error: "Internal Server Error",
-  something_went_wrong: "Something went wrong",
-  unauthorized: "Unauthorized Access",
-  forbidden: "Forbidden Access",
-  conflict: (what) => `${what} already exists`,
-  no_data: `No Data`,
-  fail_in_update: (what) => `${what} failed to update`,
-};
-
-const err_custom = {
+  no_data: { code: 404, message: `No Data` },
+  fail_in_update: { code: 1000, message: (what) => `${what} failed to update` },
+  //
   already_exist: {
-    code: 11000,
+    code: 409, // Error code for "Already Exists" as mongodb return
+    message: (what) => `${what} already exists`,
+  },
+  already_used: {
+    code: 409, // HTTP status code for "Conflict"
+    message: (what) =>
+      `Cannot delete ${what}: Resource is already used by other entities`,
   },
 };
 
@@ -110,7 +123,5 @@ module.exports = {
   sendDeletionResponse,
   sendErrorResponse,
   sendUpdateResponse,
-  success_msg,
-  err_msg,
-  err_custom,
+  responseMap,
 };

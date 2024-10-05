@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
-const { operableEntities } = require("../config/constants");
-const User = require("../models/users.model");
-const { getSearchAndPagination } = require("../utils/pagination");
+const { operableEntities } = require("../../config/constants");
+const Seller = require("./seller.model");
+const { getSearchAndPagination } = require("../../utils/pagination");
 
-async function createUser(data) {
+async function createSeller(data) {
   try {
-    const addResult = await User.create(data);
+    const addResult = await Seller.create(data);
     return addResult;
   } catch (error) {
     return error;
   }
 }
 //
-async function getUsers(query) {
+async function getSellers(query) {
   try {
     const {
       currentPage,
@@ -24,12 +24,12 @@ async function getUsers(query) {
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.address });
 
-    const fetchResult = await User.find(filterConditions)
+    const fetchResult = await Seller.find(filterConditions)
       .sort(sortConditions)
       .skip(viewSkip)
       .limit(viewLimit);
 
-    const total = await User.countDocuments(filterConditions);
+    const total = await Seller.countDocuments(filterConditions);
     return {
       meta: {
         total,
@@ -46,9 +46,9 @@ async function getUsers(query) {
   }
 }
 //
-async function updateUser({ id, data }) {
+async function updateSeller({ id, data }) {
   try {
-    const editResult = await User.findByIdAndUpdate(id, data, {
+    const editResult = await Seller.findByIdAndUpdate(id, data, {
       new: true,
     });
     return editResult;
@@ -57,9 +57,9 @@ async function updateUser({ id, data }) {
   }
 }
 //
-async function deleteUser(id) {
+async function deleteSeller(id) {
   try {
-    const deleteResult = await User.findByIdAndDelete(id);
+    const deleteResult = await Seller.findByIdAndDelete(id);
     return deleteResult;
   } catch (error) {
     return error;
@@ -67,8 +67,8 @@ async function deleteUser(id) {
 }
 
 module.exports = {
-  createUser,
-  updateUser,
-  deleteUser,
-  getUsers,
+  createSeller,
+  updateSeller,
+  deleteSeller,
+  getSellers,
 };

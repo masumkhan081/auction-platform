@@ -42,11 +42,11 @@ function getSearchAndPagination({ query: query, what }) {
 
   for (let i = 0; i < map_searchables[what]?.length; i++) {
     filterData = query[map_searchables[what][i]];
+
     if (filterData !== undefined && filterData !== "") {
       filterConditions[map_searchables[what][i]] = filterData;
     } else if (searchTerm) {
       if (searchBy === "whole") {
-        console.log("whole");
         searchConditions.push({
           [map_searchables[what][i]]: { $regex: new RegExp(searchTerm, "i") },
         });

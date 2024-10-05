@@ -6,30 +6,35 @@ const upload = multer();
 const validateRequest = (requestBodySchema) => async (req, res, next) => {
   try {
     const valid = requestBodySchema.safeParse(req.body);
-
     if (valid.success) {
-      console.log("valid::    " + JSON.stringify(valid));
+      console.log("valid::    ");
       next();
     } else {
-      console.log("invalid:  " + JSON.stringify(valid));
-
+      // JSON.stringify(valid)
+      console.log("invalid:  ");
       let messages = {};
       let issues = valid.error.issues;
-
+      let issueKey;
+      //
       for (let i = 0; i < issues.length; i++) {
-        messages[issues[i].path[0]] = issues[i].message;
+        issueKey = issues[i].path[0];
+        if (messages[issueKey]) {
+          messages[issueKey].push(issues[i].message);
+        } else {
+          messages[issueKey] = [issues[i].message];
+        }
       }
-
+      //
       res.status(400).send({
-        statusCode:400,
+        statusCode: 400,
         success: false,
         message: "Invalid data",
         messages,
-        type:"ZodError"
+        type: "ZodError",
       });
     }
   } catch (error) {
-    res.send({
+    res.status(400).send({
       success: false,
       message: "Invalid data",
       status: 400,

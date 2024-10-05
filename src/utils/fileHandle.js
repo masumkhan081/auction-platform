@@ -6,15 +6,13 @@ const { promisify } = require("util");
 const unlinkAsync = promisify(fs.unlink);
 //
 const storageMap = {
- 
-  product_thumbnail: {
+  productImages: {
     destination: "../../public/product-images",
     max_upload_size: 1024 * 1024 * 3,
     accepted_file_types: /jpeg|jpg|png|gif|webp|svg/,
     save_directory: "public/product-images/",
-    unlink_directory: "../../../public/product-images",
+    unlink_directory: "../../public/product-images",
   },
- 
 };
 
 function checkFileType({ file, fileTypes, cb }) {

@@ -1,7 +1,7 @@
 const authService = require("./auth.service");
 const httpStatus = require("http-status");
 const config = require("../../config/index");
-const userModel = require("./user.model");
+const userModel = require("./auth.model");
 const {
   sendCreateResponse,
   sendDeletionResponse,
@@ -87,7 +87,6 @@ async function sendOTPToEmail(req, res) {
 
   await authService.sendOTPToEmail(email);
 }
- 
 
 //
 module.exports = {
