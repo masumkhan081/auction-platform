@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
-
+const { utcTimezones } = require("./enum");
+//
 const auctionSchema = new Schema(
   {
     product: {
@@ -10,6 +11,7 @@ const auctionSchema = new Schema(
     startPrice: { type: Number, required: true },
     timeZone: {
       type: String,
+      enum: utcTimezones,
     },
     currentPrice: { type: Number, default: 0 },
     auctionStart: { type: Date, required: true }, // Auction start time

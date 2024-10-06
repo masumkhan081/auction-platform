@@ -1,18 +1,30 @@
 const { z } = require("zod");
 
 const bidSchema = z.object({
-  name: z
+  auction: z
     .string()
-    .min(3, { message: "Category name must be at least 3 characters long" })
-    .max(50, { message: "Category name cannot exceed 50 characters" })
-    .regex(/^[a-zA-Z0-9\s]+$/, {
-      message:
-        "Category name is not valid! Only letters, numbers, and spaces are allowed.",
-    }),
-  description: z
+    .nonempty("Auction reference is required")
+    .refine(
+      (val) => /^[0-9a-fA-F]{24}$/.test(val), // Assuming it's an ObjectId string pattern
+      { message: "Invalid auction reference ID" }
+    ),
+
+  bidder: z
     .string()
-    .max(500, { message: "Description cannot exceed 500 characters" })
-    .optional(),
+    .nonempty("Bidder reference is required")
+    .refine(
+      (val) => /^[0-9a-fA-F]{24}$/.test(val), // Assuming it's an ObjectId string pattern
+      { message: "Invalid bidder reference ID" }
+    ),
+
+  bidAmount: z
+    .number()
+    .min(1, "Bid amount must be at least 1")
+    .positive("Bid amount must be a positive number"),
+
+  bidTime: z.date().default(() => new Date()),
+
+  isWinner: z.boolean().default(false),
 });
 
 module.exports = { bidSchema };
