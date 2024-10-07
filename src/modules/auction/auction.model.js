@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
-const { utcTimezones } = require("./enum");
+const utcTimezones = require("../auth/enum");
 //
 const auctionSchema = new Schema(
   {

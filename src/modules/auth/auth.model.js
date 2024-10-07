@@ -1,5 +1,5 @@
 const { Schema, model, default: mongoose } = require("mongoose");
-
+const utcTimezones = require("./enum");
 const userSchema = new Schema(
   {
     email: {
@@ -12,6 +12,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
       enum: ["ADMIN", "SELLER", "BIDDER"],
+    },
+    timeZone: {
+      type: String,
+      enum: utcTimezones,
     },
     is_verified: { type: Boolean, default: false },
     is_active: { type: Boolean, default: false },

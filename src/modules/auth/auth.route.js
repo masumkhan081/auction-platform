@@ -12,10 +12,16 @@ const config = require("../../config/index.js");
 const { verifyToken } = require("../../utils/tokenisation.js");
 const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
-
+//
+//  0
+router.post(
+  "/register-as-bidder",
+  validateRequest(registerSchema),
+  authController.registerBidder
+);
 //  1
 router.post(
-  "/register",
+  "/register-as-seller",
   validateRequest(registerSchema),
   authController.registerUser
 );

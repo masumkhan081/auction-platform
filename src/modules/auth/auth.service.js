@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const userModel = require("./auth.model");
+const User = require("./auth.model");
 const bcrypt = require("bcrypt");
 const { sendOTPMail, sendResetMail } = require("../../utils/mail");
 const config = require("../../config");
@@ -13,45 +13,59 @@ const crypto = require("crypto-js");
 const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
 const Profile = require("../profile/profile.model");
 
-async function register({ res, data }) {
+async function register({ res, data, role }) {
   try {
-    const { full_name, phone, addresses, email, password, role } = data;
+    console.log(object);
+    const { full_name, phone, gender, address, email, password, utcTimeZone } =
+      data;
     //
+    let user;
     let flows = {
       profile: false,
       user: false,
     };
+    console.log(
+      full_name,
+      phone,
+      gender,
+      address,
+      email,
+      password,
+      utcTimeZone
+    );
     //
     try {
-      const profile = await new Profile({
-        full_name,
-        phone,
-        addresses,
-      }).save();
-      flows.profile = true;
+      // const profile = await new Profile({
+      //   full_name,
+      //   phone,
+      //   address,
+      //   gender,
+      // }).save();
+      // flows.profile = true;
 
-      const user = await new userModel({
-        email,
-        password,
-        role,
-        profile_id: profile.id,
-      }).save();
+      // user = await new User({
+      //   email,
+      //   password,
+      //   role,
+      //   utcTimeZone,
+      //   profile_id: profile.id,
+      // }).save();
       flows.user = true;
     } catch (error) {
       if (flows.profile) {
         Profile.findByIdAndDelete(profile.id);
       }
       if (flows.user) {
-        userModel.findByIdAndDelete(user.id);
+        User.findByIdAndDelete(user.id);
       }
-      res.status.send({ message: "Error creating bidder profile" });
+      res.status(400).send({ message: "Error creating bidder profile" });
     }
 
-    sendOTPMail({
-      user,
-      res,
-      successMessage: "An OTP has been sent to your email for verification.",
-    });
+    // sendOTPMail({
+    //   user,
+    //   res,
+    //   successMessage: "An OTP has been sent to your email for verification.",
+    // });
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.user });
   }
@@ -68,7 +82,7 @@ async function validateEmail({ user_email, user_otp, token, res }) {
     if (new Date().getTime() < expireAt) {
       res.send({ statusCode: 400, success: false, message: "OTP expired" });
     } else if (user_otp === otp && user_email === email) {
-      (await userModel.findOneAndUpdate({ email }, { is_verified: true }))
+      (await User.findOneAndUpdate({ email }, { is_verified: true }))
         ? res.send({
             statusCode: 400,
             success: false,
@@ -90,7 +104,7 @@ async function validateEmail({ user_email, user_otp, token, res }) {
 async function login({ res, data }) {
   try {
     const { email, password } = data;
-    const user = await userModel.findOne({ email });
+    const user = await User.findOne({ email });
     let token;
     if (user) {
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -152,14 +166,13 @@ async function getUsers({
   sortBy,
   sortOrder,
 }) {
-  const fetchResult = await userModel
-    .find({
-      title: { $regex: new RegExp(searchTerm, "i") },
-    })
+  const fetchResult = await User.find({
+    title: { $regex: new RegExp(searchTerm, "i") },
+  })
     .skip(viewSkip)
     .limit(viewLimit);
 
-  const total = await userModel.countDocuments({
+  const total = await User.countDocuments({
     title: { $regex: new RegExp(searchTerm, "i") },
   });
 
@@ -190,7 +203,7 @@ async function resetPw({ res, token }) {
         message: "Reset link expired",
       });
     } else {
-      const user = await userModel.findOne({ email: email, id: id });
+      const user = await User.findOne({ email: email, id: id });
       res.send({
         status: 200,
         success: true,
@@ -212,7 +225,7 @@ async function updatePw({ email, password, confirmPassword, res }) {
     if (password === confirmPassword) {
       const hashedPassword = getHashedPassword(password);
 
-      const updatedUser = await userModel.findOneAndUpdate(
+      const updatedUser = await User.findOneAndUpdate(
         { email },
         { password: hashedPassword }
       );

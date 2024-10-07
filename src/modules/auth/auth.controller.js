@@ -1,20 +1,32 @@
 const authService = require("./auth.service");
 const httpStatus = require("http-status");
 const config = require("../../config/index");
-const userModel = require("./auth.model");
+const User = require("./auth.model");
 const {
   sendCreateResponse,
   sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
   sendUpdateResponse,
-  sendAuthResponse,
-  success_msg,
+  responseMap,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
-const { isPostBodyValid } = require("./auth.validate");
-const { getHashedPassword } = require("../../utils/tokenisation");
+const { allowedRoles } = require("../../config/constants");
 //
+//
+async function registerBidder(req, res) {
+  try {
+    console.log(" got hit ! ");
+    await authService.register({
+      res,
+      data: req.body,
+      role: allowedRoles.bidder,
+    });
+  } catch (error) {
+    res.status(400).send({ message: "Error processing request" });
+  }
+}
+
 async function registerUser(req, res) {
   try {
     let hashedPassword;
@@ -60,7 +72,7 @@ async function logout(req, res) {
 
 async function sendResetMail(req, res) {
   try {
-    const user = await userModel.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email });
     await authService.sendResetMail({
       res,
       user,
@@ -98,4 +110,5 @@ module.exports = {
   sendOTPToEmail,
   sendResetMail,
   validateEmail,
+  registerBidder,
 };
