@@ -5,12 +5,17 @@ const { uploadProductImages } = require("../../utils/uploader");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 const validateRequest = require("../../middlewares/validateRequest");
+//
 const {
   createProductSchema,
   adminApprovalSchema,
 } = require("./product.validate");
 //
-router.get("/", productController.getProducts);
+router.get(
+  "/",
+  accessControl([allowedRoles.seller, allowedRoles.bidder]),
+  productController.getProducts
+);
 router.post(
   "/",
   uploadProductImages,

@@ -85,17 +85,18 @@ router.get("/recovery/:token", authController.resetPw);
 router.post("/reset-password", authController.updatePw);
 
 router.post("/test-auth-token", async (req, res) => {
-  const { email, role, password } = req.body;
+  const { email, role, password, profile_id } = req.body;
   try {
-    let user = await User.findOne({ email, role, password });
+    let user = await User.findOne({ email, role });
     if (!user) {
       user = User.create({
         email,
         password,
         role,
-        profile_id: "66f25cf57ed2cbf857beb03f",
+        profile_id,
       });
     }
+    console.log(JSON.stringify({ user_id: user.id, role: user.role, email }));
     res.send(
       jwt.sign(
         { user_id: user.id, role: user.role, email },
