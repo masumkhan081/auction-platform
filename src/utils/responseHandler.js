@@ -1,6 +1,18 @@
 const httpStatus = require("http-status");
 //
 //
+function sendSingleFetchResponse({ res, data, what }) {
+  let statusCode = data ? responseMap.fetch.code : responseMap.not_found.code;
+  res.status(statusCode).send({
+    statusCode,
+    success: data ? true : false,
+    message: data
+      ? responseMap.fetch.message(what)
+      : responseMap.id_not_found.message(what),
+    data,
+  });
+}
+//
 function sendFetchResponse({ res, data, what }) {
   let statusCode = responseMap.fetch.code;
   res.status(statusCode).send({
@@ -22,21 +34,25 @@ function sendCreateResponse({ res, data, what }) {
 }
 
 function sendUpdateResponse({ res, data, what }) {
-  let statusCode = responseMap.update.code;
+  let statusCode = data ? responseMap.update.code : responseMap.not_found.code;
   res.status(statusCode).send({
     statusCode,
-    success: true,
-    message: responseMap.update.message(what),
+    success: data ? true : false,
+    message: data
+      ? responseMap.update.message(what)
+      : responseMap.id_not_found.message(what),
     data,
   });
 }
 
 function sendDeletionResponse({ res, data, what }) {
-  let statusCode = responseMap.delete.code;
+  let statusCode = data ? responseMap.delete.code : responseMap.not_found.code;
   res.status(statusCode).send({
     statusCode,
-    success: true,
-    message: responseMap.delete.message(what),
+    success: data ? true : false,
+    message: data
+      ? responseMap.delete.message(what)
+      : responseMap.id_not_found.message(what),
     data,
   });
 }
@@ -109,13 +125,13 @@ const responseMap = {
   //
   invalid: { code: 500, message: "Invalid Request" },
   bad_req: { code: 500, message: "Bad Request" },
-  not_found: { code: 1000, message: (what) => `${what} not found` },
+  not_found: { code: 404, message: (what) => `${what} not found` },
   server_error: { code: 500, message: "Internal Server Error" },
   something_went_wrong: { code: 500, message: "Something went wrong" },
   unauthorized: { code: 500, message: "Unauthorized Access" },
   forbidden: { code: 500, message: "Forbidden Access" },
 
-  no_data: { code: 404, message: `No Data` },
+  no_data: { code: 204, message: `No Data` },
   fail_in_update: { code: 1000, message: (what) => `${what} failed to update` },
   //
 
@@ -124,6 +140,7 @@ const responseMap = {
 
 module.exports = {
   sendFetchResponse,
+  sendSingleFetchResponse,
   sendCreateResponse,
   sendDeletionResponse,
   sendErrorResponse,

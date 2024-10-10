@@ -1,6 +1,6 @@
 const { z } = require("zod");
 
-const categorySchema = z.object({
+const categoryPostSchema = z.object({
   name: z
     .string()
     .min(3, { message: "Category name must be at least 3 characters long" })
@@ -15,4 +15,6 @@ const categorySchema = z.object({
     .optional(),
 });
 
-module.exports = { categorySchema };
+const categoryPatchSchema = categoryPostSchema.partial();
+
+module.exports = {  categoryPostSchema,categoryPatchSchema };

@@ -3,7 +3,7 @@ const config = require("../config/index");
 const { verifyToken } = require("../utils/tokenisation");
 
 //  accessRole can be undefined/empty string or "admin" or "salesman"
-function accessControl(accessRole) {
+function accessControl(accessRoles) {
   return async (req, res, next) => {
     try {
       const token = req.headers.authorization;
@@ -13,14 +13,14 @@ function accessControl(accessRole) {
         if (!isVerified) {
           forbid(res);
         } else {
-          // Assign custom properties to the req object
+          // Assign user id & role to later use if in case ...
           req.user_id = isVerified?.user_id;
           req.role = isVerified?.role;
-          // console.log(req.role + "    <>   " + accessRole);
-          if (!accessRole === req.role) {
-            forbid(res);
-          } else {
+          // console.log(req.role + "    <>   " + accessRoles);
+          if (accessRoles.includes(req.role)) {
             next();
+          } else {
+            forbid(res);
           }
         }
       } else {

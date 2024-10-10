@@ -8,6 +8,7 @@ const {
   sendFetchResponse,
   sendUpdateResponse, 
   responseMap,
+  sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const productModel = require("../product/product.model");
@@ -22,7 +23,7 @@ async function getSingleCategory(req, res) {
         what: operableEntities.category,
       });
     } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.category });
+      sendSingleFetchResponse({ res, data: result, what: operableEntities.category });
     }
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.category });
@@ -97,7 +98,7 @@ async function deleteCategory(req, res) {
     const isUsed = await productModel.countDocuments({
       category: req.params.id,
     });
-    console.log("isUsed  " + isUsed);
+    
     if (isUsed === 0) {
       const result = await categoryService.deleteCategory(req.params.id);
       if (result instanceof Error) {
