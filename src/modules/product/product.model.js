@@ -51,16 +51,17 @@ const productSchema = new mongoose.Schema(
       },
       default: "INACTIVE", // seller did not set this prod for auction yet, just added
     },
-    approval: {
+    adminApproval: {
       type: String,
       enum: {
-        values: ["APPROVED", "DISAPPROVED", "CANCELLED", "PENDING","UNDER_REVIEW"],
+        values: ["APPROVED", "DISAPPROVED", "CANCELLED", "PENDING"],
         message:
           "Approval status must be either APPROVED, DISAPPROVED, or CANCELLED",
       },
-      default: "PENDING",
+      default: "PENDING", // untill admin review the product, the default is pending
     },
     reviewNote: {
+      // in-case admin dessaprove/cancel approval - he may add an explanation or reason behind it
       type: String,
       maxlength: [500, "Approval note cannot exceed 500 characters"],
     },
