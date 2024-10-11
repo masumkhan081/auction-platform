@@ -1,6 +1,4 @@
 const productService = require("./product.service");
-const httpStatus = require("http-status");
-
 const {
   sendCreateResponse,
   sendDeletionResponse,
@@ -13,7 +11,7 @@ const { operableEntities } = require("../../config/constants");
 const Product = require("./product.model");
 const { uploadHandler, fieldsMap } = require("../../utils/uploader");
 const { removeFile } = require("../../utils/fileHandle");
-
+//
 async function createProduct(req, res, next) {
   try {
     const { productName, category, productDetail } = req.body;
@@ -204,7 +202,7 @@ async function updateApprovalByAdmin(req, res) {
       id: req.params.id,
       data: req.body,
     });
-    console.log(updateProduct);
+ 
     if (updateResult instanceof Error) {
       sendErrorResponse({
         res,
