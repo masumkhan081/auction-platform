@@ -94,7 +94,11 @@ async function updateProduct(req, res) {
         data: editResult,
       });
     } else {
-      sendErrorResponse({ res, error:responseMap.id_not_found, what: operableEntities.product });
+      sendErrorResponse({
+        res,
+        error: responseMap.id_not_found,
+        what: operableEntities.product,
+      });
     }
   } catch (error) {
     console.log("error cash ... " + error.message);

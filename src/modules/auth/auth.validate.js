@@ -24,17 +24,8 @@ const registerSchema = z.object({
       message: "Phone number must be in the format: +<country code><9 digits>",
     })
     .nonempty({ message: "Phone number is required" }),
-
   gender: z.enum(["Male", "Female", "Other"]).optional(),
-
   address: z.string().optional(),
-
-  timeZone: z
-    .string()
-    .nonempty({ message: "Time zone is required" })
-    .refine((tz) => utcTimezones.includes(tz), {
-      message: "Time zone must be one of the valid UTC time zones.",
-    }),
 });
 //
 const loginSChema = z.object({
@@ -67,10 +58,9 @@ const resetPassSchema = z.object({
 });
 
 module.exports = {
-   
   registerSchema,
   loginSChema,
   emailVerSchema,
   resetPassSchema,
-  otpVerSchema, 
+  otpVerSchema,
 };
