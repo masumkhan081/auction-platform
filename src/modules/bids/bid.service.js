@@ -2,9 +2,27 @@
 const { operableEntities } = require("../../config/constants");
 const Bid = require("./bid.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
-
+const bidModel = require("./bid.model");
+const auctionModel = require("../auction/auction.model");
 //
+async function createBid(data) {
+  let bid;
+  try {
+    bid = await bidModel.create(data);
 
+    await auctionModel.findByIdAndUpdate(auction, {
+      currentPrice: bidAmount,
+    });
+    //
+    return bid;
+  } catch (error) {
+    if (bid) {
+      await bidModel.deleteOne({ _id: bid._id });
+    }
+    return error;
+  }
+}
+//
 async function getSingleBid(updatableId) {
   try {
     const getResult = await Bid.findById(updatableId);
@@ -75,6 +93,7 @@ async function deleteBid(id) {
 }
 
 module.exports = {
+  createBid,
   deleteBid,
   getBids,
   getSingleBid,

@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const productController = require("./product.controller");
-const { uploadProductImages } = require("../../utils/uploader");
+const { uploadProductImages } = require("../../utils/fileHandle");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 const validateRequest = require("../../middlewares/validateRequest");

@@ -4,6 +4,7 @@ const path = require("path");
 const { operableEntities } = require("../config/constants");
 const { promisify } = require("util");
 const unlinkAsync = promisify(fs.unlink);
+const upload = multer({ dest: "../../public/" });
 //
 const storageMap = {
   productImages: {
@@ -14,7 +15,39 @@ const storageMap = {
     unlink_directory: "../../public/product-images",
   },
 };
-
+//
+const fieldsMap = {
+  [operableEntities.product]: [
+    { name: "productImages", maxCount: 3, required: true },
+  ],
+};
+//
+const uploadProductImages = upload.fields(fieldsMap[operableEntities.product]);
+//
+async function uploadHandler({ type, what, file }) {
+  try {
+    const uploadDir = path.join(__dirname, storageMap[what].destination);
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+      }
+    } catch (err) {
+      console.log("inner catch");
+      console.error(err);
+    }
+    const readData = fs.readFileSync(file.path);
+    // unique name generation
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext);
+    const newFilePath = `${storageMap[what].save_directory}${basename}-${timestamp}${ext}`;
+    //
+    const writeData = fs.writeFileSync(newFilePath, readData);
+    return newFilePath;
+  } catch (error) {
+    res.status(400).send({ message: "error processing file" });
+  }
+}
 function checkFileType({ file, fileTypes, cb }) {
   const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = fileTypes.test(file.mimetype);
@@ -25,7 +58,6 @@ function checkFileType({ file, fileTypes, cb }) {
     cb("Error: Images only! (jpeg, jpg, png, gif, webp, svg)");
   }
 }
-
 async function removeFile({ fileUrl }) {
   try {
     const deleteUrl = path.join(__dirname, `../../${fileUrl}`);
@@ -36,8 +68,10 @@ async function removeFile({ fileUrl }) {
     console.log(" ---- " + JSON.stringify(error));
   }
 }
-
 module.exports = {
   storageMap,
   removeFile,
+  uploadHandler,
+  fieldsMap,
+  uploadProductImages,
 };

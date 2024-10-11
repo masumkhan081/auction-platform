@@ -2,24 +2,33 @@ const { Router } = require("express");
 const router = Router();
 const bidController = require("./bid.controller");
 const validateRequest = require("../../middlewares/validateRequest");
-const { bidSchema } = require("./bid.validate");
+const { bidCreateSchema, bidUpdateSchema } = require("./bid.validate");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 //
 router.post(
   "/",
-  // validateRequest(bidSchema),
-  // accessControl(allowedRoles.admin),
+  validateRequest(bidCreateSchema),
+  accessControl([allowedRoles.bidder]),
   bidController.createBid
 );
 router.patch(
   "/:id",
-  validateRequest(bidSchema),
-  // accessControl(allowedRoles.admin),
+  validateRequest(bidUpdateSchema),
+  accessControl([allowedRoles.bidder]),
   bidController.updateBid
 );
 router.get("/", bidController.getBids);
 router.get("/:id", bidController.getSingleBid);
-router.delete("/:id", bidController.deleteBid);
+router.get(
+  "/history",
+  accessControl([allowedRoles.bidder]),
+  bidController.getSingleBid
+);
+router.delete(
+  "/:id",
+  accessControl([allowedRoles.bidder]),
+  bidController.deleteBid
+);
 
 module.exports = router;

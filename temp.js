@@ -1,7 +1,9 @@
-const st = new Date();
+const moment = require("moment-timezone");
 
-console.log(st.getHours() + " - " + st.getMinutes() + " - ");
+const arr = moment.tz.names();
 
-const timezoneOffset = st.getTimezoneOffset();
-
-console.log(timezoneOffset);
+const data = {
+  name: "name",
+  age: 22,
+};
+console.log({ ...data, age: 29, name: "masum" });

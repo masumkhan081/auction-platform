@@ -1,3 +1,5 @@
+const moment = require("moment-timezone");
+
 const utcTimezones = [
   "UTC-11:00",
   "UTC-10:00",
@@ -32,4 +34,6 @@ const utcTimezones = [
   "UTC+12:00",
 ];
 
-module.exports = utcTimezones;
+const timeZoneEnum = moment.tz.names();
+
+module.exports = { utcTimezones, timeZoneEnum };

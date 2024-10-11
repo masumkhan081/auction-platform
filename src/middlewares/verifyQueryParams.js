@@ -1,5 +1,6 @@
 const { map_searchables } = require("../config/constants");
-
+//
+//  not used
 const validateQueryParams = (what) => (req, res, next) => {
   // search_by and search params can be present without not-filterable params
   const validParams = [...map_searchables[what], "search_by", "search"];

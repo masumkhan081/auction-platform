@@ -2,11 +2,51 @@
 const { operableEntities } = require("../../config/constants");
 const Auction = require("./auction.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
-
+const cron = require("node-cron");
+const bidModel = require("../bids/bid.model");
+const moment = require("moment-timezone");
 //
 async function createAuction(data) {
   try {
     const addResult = await Auction.create(data);
+    const auctionId = addResult.id;
+    //
+    console.log("got hit !");
+    // Schedule a cron job to check the auction status every minute
+    cron.schedule("* * * * *", async () => {
+      const now = moment.utc(); // Current time in UTC
+
+      const targetAuction = await Auction.findById(auctionId);
+      console.log("checking ..." + targetAuction.status);
+      console.log(
+        now.isSameOrAfter(moment(targetAuction.auctionStart)) +
+          " \n" +
+          now.isSameOrAfter(moment(targetAuction.auctionEnd))
+      );
+      // Check if the auction should be opened
+      if (
+        now.isSameOrAfter(moment(targetAuction.auctionStart)) &&
+        targetAuction.status !== "OPEN"
+      ) {
+        await Auction.findByIdAndUpdate(auctionId, { status: "OPEN" });
+      }
+      if (
+        now.isSameOrAfter(moment(targetAuction.auctionEnd)) &&
+        targetAuction.status === "OPEN" // Change from Open to UNSOLD
+      ) {
+        console.log("inside .. !");
+        // Count the number of bids with the auction
+        const bidCount = await bidModel.countDocuments({
+          auction: auctionId,
+        });
+        const newStatus = bidCount > 0 ? "SOLD" : "UNSOLD";
+        console.log("newStatus" + newStatus);
+        await Auction.findByIdAndUpdate(auctionId, {
+          status: newStatus,
+        });
+      }
+    });
+
     return addResult;
   } catch (error) {
     console.log(error.message);

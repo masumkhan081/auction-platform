@@ -1,19 +1,13 @@
 const { z } = require("zod");
-const utcTimezones = require("./enum"); // Ensure this exports a valid array
+const moment = require("moment-timezone");
+const { timeZoneEnum } = require("./enum"); // Ensure this exports a valid array
+//
+const statusEnum = z.enum(["OPEN", "UNSOLD", "PENDING", "SOLD"]);
 
+//
 const auctionCreateSchema = z.object({
   product: z.string().nonempty({ message: "Product is required" }), // Assuming product is a string ObjectId
-  seller: z.string().nonempty({ message: "Seller is required" }), // Assuming seller is a string ObjectId
-  timeZone: z.enum(utcTimezones, { message: "Time zone is required" }),
-  startPrice: z
-    .number()
-    .nonnegative({ message: "Start price must be a positive number" })
-    .min(0, { message: "Start price is required" }),
-  currentPrice: z
-    .number()
-    .nonnegative({ message: "Current price must be a positive number" })
-    .optional()
-    .default(0),
+  timeZone: z.enum(timeZoneEnum, { message: "Time zone is required" }),
   auctionStart: z
     .string()
     .refine((dateStr) => !isNaN(new Date(dateStr).getTime()), {
@@ -26,27 +20,60 @@ const auctionCreateSchema = z.object({
       message: "Auction end must be a valid date",
     })
     .transform((dateStr) => new Date(dateStr)), // Convert string to Date
+  startPrice: z
+    .number()
+    .nonnegative({ message: "Start price must be a positive number" })
+    .min(0, { message: "Start price is required" }),
+
   minBidIncrement: z
     .number()
     .nonnegative({ message: "Bid increment must be a positive number" })
     .min(0, { message: "Bid increment is required" }),
-  isOpen: z.boolean().optional().default(false),
-  isSold: z.boolean().optional().default(false),
 });
 
 // Ensure this is set up correctly
 const auctionEditSchema = auctionCreateSchema.omit({ isSold: true }).partial();
 
-const isAuctionEndValid = ({ auctionStart, auctionEnd }) => {
+const validateAndConvertToUTC = ({ auctionStart, auctionEnd, timeZone }) => {
   try {
-    if (new Date(auctionEnd) <= new Date(auctionStart)) {
-      return false;
-    } else {
-      return true;
+    // Convert auctionStart and auctionEnd to Date objects
+    const startDate = new Date(auctionStart);
+    const endDate = new Date(auctionEnd);
+
+    // Check if the auction start time is in the past
+    if (startDate <= new Date()) {
+      return {
+        success: false,
+        message: "The auction start time must be set for the future.",
+      };
     }
+
+    // Ensure the auction end time is after the start time
+    if (endDate <= startDate) {
+      return {
+        success: false,
+        message: "The auction end time must come after the start time.",
+      };
+    }
+
+    // If both checks pass, convert the times to UTC format
+    return {
+      success: true,
+      message: "",
+      auctionStart: moment.tz(auctionStart, timeZone).utc().format(),
+      auctionEnd: moment.tz(auctionEnd, timeZone).utc().format(),
+    };
   } catch (error) {
-    return false;
+    // Handle any unexpected errors that may occur during validation
+    return {
+      success: false,
+      message: "There was an error validating the auction times.",
+    };
   }
 };
 
-module.exports = { auctionCreateSchema, auctionEditSchema, isAuctionEndValid };
+module.exports = {
+  auctionCreateSchema,
+  auctionEditSchema,
+  validateAndConvertToUTC,
+};

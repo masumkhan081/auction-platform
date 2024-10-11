@@ -1,7 +1,8 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
-const utcTimezones = require("./enum");
+const { timeZoneEnum } = require("./enum");
 //
+
 const auctionSchema = new Schema(
   {
     product: {
@@ -16,18 +17,8 @@ const auctionSchema = new Schema(
     },
     timeZone: {
       type: String,
-      enum: utcTimezones,
+      enum: timeZoneEnum,
       required: [true, "Time zone is required"],
-    },
-    startPrice: {
-      type: Number,
-      required: [true, "Start price is required"],
-      min: [0, "Start price must be a positive number"], // Must be non-negative
-    },
-    currentPrice: {
-      type: Number,
-      default: 0,
-      min: [0, "Current price must be a positive number"], // Must be non-negative
     },
     auctionStart: {
       type: Date,
@@ -49,18 +40,25 @@ const auctionSchema = new Schema(
         message: "Auction end must be a valid date and after auction start",
       },
     },
+    startPrice: {
+      type: Number,
+      required: [true, "Start price is required"],
+      min: [0, "Start price must be a positive number"], // Must be non-negative
+    },
+    currentPrice: {
+      type: Number,
+      default: 0,
+      min: [0, "Current price must be a positive number"], // Must be non-negative
+    },
     minBidIncrement: {
       type: Number,
       required: [true, "Bid increment is required"],
       min: [0, "Bid increment must be a positive number"], // Must be non-negative
     },
-    isOpen: {
-      type: Boolean,
-      default: false,
-    },
-    isSold: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["OPEN", "UNSOLD", "PENDING", "SOLD","CANCELLED"],
+      default: "PENDING",
     },
   },
   {

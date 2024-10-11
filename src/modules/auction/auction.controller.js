@@ -8,25 +8,59 @@ const {
   sendFetchResponse,
   sendUpdateResponse,
   responseMap,
+  sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
-const { isAuctionEndValid } = require("./auction.validate");
+const { validateAndConvertToUTC } = require("./auction.validate");
+const productModel = require("../product/product.model");
 
 //
 async function createAuction(req, res) {
   try {
-    if (isAuctionEndValid(req.body)) {
-      const addResult = await auctionService.createAuction(req.body);
+    //
+    const { product, auctionStart, auctionEnd, timeZone } = req.body;
+    //
+    const {
+      success,
+      message,
+      auctionStart: convertedStart,
+      auctionEnd: convertedEnd,
+    } = validateAndConvertToUTC({ auctionStart, auctionEnd, timeZone });
+    //
+    const targetProduct = await productModel.findById(product);
+    //
+    if (!targetProduct) {
+      return res.status(404).send({
+        success: false,
+        message: "Product not found.",
+      });
+    } else if (["SOLD", "ON_AUCTION"].includes(targetProduct.status)) {
+      return res.status(400).send({
+        success: false,
+        message: `Target product is already ${targetProduct.status}.`,
+      });
+    } else if (targetProduct.adminApproval !== "APPROVED") {
+      return res.status(400).send({
+        success: false,
+        message: `The product must be approved to set on auction. Current status: ${targetProduct.adminApproval}.`,
+      });
+    } else if (!success) {
+      return res.status(400).send({
+        success,
+        message,
+      });
+    } else {
+      req.body.auctionStart = convertedStart;
+      req.body.auctionEnd = convertedEnd;
+
+      const addResult = await auctionService.createAuction({
+        ...req.body,
+        seller: req.user_id,
+      });
       sendCreateResponse({
         res,
         what: operableEntities.auction,
         data: addResult,
-      });
-    } else {
-      res.status(400).send({
-        success: false,
-        statusCode: 400,
-        message: "Auction end time must be after start time",
       });
     }
   } catch (error) {
@@ -44,7 +78,11 @@ async function getSingleAuction(req, res) {
         what: operableEntities.auction,
       });
     } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.auction });
+      sendSingleFetchResponse({
+        res,
+        data: result,
+        what: operableEntities.auction,
+      });
     }
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.auction });

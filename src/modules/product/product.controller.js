@@ -10,8 +10,11 @@ const {
 const { operableEntities } = require("../../config/constants");
 const Product = require("./product.model");
 const Auction = require("../auction/auction.model");
-const { uploadHandler, fieldsMap } = require("../../utils/uploader");
-const { removeFile } = require("../../utils/fileHandle");
+const {
+  uploadHandler,
+  fieldsMap,
+  removeFile,
+} = require("../../utils/fileHandle");
 //
 async function createProduct(req, res, next) {
   try {
@@ -72,11 +75,12 @@ async function updateProduct(req, res) {
         }
       }
       //
-      const { productName, category, productDetail } = getUpdateFields({
-        updatable,
-        body: req.body,
-        fileUrls,
-      });
+      const { productName, category, productDetail, productImages } =
+        getUpdateFields({
+          updatable,
+          body: req.body,
+          fileUrls,
+        });
       //
       const editResult = await Product.findByIdAndUpdate(
         req.params.id,
