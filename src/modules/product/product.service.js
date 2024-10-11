@@ -93,10 +93,10 @@ async function deleteProduct(id) {
 
 async function updateApprovalByAdmin({ id, data }) {
   try {
-    const { approval, reviewNote } = data;
+    const { adminApproval, reviewNote } = data;
     const editResult = await Product.findByIdAndUpdate(
       id,
-      { approval, reviewNote },
+      { adminApproval, reviewNote },
       { new: true }
     );
     return editResult;

@@ -20,7 +20,6 @@ const createProductSchema = z.object({
       "Product detail can only contain letters, numbers, and spaces"
     ),
 });
-
 //
 
 const adminApprovalSchema = z.object({

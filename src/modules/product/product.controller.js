@@ -9,6 +9,7 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const Product = require("./product.model");
+const Auction = require("../auction/auction.model");
 const { uploadHandler, fieldsMap } = require("../../utils/uploader");
 const { removeFile } = require("../../utils/fileHandle");
 //
@@ -55,84 +56,45 @@ async function createProduct(req, res, next) {
 }
 //
 async function updateProduct(req, res) {
-  const idUpdatableProduct = req.params.id;
-  let paths = {
-    product_thumbnail: "",
-    additional_product_thumbnail: [],
-  };
-  //
   try {
-    const updatableProduct = await Product.findById(idUpdatableProduct);
-    if (updatableProduct) {
-      const valid = isPatchBodyValid({
-        updatable: updatableProduct,
-        role: req.role,
-        bodyData: req.body,
-      });
-
-      // console.log("----- !! \n\n" + JSON.stringify(valid));
-
-      let len = fieldsMap[operableEntities.product].length;
-      // console.log("----- !!" + len);
-      //
-      for (let i = 0; i < len; i++) {
-        let fieldName = fieldsMap[operableEntities.product][i].name;
-        let maxCount = fieldsMap[operableEntities.product][i].maxCount;
-        if (req?.files?.[fieldName]) {
-          if (maxCount === 1) {
-            paths[fieldName] = await uploadHandler({
-              what: fieldName,
-              file: req.files[fieldName][0],
-            });
-            removeFile({ fileUrl: updatableProduct[fieldName] });
-          }
-          if (maxCount > 1) {
-            console.log("maxC > 1");
-            for (let i = 0; i < req?.files?.[fieldName].length; i++) {
-              let fileUrl = await uploadHandler({
-                what: fieldName,
-                file: req.files[fieldName][i],
-              });
-              paths[fieldName][i] = fileUrl;
-            }
-            for (let i = 0; i < updatableProduct[fieldName]?.length; i++) {
-              removeFile({ fileUrl: updatableProduct[fieldName][i] });
-            }
-          }
+    let fileUrls = [];
+    let fieldName = fieldsMap[operableEntities.product][0].name; // needed looping if were multiple fields
+    //
+    const updatable = await Product.findById(req.params.id);
+    //
+    if (updatable) {
+      if (req?.files?.[fieldName]) {
+        for (let i = 0; i < req?.files?.[fieldName].length; i++) {
+          fileUrls[i] = await uploadHandler({
+            what: fieldName,
+            file: req.files[fieldName][i],
+          });
         }
       }
-
-      console.log(
-        "valid: " + JSON.stringify(paths["additional_product_thumbnail"])
-      );
-
+      //
+      const { productName, category, productDetail } = getUpdateFields({
+        updatable,
+        body: req.body,
+        fileUrls,
+      });
+      //
       const editResult = await Product.findByIdAndUpdate(
-        idUpdatableProduct,
+        req.params.id,
         {
-          ...valid,
-          product_thumbnail:
-            paths["product_thumbnail"].length > 0
-              ? paths["product_thumbnail"]
-              : updatableProduct.product_thumbnail,
-          additional_product_thumbnail:
-            paths["additional_product_thumbnail"].length > 0
-              ? paths["additional_product_thumbnail"]
-              : updatableProduct.additional_product_thumbnail,
+          productName,
+          category,
+          productDetail,
+          productImages,
         },
         { new: true }
       );
-
       sendUpdateResponse({
         res,
         what: operableEntities.product,
         data: editResult,
       });
     } else {
-      res.status(404).send({
-        success: false,
-        status: 404,
-        message: "Id not found",
-      });
+      sendErrorResponse({ res, error:responseMap.id_not_found, what: operableEntities.product });
     }
   } catch (error) {
     console.log("error cash ... " + error.message);
@@ -180,13 +142,29 @@ async function getSingleProduct(req, res) {
 //
 async function deleteProduct(req, res) {
   try {
-    const result = await productService.deleteProduct(req.params.id);
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.product });
+    const isUsed = await Auction.countDocuments({
+      product: req.params.id,
+    });
+
+    if (isUsed === 0) {
+      const result = await productService.deleteProduct(req.params.id);
+      if (result instanceof Error) {
+        sendErrorResponse({
+          res,
+          error: result,
+          what: operableEntities.product,
+        });
+      } else {
+        sendDeletionResponse({
+          res,
+          data: result,
+          what: operableEntities.product,
+        });
+      }
     } else {
-      sendDeletionResponse({
+      sendErrorResponse({
         res,
-        data: result,
+        error: responseMap.already_used,
         what: operableEntities.product,
       });
     }
@@ -194,7 +172,7 @@ async function deleteProduct(req, res) {
     res.status(400).send({ message: "Error deleting product" });
   }
 }
-
+//
 async function updateApprovalByAdmin(req, res) {
   try {
     // console.log("role from updateStatusBySeller : " + req.role);
@@ -202,7 +180,7 @@ async function updateApprovalByAdmin(req, res) {
       id: req.params.id,
       data: req.body,
     });
- 
+
     if (updateResult instanceof Error) {
       sendErrorResponse({
         res,
@@ -220,7 +198,17 @@ async function updateApprovalByAdmin(req, res) {
     res.status(400).send({ message: "Error updating status" });
   }
 }
-
+//
+function getUpdateFields({ updatable, body, fileUrls }) {
+  return {
+    productName: body.productName ? body.productName : updatable.productName,
+    category: body.category ? body.category : updatable.category,
+    productDetail: body.productDetail
+      ? body.productDetail
+      : updatable.productDetail,
+    productImages: fileUrls.length > 0 ? fileUrls : updatable.productImages,
+  };
+}
 //
 module.exports = {
   createProduct,

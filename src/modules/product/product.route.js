@@ -12,6 +12,7 @@ const {
 } = require("./product.validate");
 //
 router.get("/", productController.getProducts);
+router.get("/:id", productController.getSingleProduct);
 //
 router.post(
   "/",
@@ -20,7 +21,6 @@ router.post(
   validateRequest(createProductSchema),
   productController.createProduct
 );
-router.get("/:id", productController.getSingleProduct);
 //
 router.patch(
   "/:id",
