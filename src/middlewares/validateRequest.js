@@ -10,7 +10,7 @@ const validateRequest = (requestBodySchema) => async (req, res, next) => {
       console.log("valid::    ");
       next();
     } else {
-      // JSON.stringify(valid)
+      JSON.stringify(valid)
       console.log("invalid:  ");
       let messages = {};
       let issues = valid.error.issues;
@@ -34,6 +34,7 @@ const validateRequest = (requestBodySchema) => async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error.message)
     res.status(400).send({
       success: false,
       message: "Invalid data",

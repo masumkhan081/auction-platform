@@ -4,6 +4,15 @@ const Auction = require("./auction.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
 
 //
+async function createAuction(data) {
+  try {
+    const addResult = await Auction.create(data);
+    return addResult;
+  } catch (error) {
+    console.log(error.message);
+    return error;
+  }
+}
 
 async function getSingleAuction(id) {
   try {
@@ -50,15 +59,9 @@ async function getAuctions(query) {
 //
 async function updateAuction({ id, data }) {
   try {
-    const { name, description } = data;
-    const updateResult = await Auction.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-      },
-      { new: true }
-    );
+    const updateResult = await Auction.findByIdAndUpdate(id, data, {
+      new: true,
+    });
     return updateResult;
   } catch (error) {
     return error;
@@ -75,6 +78,7 @@ async function deleteAuction(id) {
 }
 
 module.exports = {
+  createAuction,
   deleteAuction,
   getAuctions,
   getSingleAuction,

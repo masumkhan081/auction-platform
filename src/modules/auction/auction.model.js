@@ -70,4 +70,4 @@ const auctionSchema = new Schema(
   }
 );
 
-module.exports = model("auction", auctionSchema);
+module.exports = model("auctions", auctionSchema);

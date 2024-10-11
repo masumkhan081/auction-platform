@@ -10,7 +10,30 @@ const {
   responseMap,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
+const { isAuctionEndValid } = require("./auction.validate");
 
+//
+async function createAuction(req, res) {
+  try {
+    if (isAuctionEndValid(req.body)) {
+      const addResult = await auctionService.createAuction(req.body);
+      sendCreateResponse({
+        res,
+        what: operableEntities.auction,
+        data: addResult,
+      });
+    } else {
+      res.status(400).send({
+        success: false,
+        statusCode: 400,
+        message: "Auction end time must be after start time",
+      });
+    }
+  } catch (error) {
+    sendErrorResponse({ res, error, what: operableEntities.auction });
+  }
+}
+//
 async function getSingleAuction(req, res) {
   try {
     const result = await auctionService.getSingleAuction(req.params.id);
@@ -23,23 +46,6 @@ async function getSingleAuction(req, res) {
     } else {
       sendFetchResponse({ res, data: result, what: operableEntities.auction });
     }
-  } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.auction });
-  }
-}
-
-async function createAuction(req, res) {
-  try {
-    const { name, description } = req.body;
-    const addResult = await Auction.create({
-      name,
-      description,
-    });
-    sendCreateResponse({
-      res,
-      what: operableEntities.auction,
-      data: addResult,
-    });
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
