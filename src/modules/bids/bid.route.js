@@ -23,7 +23,7 @@ router.get("/:id", bidController.getSingleBid);
 router.get(
   "/history",
   accessControl([allowedRoles.bidder]),
-  bidController.getSingleBid
+  bidController.getBidHistory
 );
 router.delete(
   "/:id",

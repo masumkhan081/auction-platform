@@ -12,13 +12,20 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const { validateAndConvertToUTC } = require("./auction.validate");
-const productModel = require("../product/product.model");
+const Product = require("../product/product.model");
 
 //
 async function createAuction(req, res) {
   try {
     //
-    const { product, auctionStart, auctionEnd, timeZone } = req.body;
+    const {
+      product,
+      auctionStart,
+      auctionEnd,
+      timeZone,
+      threshold,
+      startPrice,
+    } = req.body;
     //
     const {
       success,
@@ -27,7 +34,7 @@ async function createAuction(req, res) {
       auctionEnd: convertedEnd,
     } = validateAndConvertToUTC({ auctionStart, auctionEnd, timeZone });
     //
-    const targetProduct = await productModel.findById(product);
+    const targetProduct = await Product.findById(product);
     //
     if (!targetProduct) {
       return res.status(404).send({
@@ -48,6 +55,11 @@ async function createAuction(req, res) {
       return res.status(400).send({
         success,
         message,
+      });
+    } else if (threshold > startPrice) {
+      return res.status(400).send({
+        success: false,
+        message: "threshold can't be higher than starting price",
       });
     } else {
       req.body.auctionStart = convertedStart;

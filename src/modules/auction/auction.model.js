@@ -43,12 +43,17 @@ const auctionSchema = new Schema(
     startPrice: {
       type: Number,
       required: [true, "Start price is required"],
-      min: [0, "Start price must be a positive number"], // Must be non-negative
+      min: [0, "Start price must be a positive number"], // an initial price
     },
-    currentPrice: {
+    threshold: {
+      type: Number,
+      required: [true, "Threshold price is required"],
+      min: [0.01, "Threshold must be a positive number and non-zero"],
+    },
+    currentHighest: {
       type: Number,
       default: 0,
-      min: [0, "Current price must be a positive number"], // Must be non-negative
+      min: [0, "Current price must be a positive number"], // current highest
     },
     minBidIncrement: {
       type: Number,
@@ -57,9 +62,10 @@ const auctionSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["OPEN", "UNSOLD", "PENDING", "SOLD","CANCELLED"],
+      enum: ["OPEN", "UNSOLD", "PENDING", "SOLD", "CANCELLED"],
       default: "PENDING",
     },
+    isFlagged: { type: Boolean, default: false },
   },
   {
     timestamps: true,

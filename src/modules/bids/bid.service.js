@@ -1,23 +1,23 @@
 /* eslint-disable no-unused-vars */
 const { operableEntities } = require("../../config/constants");
-const Bid = require("./bid.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
-const bidModel = require("./bid.model");
-const auctionModel = require("../auction/auction.model");
+const Bid = require("./bid.model");
+const Auction = require("../auction/auction.model");
 //
 async function createBid(data) {
   let bid;
   try {
-    bid = await bidModel.create(data);
+    console.log("bid: " + JSON.stringify(data));
+    bid = await Bid.create(data);
 
-    await auctionModel.findByIdAndUpdate(auction, {
-      currentPrice: bidAmount,
+    await Auction.findByIdAndUpdate(data.auction, {
+      currentPrice: data.bidAmount,
     });
     //
     return bid;
   } catch (error) {
     if (bid) {
-      await bidModel.deleteOne({ _id: bid._id });
+      await Bid.deleteOne({ _id: bid._id });
     }
     return error;
   }

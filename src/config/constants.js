@@ -6,8 +6,9 @@ const allowedRoles = {
 
 const operableEntities = {
   category: "Category",
-  product: "Products",
+  product: "Product",
   auction: "Auction",
+  bid:"Bid"
 };
 
 const paginationFields = ["page", "limit", "sortBy", "sortOrder"];

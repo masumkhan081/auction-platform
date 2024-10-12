@@ -24,7 +24,9 @@ const auctionCreateSchema = z.object({
     .number()
     .nonnegative({ message: "Start price must be a positive number" })
     .min(0, { message: "Start price is required" }),
-
+ threshold: z
+    .number()
+    .positive({ message: "Threshold must be a positive number and non-zero" }),
   minBidIncrement: z
     .number()
     .nonnegative({ message: "Bid increment must be a positive number" })
@@ -32,7 +34,7 @@ const auctionCreateSchema = z.object({
 });
 
 // Ensure this is set up correctly
-const auctionEditSchema = auctionCreateSchema.omit({ isSold: true }).partial();
+const auctionEditSchema = auctionCreateSchema.partial();
 
 const validateAndConvertToUTC = ({ auctionStart, auctionEnd, timeZone }) => {
   try {

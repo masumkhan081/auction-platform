@@ -9,22 +9,6 @@ const {
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 const { convertToUTC } = require("../../utils/timeHandler");
-
-//
-router.post("/test-auction-times", (req, res) => {
-  //
-  const { auctionStart, auctionEnd, timeZone } = req.body;
-  // Convert to UTC
-  const auctionStartUTC = convertToUTC(auctionStart, timeZone);
-  const auctionEndUTC = convertToUTC(auctionEnd, timeZone);
-  //
-  const auction = {
-    start: auctionStartUTC,
-    end: auctionEndUTC,
-    status: "OPEN",
-  };
-  res.send("dfdf");
-});
 //
 router.post(
   "/",

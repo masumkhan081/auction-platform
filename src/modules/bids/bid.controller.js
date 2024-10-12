@@ -1,6 +1,5 @@
 const bidService = require("./bid.service");
 const httpStatus = require("http-status");
-const Bid = require("./bid.model");
 const {
   sendCreateResponse,
   sendDeletionResponse,
@@ -10,10 +9,28 @@ const {
   responseMap,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
-const auctionModel = require("../auction/auction.model");
-const bidModel = require("./bid.model");
+const Auction = require("../auction/auction.model");
+const Bid = require("./bid.model");
+//
 
 async function getSingleBid(req, res) {
+  try {
+    const result = await bidService.getSingleBid(req.params.id);
+    if (result instanceof Error) {
+      sendErrorResponse({
+        res,
+        error: result,
+        what: operableEntities.bid,
+      });
+    } else {
+      sendFetchResponse({ res, data: result, what: operableEntities.bid });
+    }
+  } catch (error) {
+    sendErrorResponse({ res, error, what: operableEntities.bid });
+  }
+}
+
+async function getBidHistory(req, res) {
   try {
     const result = await bidService.getSingleBid(req.params.id);
     if (result instanceof Error) {
@@ -35,17 +52,17 @@ async function createBid(req, res) {
     const { auction, bidAmount } = req.body;
 
     // Fetch the auction details
-    const auctionItem = await auctionModel.findById(auction);
+    const targetAuction = await Auction.findById(auction);
 
     // Check if auction exists
-    if (!auctionItem) {
+    if (!targetAuction) {
       return res.status(404).send({
         success: false,
         message: "Auction not found.",
       });
     }
     // Ensure the auction status is 'OPEN'
-    if (auctionItem.status !== "OPEN") {
+    if (targetAuction.status !== "OPEN") {
       return res.status(400).send({
         success: false,
         message: "The auction is not open for bidding",
@@ -53,11 +70,11 @@ async function createBid(req, res) {
     }
     // Check if the bid amount is higher than the current price + minBidIncrement
     const requiredBidAmount =
-      auctionItem.currentPrice + auctionItem.minBidIncrement;
+      targetAuction.currentPrice + targetAuction.minBidIncrement;
     if (bidAmount < requiredBidAmount) {
       return res.status(400).send({
         success: false,
-        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${auctionItem.currentPrice}) + MBI:(${auctionItem.minBidIncrement}) `,
+        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentPrice}) + MBI:(${targetAuction.minBidIncrement}) `,
       });
     }
 
@@ -65,9 +82,12 @@ async function createBid(req, res) {
       auction,
       bidder: req.user_id,
       bidAmount,
+      isFlagged: bidAmount < targetAuction.startPrice * 0.5,
     });
+    console.log(JSON.stringify(result));
     sendCreateResponse({ res, data: result, what: operableEntities.bid });
   } catch (error) {
+    console.log("error: " + error.message);
     sendErrorResponse({ res, error, what: operableEntities.bid });
   }
 }
@@ -98,7 +118,7 @@ async function updateBid(req, res) {
 //
 async function getBids(req, res) {
   try {
-    const result = await bidService.getCategories(req.query);
+    const result = await bidService.getBids(req.query);
     if (result instanceof Error) {
       sendErrorResponse({
         res,
@@ -119,11 +139,14 @@ async function getBids(req, res) {
 //
 async function deleteBid(req, res) {
   try {
-    const isUsed = await productModel.countDocuments({
-      category: req.params.id,
-    });
+    const targetBid = await Bid.findById(req.params.id);
     console.log("isUsed  " + isUsed);
-    if (isUsed === 0) {
+    if (targetBid.isWinner) {
+      res.status(400).send({
+        success: false,
+        message: "Can't delete bid after declared winner",
+      });
+    } else {
       const result = await bidService.deleteCategory(req.params.id);
       if (result instanceof Error) {
         sendErrorResponse({
@@ -138,12 +161,6 @@ async function deleteBid(req, res) {
           what: operableEntities.bid,
         });
       }
-    } else {
-      sendErrorResponse({
-        res,
-        error: responseMap.already_used,
-        what: operableEntities.bid,
-      });
     }
   } catch (error) {
     sendErrorResponse({
@@ -160,4 +177,5 @@ module.exports = {
   deleteBid,
   getBids,
   getSingleBid,
+  getBidHistory,
 };
