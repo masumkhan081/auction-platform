@@ -19,7 +19,7 @@ async function register({ res, data }) {
     const { fullName, phone, gender, address, email, password, role } = data; // Ensure role is included
     profile = await new Profile({ fullName, phone, address, gender }).save();
 
-    user = await new User({ email, password, role, profile_id: profile.id }).save();
+    user = await new User({ email, password, role, profileId: profile.id }).save();
 
     sendOTPMail({ user, res, successMessage: "An OTP has been sent to your email for verification." });
 
@@ -35,33 +35,42 @@ async function register({ res, data }) {
   }
 }
 
-async function validateEmail({ user_email, user_otp, token, res }) {
-  // decrypted otp and it's expiry time, which to be validated against user typed otp
+async function validateEmail({ data, res }) {
   try {
+    // Decrypt OTP token and parse the data
     const { expireAt, otp, email } = JSON.parse(
-      crypto.AES.decrypt(token, config.tkn_secret).toString(crypto.enc.Utf8)
+      crypto.AES.decrypt(data.token, config.tkn_secret).toString(crypto.enc.Utf8)
     );
-    console.log("parsed from token:  " + expireAt, otp, email);
 
-    if (new Date().getTime() < expireAt) {
-      res.send({ statusCode: 400, success: false, message: "OTP expired" });
-    } else if (user_otp === otp && user_email === email) {
-      (await User.findOneAndUpdate({ email }, { is_verified: true }))
-        ? res.send({
-          statusCode: 400,
-          success: false,
+    console.log("User input: ", data.otp, data.email, data.token);
+    console.log("Parsed from token: ", expireAt, otp, email);
+
+    // Check if OTP has expired
+    if (new Date().getTime() > expireAt) {
+      return res.status(400).send({ success: false, message: "OTP expired" });
+    }
+
+    // Validate OTP and email
+    if (data.otp === otp && data.email === email) {
+      const user = await User.findOneAndUpdate({ email }, { isVerified: true });
+
+      if (user) {
+        return res.status(200).send({
+          success: true,
           message: "Account verified. You may login",
-        })
-        : res.send({
-          statusCode: 400,
-          success: false,
-          message: "Error verifying your account",
         });
+      } else {
+        return res.status(404).send({
+          success: false,
+          message: "No user associated with that email",
+        });
+      }
     } else {
-      res.send({ statusCode: 400, success: false, message: "Invalid OTP" });
+      return res.status(400).send({ success: false, message: "Invalid OTP or email" });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error verifying email" });
+    console.error("Error verifying email:", error);
+    return res.status(500).send({ success: false, message: "Internal Server Error" });
   }
 }
 

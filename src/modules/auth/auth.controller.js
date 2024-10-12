@@ -27,7 +27,7 @@ async function registerBidder(req, res) {
     }
     else {
       req.body.password = await getHashedPassword(req.body.password);
-      req.body.role= allowedRoles.bidder;
+      req.body.role = allowedRoles.bidder;
       await authService.register({
         res,
         data: req.body,
@@ -57,13 +57,15 @@ async function registerUser(req, res) {
 }
 
 async function validateEmail(req, res) {
-  const { email, otp, token } = req.body;
-  await authService.validateEmail({
-    res,
-    user_email: email,
-    user_otp: otp,
-    token,
-  });
+  try { 
+      await authService.validateEmail({
+        res,
+        data: req.body,
+      });
+  } catch (error) {
+    console.log("err in controller: " + error.message);
+    res.status(500).send({ message: "Error processing request" });
+  }
 }
 
 async function login(req, res) {
