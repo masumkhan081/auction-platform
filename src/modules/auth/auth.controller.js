@@ -1,7 +1,6 @@
 const authService = require("./auth.service");
 const httpStatus = require("http-status");
 const config = require("../../config/index");
-const User = require("./auth.model");
 const {
   sendCreateResponse,
   sendDeletionResponse,
@@ -13,58 +12,41 @@ const {
 const { operableEntities } = require("../../config/constants");
 const { allowedRoles } = require("../../config/constants");
 const { getHashedPassword } = require("../../utils/tokenisation");
+const { sendOTPMail, sendResetMail } = require("../../utils/mail");
+const User = require("./auth.model");
 //
 //
-async function registerBidder(req, res) {
+const registerUser = (role) => async (req, res) => {
   try {
-
     const isExist = await User.findOne({ email: req.body.email });
     if (isExist) {
       return res.status(409).send({
         success: false,
-        message: "Email already registered. You may login"
+        message: "Email already registered. You may login",
       });
-    }
-    else {
+    } else {
       req.body.password = await getHashedPassword(req.body.password);
-      req.body.role = allowedRoles.bidder;
+      req.body.role = role;
       await authService.register({
         res,
         data: req.body,
       });
     }
-
   } catch (error) {
     console.log("err in controller: " + error.message);
     res.status(500).send({ message: "Error processing request" });
   }
-}
+};
 
-async function registerUser(req, res) {
+async function verifyEmail(req, res) {
   try {
-    let hashedPassword;
-    let data = isPostBodyValid(req.body);
-    if (data.success) {
-      hashedPassword = await getHashedPassword(data.password);
-      data.password = hashedPassword;
-      await authService.register({ res, data });
-    } else {
-      res.status(400).send({ message: data.message });
-    }
-  } catch (error) {
-    res.status(400).send({ message: "Error processing request" });
-  }
-}
-
-async function validateEmail(req, res) {
-  try { 
-      await authService.validateEmail({
-        res,
-        data: req.body,
-      });
+    await authService.validateEmail({
+      res,
+      data: req.body,
+    });
   } catch (error) {
     console.log("err in controller: " + error.message);
-    res.status(500).send({ message: "Error processing request" });
+    res.status(500).send({ message: "Internal server error" });
   }
 }
 
@@ -74,45 +56,71 @@ async function login(req, res) {
   } catch (error) {
     res.status(500).send({
       success: false,
-      statusCode: 500,
       message: "Server error",
     });
   }
 }
 
-async function logout(req, res) {
-  res.clearCookie(config.tkn_header_key);
-  res.send({ status: 200, message: "User logged out succesfully" });
-}
+// async function logout(req, res) {
+//   res.clearCookie(config.tkn_header_key);
+//   res.send({ status: 200, message: "User logged out succesfully" });
+// }
 
-async function sendResetMail(req, res) {
+async function recoverAccount(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
-    await authService.sendResetMail({
-      res,
-      user,
-    });
+    if (user) {
+      if (user.isVerified) {
+        sendResetMail({
+          user,
+          res,
+          successMessage:
+            "An OTP has been sent to your email for verification.",
+        });
+      } else {
+        res.status(400).send({ message: "Your account is not verified yet" });
+      }
+    } else {
+      res
+        .status(400)
+        .send({ message: "No account associated with that email" });
+    }
   } catch (error) {
-    res.send({
-      status: 400,
-      success: false,
-      message: "internal server error",
-    });
+    res.status(500).send({ success: false, message: "Interval server error" });
   }
 }
 
 async function resetPw(req, res) {
-  await authService.resetPw({ token: req.params.token, res });
+  try {
+    await authService.resetPw({ token: req.params.token, res });
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Interval server error" });
+  }
 }
 
 async function updatePw(req, res) {
-  const { email, password, confirmPassword } = req.body;
-  await authService.updatePw({ res, email, password, confirmPassword });
+  try {
+    const { email, password, confirmPassword } = req.body;
+    await authService.updatePw({ res, email, password, confirmPassword });
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Interval server error" });
+  }
 }
-async function sendOTPToEmail(req, res) {
-  const { email } = req.body;
-
-  await authService.sendOTPToEmail(email);
+async function verifyAccount(req, res) {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user.isVerified) {
+      res.status(200).send({ message: "Account already verified" });
+    } else {
+      sendOTPMail({
+        user,
+        res,
+        successMessage: "An OTP has been sent to your email for verification.",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Interval server error" });
+  }
 }
 
 //
@@ -122,8 +130,7 @@ module.exports = {
   logout,
   resetPw,
   updatePw,
-  sendOTPToEmail,
-  sendResetMail,
-  validateEmail,
-  registerBidder,
+  verifyAccount,
+  recoverAccount,
+  verifyEmail,
 };

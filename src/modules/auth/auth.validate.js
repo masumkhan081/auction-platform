@@ -1,4 +1,4 @@
-const { z } = require("zod"); 
+const { z } = require("zod");
 
 const registerSchema = z.object({
   email: z
@@ -17,21 +17,16 @@ const registerSchema = z.object({
     .min(1, { message: "Full name is required" })
     .max(50, { message: "Full name must be at most 50 characters long" }),
 
-  phone: z
-    .string()
-    .regex(/^\+\d{1,3}\d{9}$/, {
-      message: "Phone number must be in the format: +<country code><9 digits>",
-    })
-    .nonempty({ message: "Phone number is required" }),
+  phone: z.string().nonempty({ message: "Phone number is required" }),
   gender: z.enum(["Male", "Female", "Other"]).optional(),
   address: z.string().optional(),
 });
 //
-const loginSChema = z.object({
+const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
+    .min(6, { message: "Password must be at least 6 characters long" })
     .max(20, { message: "Password must be no more than 20 characters" }),
 });
 //
@@ -41,7 +36,7 @@ const otpVerSchema = z.object({
   otp: z.string().min(4).max(6),
 });
 
-const emailVerSchema = z.object({
+const emailSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
 });
 
@@ -58,8 +53,8 @@ const resetPassSchema = z.object({
 
 module.exports = {
   registerSchema,
-  loginSChema,
-  emailVerSchema,
+  loginSchema,
+  emailSchema,
   resetPassSchema,
   otpVerSchema,
 };

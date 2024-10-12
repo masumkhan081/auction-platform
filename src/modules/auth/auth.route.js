@@ -3,36 +3,47 @@ const router = Router();
 const authController = require("./auth.controller.js");
 const validateRequest = require("../../middlewares/validateRequest.js");
 const {
-  loginSchmea,
+  loginSchema,
   registerSchema,
-  emailVerSchema,
+  emailSchema,
   otpVerSchema,
 } = require("./auth.validate.js");
 const config = require("../../config/index.js");
 const { verifyToken } = require("../../utils/tokenisation.js");
 const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
+const { allowedRoles } = require("../../config/constants.js");
 //
 //  0
 router.post(
   "/register-as-bidder",
   validateRequest(registerSchema),
-  authController.registerBidder
+  authController.registerUser(allowedRoles.bidder)
 );
 //  1
 router.post(
   "/register-as-seller",
   validateRequest(registerSchema),
-  authController.registerUser
+  authController.registerUser(allowedRoles.seller)
 );
 //  2
 router.post(
   "/verify-email",
   validateRequest(otpVerSchema),
-  authController.validateEmail
+  authController.verifyEmail
 );
+// 
+router.post("/login", validateRequest(loginSchema), authController.login);
+// 
+router.post("/email-verification",validateRequest(emailSchema), authController.verifyAccount); // extra, depends on front end design 
 
-router.post("/login", authController.login);
+// router.get("/logout", authController.logout);
+
+router.post("/recovery", validateRequest(emailSchema), authController.recoverAccount);
+
+router.get("/recovery/:token", authController.resetPw);
+
+router.post("/reset-password", authController.updatePw);
 
 //  needed time to make it more articulated ...
 router.get("/cookie-check", async (req, res) => {
@@ -73,16 +84,6 @@ router.get("/cookie-check", async (req, res) => {
     });
   }
 });
-
-router.post("/email-verification", authController.sendOTPToEmail);
-
-router.get("/logout", authController.logout);
-
-router.post("/recovery", authController.sendResetMail);
-
-router.get("/recovery/:token", authController.resetPw);
-
-router.post("/reset-password", authController.updatePw);
 
 router.post("/test-auth-token", async (req, res) => {
   const { email, role, password } = req.body;

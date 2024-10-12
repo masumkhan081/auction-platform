@@ -16,7 +16,7 @@ function accessControl(accessRoles) {
           // Assign user id & role to later use if in case ...
           req.user_id = isVerified?.user_id;
           req.role = isVerified?.role;
-          // console.log(req.role + "    <>   " + accessRoles);
+          //  console.log(req.role + "    <>   " + accessRoles);
           if (accessRoles.includes(req.role)) {
             next();
           } else {

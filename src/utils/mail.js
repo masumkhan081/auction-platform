@@ -20,45 +20,49 @@ const sendOTPMail = ({ user, res, successMessage }) => {
       .sendMail(mailOptions)
       .then((result) => {
         result.accepted.includes(user.email)
-          ? res.status(201).send({
-            message: successMessage,
-            token: getOtpToken({ otp: generatedOTP, email: user.email }),
-          })
-          : res.status(400).send({ message: "Error sendign otp to the mail" });
+          ? res.status(200).send({
+              message: successMessage,
+              token: getOtpToken({ otp: generatedOTP, email: user.email }),
+            })
+          : res.status(400).send({ message: "Error sending otp to the mail" });
       })
       .catch((err) => {
         console.log("err: sending mail  " + err.message);
-        res.status(500).send({ message: "Error sendign otp to the mail" });
+        res.status(500).send({ message: "Error sending otp to the mail" });
       });
   } catch (error) {
-    res.status(400).send({ message: "Errro sending otp mail" });
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
 //  send password reset link to user email
-async function sendResetMail({ user, res }) {
+async function sendResetMail({ user, res, successMessage }) {
   //
-  const mailOptions = getMailOptions({
-    to: user.email,
-    subject: () => setSubject("recovery"),
-    html: () => getResetLink(user),
-  });
-  //
-  const transporter = getTransporter();
-  //
-  transporter
-    .sendMail(mailOptions)
-    .then((result) => {
-      result
-        ? res.status(200).send({ message: "A recovery mail has been sent " })
-        : res
-          .status(400)
-          .send({ message: "Error sendign password reset mail" });
-    })
-    .catch((err) => {
-      console.log("reset-mail: err:  " + err);
-      res.send(err.message);
+  try {
+    const mailOptions = getMailOptions({
+      to: user.email,
+      subject: () => setSubject("recovery"),
+      html: () => getResetLink(user),
     });
+    //
+    const transporter = getTransporter();
+    //
+    transporter
+      .sendMail(mailOptions)
+      .then((result) => {
+        result
+          ? res.status(200).send({ message: successMessage })
+          : res
+              .status(400)
+              .send({ message: "Error sending password reset mail" });
+      })
+      .catch((err) => {
+        console.log("err: sending mail  " + err.message);
+        res.status(500).send({ message: "Error sending password reset mail" });
+      });
+  } catch (error) {
+    res.status(500).send({ message: "Internal server error" });
+  }
 }
 
 const generateOTP = () => {
@@ -74,15 +78,16 @@ const getVerificationMessage = (otp) =>
   `<h4 style="color:blue;text-align:center;">Please copy or type the OTP provided below: <br><br>${otp}`;
 
 function getResetLink(user) {
-  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${config.base_url
-    }/auth/recovery/${jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        expireAt: new Date().getTime() + 5 * 60000,
-      },
-      config.tkn_secret
-    )}`;
+  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${
+    config.base_url
+  }/auth/recovery/${jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      expireAt: new Date().getTime() + 5 * 60000,
+    },
+    config.tkn_secret
+  )}`;
 }
 
 // return a relatable email sibject based on purpose of the mail
@@ -90,8 +95,8 @@ const setSubject = (action) =>
   action === "recovery"
     ? "Auction-platform: Recover Your Password"
     : action === "verification"
-      ? "Auction-platform: Verify Your Email"
-      : "";
+    ? "Auction-platform: Verify Your Email"
+    : "";
 
 const getMailOptions = ({ to, subject, html }) => {
   return {

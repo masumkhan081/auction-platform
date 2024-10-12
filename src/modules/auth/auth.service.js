@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const User = require("./auth.model");
 const bcrypt = require("bcrypt");
-const { sendOTPMail, sendResetMail } = require("../../utils/mail");
+const { sendOTPMail } = require("../../utils/mail");
 const config = require("../../config");
 const httpStatus = require("http-status");
 /* eslint-disable no-unused-vars */
@@ -14,15 +14,24 @@ const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
 const Profile = require("../profile/profile.model");
 
 async function register({ res, data }) {
-  let user; let profile;
+  let user;
+  let profile;
   try {
     const { fullName, phone, gender, address, email, password, role } = data; // Ensure role is included
     profile = await new Profile({ fullName, phone, address, gender }).save();
 
-    user = await new User({ email, password, role, profileId: profile.id }).save();
+    user = await new User({
+      email,
+      password,
+      role,
+      profileId: profile.id,
+    }).save();
 
-    sendOTPMail({ user, res, successMessage: "An OTP has been sent to your email for verification." });
-
+    sendOTPMail({
+      user,
+      res,
+      successMessage: "An OTP has been sent to your email for verification.",
+    });
   } catch (error) {
     if (profile) {
       await Profile.findByIdAndDelete(profile.id);
@@ -39,7 +48,9 @@ async function validateEmail({ data, res }) {
   try {
     // Decrypt OTP token and parse the data
     const { expireAt, otp, email } = JSON.parse(
-      crypto.AES.decrypt(data.token, config.tkn_secret).toString(crypto.enc.Utf8)
+      crypto.AES.decrypt(data.token, config.tkn_secret).toString(
+        crypto.enc.Utf8
+      )
     );
 
     console.log("User input: ", data.otp, data.email, data.token);
@@ -66,11 +77,15 @@ async function validateEmail({ data, res }) {
         });
       }
     } else {
-      return res.status(400).send({ success: false, message: "Invalid OTP or email" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Invalid OTP or email" });
     }
   } catch (error) {
     console.error("Error verifying email:", error);
-    return res.status(500).send({ success: false, message: "Internal Server Error" });
+    return res
+      .status(500)
+      .send({ success: false, message: "Internal Server Error" });
   }
 }
 
@@ -83,10 +98,10 @@ async function login({ res, data }) {
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (isPasswordValid) {
-        if (user.is_verified) {
+        if (user.isVerified) {
           (token = jwt.sign(
             {
-              user_id: user.id, // remove id from here !
+              user_id: user.id, // i should remove id from here !
               role: user.role,
               email: user.email,
               expire: 2628000000 + Date.now(),
@@ -96,7 +111,7 @@ async function login({ res, data }) {
           )),
             res.status(200).send({
               success: true,
-              message: "You are logged in",
+              message: "You are successfully logged in",
               token,
             });
         }
@@ -110,58 +125,24 @@ async function login({ res, data }) {
           });
         }
       } else {
-        res.send({
-          statusCode: 400,
-          success: false,
-          message: "Wrong Credentialss",
-        });
+        res.status(400).send({ success: false, message: "Wrong Credentials" });
       }
     }
     // no user with that username in system
     else {
-      res.status(400).send({ nextPage: false, message: "Wrong Credentials" });
+      res.status(400).send({ success: false, message: "Wrong Credentials" });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error at user login" });
+    console.error("Inside service func:", error.message);
+    res.status(500).send({ message: "Internal server error" });
   }
 }
 
-async function logout(req, res) {
-  res.clearCookie(config.tkn_header_key);
-  res.status(200).send("Pulled Out Succesfully");
-}
+// async function logout(req, res) {
+//   res.clearCookie(config.tkn_header_key);
+//   res.status(200).send("Pulled Out Succesfully");
+// }
 //
-async function getUsers({
-  currentPage,
-  searchTerm,
-  viewLimit,
-  viewSkip,
-  sortBy,
-  sortOrder,
-}) {
-  const fetchResult = await User.find({
-    title: { $regex: new RegExp(searchTerm, "i") },
-  })
-    .skip(viewSkip)
-    .limit(viewLimit);
-
-  const total = await User.countDocuments({
-    title: { $regex: new RegExp(searchTerm, "i") },
-  });
-
-  return {
-    meta: {
-      total,
-      limit: viewLimit,
-      page: currentPage,
-      skip: viewSkip,
-      sortBy,
-      sortOrder,
-    },
-    data: fetchResult,
-  };
-}
-
 async function resetPw({ res, token }) {
   try {
     const { id, expireAt, email } = verifyToken({
@@ -223,23 +204,11 @@ async function updatePw({ email, password, confirmPassword, res }) {
   }
   // const result = await userService.updatePw(req.body);
 }
-async function sendOTPToEmail(req, res) {
-  // const { email } = req.body;
-
-  // const result = await userService.sendOTPToEmail(email);
-  if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.address });
-  } else {
-    sendFetchResponse({ res, data: result, what: operableEntities.address });
-  }
-}
 
 module.exports = {
   register,
   getUsers,
   login,
-  sendOTPToEmail,
-  sendResetMail,
   validateEmail,
   logout,
   resetPw,
