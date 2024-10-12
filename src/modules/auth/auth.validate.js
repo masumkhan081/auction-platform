@@ -12,7 +12,7 @@ const registerSchema = z.object({
     .max(20, { message: "Password must be at most 20 characters long" })
     .nonempty({ message: "Password is required" }),
 
-  full_name: z
+  fullName: z
     .string()
     .min(1, { message: "Full name is required" })
     .max(50, { message: "Full name must be at most 50 characters long" }),

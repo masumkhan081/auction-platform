@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const profileSchema = new Schema(
   {
-    full_name: {
+    fullName: {
       type: String,
       required: true,
     },

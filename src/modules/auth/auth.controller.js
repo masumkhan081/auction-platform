@@ -12,18 +12,31 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const { allowedRoles } = require("../../config/constants");
+const { getHashedPassword } = require("../../utils/tokenisation");
 //
 //
 async function registerBidder(req, res) {
   try {
-    console.log(" got hit ! ");
-    await authService.register({
-      res,
-      data: req.body,
-      role: allowedRoles.bidder,
-    });
+
+    const isExist = await User.findOne({ email: req.body.email });
+    if (isExist) {
+      return res.status(409).send({
+        success: false,
+        message: "Email already registered. You may login"
+      });
+    }
+    else {
+      req.body.password = await getHashedPassword(req.body.password);
+      req.body.role= allowedRoles.bidder;
+      await authService.register({
+        res,
+        data: req.body,
+      });
+    }
+
   } catch (error) {
-    res.status(400).send({ message: "Error processing request" });
+    console.log("err in controller: " + error.message);
+    res.status(500).send({ message: "Error processing request" });
   }
 }
 

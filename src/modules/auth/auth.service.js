@@ -13,61 +13,25 @@ const crypto = require("crypto-js");
 const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
 const Profile = require("../profile/profile.model");
 
-async function register({ res, data, role }) {
+async function register({ res, data }) {
+  let user; let profile;
   try {
-    console.log(object);
-    const { full_name, phone, gender, address, email, password, utcTimeZone } =
-      data;
-    //
-    let user;
-    let flows = {
-      profile: false,
-      user: false,
-    };
-    console.log(
-      full_name,
-      phone,
-      gender,
-      address,
-      email,
-      password,
-      utcTimeZone
-    );
-    //
-    try {
-      // const profile = await new Profile({
-      //   full_name,
-      //   phone,
-      //   address,
-      //   gender,
-      // }).save();
-      // flows.profile = true;
+    const { fullName, phone, gender, address, email, password, role } = data; // Ensure role is included
+    profile = await new Profile({ fullName, phone, address, gender }).save();
 
-      // user = await new User({
-      //   email,
-      //   password,
-      //   role,
-      //   utcTimeZone,
-      //   profile_id: profile.id,
-      // }).save();
-      flows.user = true;
-    } catch (error) {
-      if (flows.profile) {
-        Profile.findByIdAndDelete(profile.id);
-      }
-      if (flows.user) {
-        User.findByIdAndDelete(user.id);
-      }
-      res.status(400).send({ message: "Error creating bidder profile" });
-    }
+    user = await new User({ email, password, role, profile_id: profile.id }).save();
 
-    // sendOTPMail({
-    //   user,
-    //   res,
-    //   successMessage: "An OTP has been sent to your email for verification.",
-    // });
+    sendOTPMail({ user, res, successMessage: "An OTP has been sent to your email for verification." });
+
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.user });
+    if (profile) {
+      await Profile.findByIdAndDelete(profile.id);
+    }
+    if (user) {
+      await User.findByIdAndDelete(user.id);
+    }
+    console.log("err:: " + error.message);
+    res.status(500).send({ message: "Error creating bidder profile" });
   }
 }
 
@@ -84,15 +48,15 @@ async function validateEmail({ user_email, user_otp, token, res }) {
     } else if (user_otp === otp && user_email === email) {
       (await User.findOneAndUpdate({ email }, { is_verified: true }))
         ? res.send({
-            statusCode: 400,
-            success: false,
-            message: "Account verified. You may login",
-          })
+          statusCode: 400,
+          success: false,
+          message: "Account verified. You may login",
+        })
         : res.send({
-            statusCode: 400,
-            success: false,
-            message: "Error verifying your account",
-          });
+          statusCode: 400,
+          success: false,
+          message: "Error verifying your account",
+        });
     } else {
       res.send({ statusCode: 400, success: false, message: "Invalid OTP" });
     }
