@@ -2,12 +2,12 @@
 require("dotenv").config();
 
 const config = {
-  base_url: process.env.BASE_URL || "http://localhost:3000/",
-  app_name: "e-com-shop",
+  base_url: process.env.BASE_URL || "http://localhost:3000",
+  app_name: "auction-platform",
   port: process.env.PORT || 3000,
   db_url:
     process.env.DB_URL ||
-    "mongodb+srv://masumkhan:pddrgj3q@cluster0.48jxv.mongodb.net/",
+    "mongodb+srv://masumkhan:passme@cluster0.bpxry.mongodb.net/",
   tkn_secret: process.env.JWT_ACCESS_TOKEN_SECRET || "i-act-as-token-secret",
   ref_tkn_secret:
     process.env.JWT_REFRESH_TOKEN_SECRET || "i-act-as-refresh-token-secret",

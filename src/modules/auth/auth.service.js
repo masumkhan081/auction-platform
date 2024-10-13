@@ -149,13 +149,13 @@ async function verifyAccountRecovery({ res, token }) {
       secret: config.tkn_secret,
     });
 
-    if (new Date().getTime() > expireAt) {
+    if (new Date().getTime() < expireAt) {
       res.status(400).send({
         success: false,
         message: "Password reset link expired.",
       });
     } else {
-      const user = await User.findOne({ email: email, id: id });
+      const user = await User.findOne({ email: email });
       res.status(200).send({
         success: true,
         message: "Your can update your password now",
@@ -163,10 +163,9 @@ async function verifyAccountRecovery({ res, token }) {
       });
     }
   } catch (error) {
-    res.send({
-      status: 400,
+    res.status(500).send({
       success: false,
-      message: "Error processing reset link",
+      message: "Server error: processing reset link",
     });
   }
 }

@@ -7,6 +7,7 @@ const categoryRoutes = require("./modules/category/category.route");
 const productRoutes = require("./modules/product/product.route");
 const auctionRoutes = require("./modules/auction/auction.route");
 const bidRoutes = require("./modules/bids/bid.route");
+const feedbackRoutes = require("./modules/feedback/feedback.route");
 
 //
 const routes = [
@@ -30,6 +31,10 @@ const routes = [
   {
     path: "/bids",
     route: bidRoutes,
+  },
+  {
+    path: "/feedbacks",
+    route: feedbackRoutes,
   },
 ];
 
