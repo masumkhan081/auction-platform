@@ -41,13 +41,14 @@ const emailSchema = z.object({
 });
 
 const resetPassSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
+    .min(6, { message: "Password must be at least 6 characters long" })
     .max(20, { message: "Password must be no more than 20 characters" }),
   confirmPassword: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
+    .min(6, { message: "Password must be at least 6 characters long" })
     .max(20, { message: "Password must be no more than 20 characters" }),
 });
 

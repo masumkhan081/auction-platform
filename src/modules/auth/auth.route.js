@@ -7,6 +7,7 @@ const {
   registerSchema,
   emailSchema,
   otpVerSchema,
+  resetPassSchema,
 } = require("./auth.validate.js");
 const config = require("../../config/index.js");
 const { verifyToken } = require("../../utils/tokenisation.js");
@@ -28,24 +29,36 @@ router.post(
 );
 //  2
 router.post(
-  "/verify-email",
+  "/email-verification",
   validateRequest(otpVerSchema),
   authController.verifyEmail
 );
-// 
+//
+router.post(
+  "/request-email-verification",
+  validateRequest(emailSchema),
+  authController.requestEmailVerfication
+);
+
 router.post("/login", validateRequest(loginSchema), authController.login);
-// 
-router.post("/email-verification",validateRequest(emailSchema), authController.verifyAccount); // extra, depends on front end design 
 
 // router.get("/logout", authController.logout);
 
-router.post("/recovery", validateRequest(emailSchema), authController.recoverAccount);
+router.post(
+  "/recovery",
+  validateRequest(emailSchema),
+  authController.requestAccountRecovery
+);
 
-router.get("/recovery/:token", authController.resetPw);
+router.get("/recovery/:token", authController.verifyAccountRecovery);
 
-router.post("/reset-password", authController.updatePw);
+router.post(
+  "/reset-password",
+  validateRequest(resetPassSchema),
+  authController.updatePassword
+);
 
-//  needed time to make it more articulated ...
+// experiment ! needed time to make it more articulated ...
 router.get("/cookie-check", async (req, res) => {
   try {
     const token = req.cookies[config.tkn_header_key];

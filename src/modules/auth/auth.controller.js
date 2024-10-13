@@ -38,9 +38,34 @@ const registerUser = (role) => async (req, res) => {
   }
 };
 
+async function requestEmailVerfication(req, res) {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      if (user.isVerified) {
+        res.status(200).send({ message: "Account already verified" });
+      } else {
+        sendOTPMail({
+          user,
+          res,
+          successMessage:
+            "An OTP has been sent to your email for verification.",
+        });
+      }
+    } else {
+      return res.status(404).send({
+        success: false,
+        message: "No user associated with that email",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Interval server error" });
+  }
+}
+
 async function verifyEmail(req, res) {
   try {
-    await authService.validateEmail({
+    await authService.verifyEmail({
       res,
       data: req.body,
     });
@@ -52,11 +77,12 @@ async function verifyEmail(req, res) {
 
 async function login(req, res) {
   try {
-    await authService.login({ res, data: req.body });
+    const { email, password } = req.body;
+    await authService.login({ res, email, password });
   } catch (error) {
     res.status(500).send({
       success: false,
-      message: "Server error",
+      message: "Internal server error",
     });
   }
 }
@@ -66,7 +92,7 @@ async function login(req, res) {
 //   res.send({ status: 200, message: "User logged out succesfully" });
 // }
 
-async function recoverAccount(req, res) {
+async function requestAccountRecovery(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -74,8 +100,7 @@ async function recoverAccount(req, res) {
         sendResetMail({
           user,
           res,
-          successMessage:
-            "An OTP has been sent to your email for verification.",
+          successMessage: "A password reset link has been sent to your email.",
         });
       } else {
         res.status(400).send({ message: "Your account is not verified yet" });
@@ -90,34 +115,18 @@ async function recoverAccount(req, res) {
   }
 }
 
-async function resetPw(req, res) {
+async function verifyAccountRecovery(req, res) {
   try {
-    await authService.resetPw({ token: req.params.token, res });
+    await authService.verifyAccountRecovery({ token: req.params.token, res });
   } catch (error) {
     res.status(500).send({ success: false, message: "Interval server error" });
   }
 }
 
-async function updatePw(req, res) {
+async function updatePassword(req, res) {
   try {
     const { email, password, confirmPassword } = req.body;
-    await authService.updatePw({ res, email, password, confirmPassword });
-  } catch (error) {
-    res.status(500).send({ success: false, message: "Interval server error" });
-  }
-}
-async function verifyAccount(req, res) {
-  try {
-    const user = await User.findOne({ email: req.body.email });
-    if (user.isVerified) {
-      res.status(200).send({ message: "Account already verified" });
-    } else {
-      sendOTPMail({
-        user,
-        res,
-        successMessage: "An OTP has been sent to your email for verification.",
-      });
-    }
+    await authService.updatePassword({ res, email, password, confirmPassword });
   } catch (error) {
     res.status(500).send({ success: false, message: "Interval server error" });
   }
@@ -126,11 +135,10 @@ async function verifyAccount(req, res) {
 //
 module.exports = {
   registerUser,
-  login,
-  logout,
-  resetPw,
-  updatePw,
-  verifyAccount,
-  recoverAccount,
+  requestEmailVerfication,
   verifyEmail,
+  login,
+  requestAccountRecovery,
+  verifyAccountRecovery,
+  updatePassword,
 };

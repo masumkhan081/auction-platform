@@ -44,7 +44,7 @@ async function register({ res, data }) {
   }
 }
 
-async function validateEmail({ data, res }) {
+async function verifyEmail({ data, res }) {
   try {
     // Decrypt OTP token and parse the data
     const { expireAt, otp, email } = JSON.parse(
@@ -89,9 +89,8 @@ async function validateEmail({ data, res }) {
   }
 }
 
-async function login({ res, data }) {
+async function login({ res, email, password }) {
   try {
-    const { email, password } = data;
     const user = await User.findOne({ email });
     let token;
     if (user) {
@@ -99,7 +98,7 @@ async function login({ res, data }) {
 
       if (isPasswordValid) {
         if (user.isVerified) {
-          (token = jwt.sign(
+          token = jwt.sign(
             {
               user_id: user.id, // i should remove id from here !
               role: user.role,
@@ -108,12 +107,12 @@ async function login({ res, data }) {
             },
             config.tkn_secret,
             config.jwt_options
-          )),
-            res.status(200).send({
-              success: true,
-              message: "You are successfully logged in",
-              token,
-            });
+          );
+          res.status(200).send({
+            success: true,
+            message: "You are successfully logged in",
+            token,
+          });
         }
         // email and associated password matched but email not-verified yet
         else {
@@ -143,7 +142,7 @@ async function login({ res, data }) {
 //   res.status(200).send("Pulled Out Succesfully");
 // }
 //
-async function resetPw({ res, token }) {
+async function verifyAccountRecovery({ res, token }) {
   try {
     const { id, expireAt, email } = verifyToken({
       token,
@@ -152,17 +151,15 @@ async function resetPw({ res, token }) {
 
     if (new Date().getTime() > expireAt) {
       res.status(400).send({
-        status: 400,
         success: false,
-        message: "Reset link expired",
+        message: "Password reset link expired.",
       });
     } else {
       const user = await User.findOne({ email: email, id: id });
-      res.send({
-        status: 200,
+      res.status(200).send({
         success: true,
         message: "Your can update your password now",
-        data: user,
+        data: { email: user.email },
       });
     }
   } catch (error) {
@@ -174,32 +171,26 @@ async function resetPw({ res, token }) {
   }
 }
 
-async function updatePw({ email, password, confirmPassword, res }) {
+async function updatePassword({ email, password, confirmPassword, res }) {
   try {
     if (password === confirmPassword) {
-      const hashedPassword = getHashedPassword(password);
+      const hashedPassword = await getHashedPassword(password);
 
-      const updatedUser = await User.findOneAndUpdate(
-        { email },
-        { password: hashedPassword }
-      );
+      await User.findOneAndUpdate({ email }, { password: hashedPassword });
       res.status(200).send({
-        status: 200,
         success: true,
-        message: "Password updated successfully",
+        message: "Password updated successfully. You may login",
       });
     } else {
       res.status(400).send({
-        status: 400,
         success: false,
         message: "Password doesn't match",
       });
     }
   } catch (error) {
-    res.status(400).send({
-      status: 400,
+    res.status(500).send({
       success: false,
-      message: "Error updating password",
+      message: "Internal server error",
     });
   }
   // const result = await userService.updatePw(req.body);
@@ -207,10 +198,8 @@ async function updatePw({ email, password, confirmPassword, res }) {
 
 module.exports = {
   register,
-  getUsers,
   login,
-  validateEmail,
-  logout,
-  resetPw,
-  updatePw,
+  verifyEmail,
+  verifyAccountRecovery,
+  updatePassword,
 };
