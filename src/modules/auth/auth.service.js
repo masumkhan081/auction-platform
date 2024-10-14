@@ -144,55 +144,109 @@ async function login({ res, email, password }) {
 //
 async function verifyAccountRecovery({ res, token }) {
   try {
-    const { id, expireAt, email } = verifyToken({
+    const { success, data } = verifyToken({
       token,
       secret: config.tkn_secret,
     });
 
-    if (new Date().getTime() < expireAt) {
-      res.status(400).send({
+    if (!success) {
+      return res.status(401).send({
+        success: false,
+        message: "The provided token is invalid or has changed.",
+      });
+    }
+
+    const { expireAt, email } = data;
+
+    // Check if the token has expired
+    if (new Date().getTime() >= expireAt) {
+      return res.status(400).send({
         success: false,
         message: "Password reset link expired.",
       });
-    } else {
-      const user = await User.findOne({ email: email });
-      res.status(200).send({
-        success: true,
-        message: "Your can update your password now",
-        data: { email: user.email },
+    }
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found.",
       });
     }
+
+    // If everything is valid, allow password update, would expect the token at update password post req
+    return res.status(200).send({
+      success: true,
+      message: "You can update your password now.",
+      token,
+    });
   } catch (error) {
+    console.error("Error in verifyAccountRecovery:", error.message);
     res.status(500).send({
       success: false,
-      message: "Server error: processing reset link",
+      message: "Server error: " + error.message,
     });
   }
 }
 
-async function updatePassword({ email, password, confirmPassword, res }) {
+async function updatePassword({
+  token,
+  email: userEmail,
+  password,
+  confirmPassword,
+  res,
+}) {
   try {
-    if (password === confirmPassword) {
-      const hashedPassword = await getHashedPassword(password);
-
-      await User.findOneAndUpdate({ email }, { password: hashedPassword });
-      res.status(200).send({
-        success: true,
-        message: "Password updated successfully. You may login",
-      });
-    } else {
-      res.status(400).send({
+    const { expireAt, email } = verifyToken({
+      token,
+      secret: config.tkn_secret,
+    });
+    if (userEmail !== email) {
+      return res.status(400).send({
         success: false,
-        message: "Password doesn't match",
+        message: "Token does not match the email provided",
       });
     }
+    if (password !== confirmPassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Password and confirm password do not match.",
+      });
+    }
+    if (new Date().getTime() < expireAt) {
+      return res.status(400).send({
+        success: false,
+        message: "Timeout. Request for new password reset link",
+      });
+    }
+
+    const hashedPassword = await getHashedPassword(password);
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email: userEmail },
+      { password: hashedPassword },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the user was found and updated
+    if (!updatedUser) {
+      return res.status(404).send({
+        success: false,
+        message: "No user found with that email.",
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "Password updated successfully. You may log in.",
+    });
   } catch (error) {
     res.status(500).send({
       success: false,
       message: "Internal server error",
     });
   }
-  // const result = await userService.updatePw(req.body);
 }
 
 module.exports = {

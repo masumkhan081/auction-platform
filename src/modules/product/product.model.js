@@ -13,10 +13,10 @@ const productSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (v) {
-          return /^[a-zA-Z0-9\s]+$/.test(v); // Only letters, digits, and spaces
+          return /^[a-zA-Z0-9\s-_]+$/.test(v); // Allow letters, digits, spaces, hyphens, and underscores
         },
         message: (props) =>
-          `${props.value} is not valid! Only letters, numbers, and spaces are allowed.`,
+          `${props.value} is not valid! Only letters, numbers, spaces, hyphens, and underscores are allowed.`,
       },
     },
     category: {
@@ -37,10 +37,10 @@ const productSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (v) {
-          return /^[a-zA-Z0-9\s]+$/.test(v); // Only letters, digits, and spaces
+          return /^[a-zA-Z0-9\s-_]+$/.test(v); // Allow letters, digits, spaces, hyphens, and underscores
         },
         message: (props) =>
-          `${props.value} is not valid! Only letters, numbers, and spaces are allowed.`,
+          `${props.value} is not valid! Only letters, numbers, spaces, hyphens, and underscores are allowed.`,
       },
     },
     status: {
@@ -49,7 +49,7 @@ const productSchema = new mongoose.Schema(
         values: ["SOLD", "UNSOLD", "ON_AUCTION", "INACTIVE"],
         message: "Status must be either SOLD, UNSOLD, ON_AUCTION, or INACTIVE",
       },
-      default: "INACTIVE", // seller did not set this prod for auction yet, just added
+      default: "INACTIVE", // Seller did not set this product for auction yet, just added
     },
     adminApproval: {
       type: String,
@@ -58,10 +58,10 @@ const productSchema = new mongoose.Schema(
         message:
           "Approval status must be either APPROVED, DISAPPROVED, or CANCELLED",
       },
-      default: "PENDING", // untill admin review the product, the default is pending
+      default: "PENDING", // Until admin reviews the product, the default is pending
     },
     reviewNote: {
-      // in-case admin dessaprove/cancel approval - he may add an explanation or reason behind it
+      // In case admin disapproves/cancels approval - may add an explanation or reason
       type: String,
       maxlength: [500, "Approval note cannot exceed 500 characters"],
     },

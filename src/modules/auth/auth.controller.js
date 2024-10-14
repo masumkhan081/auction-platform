@@ -117,7 +117,6 @@ async function requestAccountRecovery(req, res) {
 
 async function verifyAccountRecovery(req, res) {
   try {
-    console.log("got hit !");
     await authService.verifyAccountRecovery({ token: req.params.token, res });
   } catch (error) {
     res.status(500).send({ success: false, message: "Interval server error" });
@@ -126,8 +125,8 @@ async function verifyAccountRecovery(req, res) {
 
 async function updatePassword(req, res) {
   try {
-    const { email, password, confirmPassword } = req.body;
-    await authService.updatePassword({ res, email, password, confirmPassword });
+    const { token,email, password, confirmPassword } = req.body;
+    await authService.updatePassword({ res,token, email, password, confirmPassword });
   } catch (error) {
     res.status(500).send({ success: false, message: "Interval server error" });
   }

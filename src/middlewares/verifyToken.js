@@ -7,26 +7,30 @@ function accessControl(accessRoles) {
   return async (req, res, next) => {
     try {
       const token = req.headers.authorization;
-      if (token) {
-        const isVerified = verifyToken({ token, secret: config.tkn_secret });
-        console.log("isVerified: " + JSON.stringify(isVerified));
-        if (!isVerified) {
-          forbid(res);
-        } else {
-          // Assign user id & role to later use if in case ...
-          req.user_id = isVerified?.user_id;
-          req.role = isVerified?.role;
-          console.log(req.role + "    <>   " + accessRoles);
-          if (accessRoles.includes(req.role)) {
-            next();
-          } else {
-            forbid(res);
-          }
-        }
+      if (!token) {
+        return forbid(res);
+      }
+
+      const { success, payload } = verifyToken(token);
+      console.log("verified:payload: " + JSON.stringify(payload));
+
+      if (!success) {
+        return forbid(res);
+      }
+
+      // Assign user ID and role for later use ( if i need for any further use)
+      req.user_id = payload?.user_id;
+      req.role = payload?.role;
+
+      console.log(`${req.role} <> ${accessRoles}`);
+
+      if (accessRoles.includes(req.role)) {
+        return next();
       } else {
-        forbid(res);
+        return forbid(res);
       }
     } catch (error) {
+      console.log("Error at accessControl: " + error.message);
       forbid(res);
     }
   };

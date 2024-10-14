@@ -41,6 +41,7 @@ const emailSchema = z.object({
 });
 
 const resetPassSchema = z.object({
+  token: z.string().min(15).max(500),
   email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()

@@ -76,6 +76,7 @@ async function createAuction(req, res) {
       });
     }
   } catch (error) {
+    console.error("Controller: createAuction - Error:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
@@ -97,6 +98,7 @@ async function getSingleAuction(req, res) {
       });
     }
   } catch (error) {
+    console.error("Controller: getSingleAuction - Error: ", error.message);
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
@@ -121,6 +123,7 @@ async function updateAuction(req, res) {
       });
     }
   } catch (error) {
+    console.error("Controller: updateAuction - Error:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
@@ -138,6 +141,7 @@ async function getAuctions(req, res) {
       sendFetchResponse({ res, data: result, what: operableEntities.auction });
     }
   } catch (error) {
+    console.error("Controller: getAuctions - Error:", error.message);
     sendErrorResponse({
       res,
       error,
@@ -175,6 +179,7 @@ async function deleteAuction(req, res) {
       });
     }
   } catch (error) {
+    console.error("Controller: deleteAuction - Error:", error.message);
     sendErrorResponse({
       res,
       error,

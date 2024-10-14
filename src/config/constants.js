@@ -27,16 +27,25 @@ const map_default_sort_by = {
 
 const map_searchables = {
   [operableEntities.category]: ["name"],
-  [operableEntities.product]: ["name", "category"],
+  [operableEntities.product]: ["productName", "productDetail"],
   [operableEntities.auction]: [],
   [operableEntities.bid]: [],
-  [operableEntities.feedback]: ["reviewer","auction"],
+  [operableEntities.feedback]: [],
+};
+
+const map_filterables = {
+  [operableEntities.category]: [],
+  [operableEntities.product]: ["category", "status", "adminApproval"],
+  [operableEntities.auction]: [],
+  [operableEntities.bid]: [],
+  [operableEntities.feedback]: ["reviewer", "auction"],
 };
 
 module.exports = {
   paginationFields,
   defaultViewLimit,
   map_searchables,
+  map_filterables,
   defaultSortOrder,
   map_default_sort_by,
   operableEntities,

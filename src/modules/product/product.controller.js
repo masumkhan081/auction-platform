@@ -15,97 +15,157 @@ const {
   fieldsMap,
   removeFile,
 } = require("../../utils/fileHandle");
+const Category = require("../category/category.model");
 //
-async function createProduct(req, res, next) {
+async function createProduct(req, res) {
   try {
     const { productName, category, productDetail } = req.body;
 
     let fileUrls = [];
-    let fieldName = fieldsMap[operableEntities.product][0].name; // needed looping if were multiple fields
-    let maxCount = fieldsMap[operableEntities.product][0].maxCount;
-    //
+    const fieldName = fieldsMap[operableEntities.product][0].name;
+    const maxCount = fieldsMap[operableEntities.product][0].maxCount;
+    const filesInBody = req?.files?.[fieldName]?.length || 0;
+
+    // Check for file upload limit
+    if (filesInBody > maxCount) {
+      return res.status(400).send({
+        success: false,
+        message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
+      });
+    }
+
+    // Handle file uploads
     if (req?.files?.[fieldName]) {
-      for (let i = 0; i < req?.files?.[fieldName].length; i++) {
-        fileUrls[i] = await uploadHandler({
-          what: fieldName,
-          file: req.files[fieldName][i],
-        });
+      for (const file of req.files[fieldName]) {
+        try {
+          const fileUrl = await uploadHandler({ what: fieldName, file });
+          fileUrls.push(fileUrl);
+        } catch (error) {
+          console.error("File upload error:", error.message);
+          // Remove previously uploaded files
+          await Promise.all(
+            fileUrls.map((url) => removeFile({ fileUrl: url }))
+          );
+          return res.status(500).send({
+            success: false,
+            message: "Error uploading files. Please try again.",
+          });
+        }
       }
       console.log(JSON.stringify(fileUrls));
     }
 
-    try {
-      const addResult = await Product.create({
-        productName,
-        category,
-        productDetail,
-        productImages: [...fileUrls],
-      });
-
-      sendCreateResponse({
-        res,
-        what: operableEntities.product,
-        data: addResult,
-      });
-    } catch (error) {
-      for (let i = 0; i < fileUrls.length; i++) {
-        removeFile({ fileUrl: fileUrls[i] });
-      }
-      sendErrorResponse({ res, error, what: operableEntities.product });
+    const categoryExist = await Category.findById(category);
+    if (!categoryExist) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Category doesn't exist" });
     }
+
+    // Create product
+    const addResult = await Product.create({
+      productName,
+      category,
+      productDetail,
+      productImages: fileUrls,
+    });
+
+    sendCreateResponse({
+      res,
+      what: operableEntities.product,
+      data: addResult,
+    });
   } catch (error) {
+    console.error("Error creating product:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.product });
   }
 }
+
 //
 async function updateProduct(req, res) {
   try {
-    let fileUrls = [];
-    let fieldName = fieldsMap[operableEntities.product][0].name; // needed looping if were multiple fields
-    //
+    const fieldName = fieldsMap[operableEntities.product][0].name; // Assuming single field for now
     const updatable = await Product.findById(req.params.id);
-    //
-    if (updatable) {
-      if (req?.files?.[fieldName]) {
-        for (let i = 0; i < req?.files?.[fieldName].length; i++) {
-          fileUrls[i] = await uploadHandler({
-            what: fieldName,
-            file: req.files[fieldName][i],
-          });
-        }
-      }
-      //
-      const { productName, category, productDetail, productImages } =
-        getUpdateFields({
-          updatable,
-          body: req.body,
-          fileUrls,
-        });
-      //
-      const editResult = await Product.findByIdAndUpdate(
-        req.params.id,
-        {
-          productName,
-          category,
-          productDetail,
-          productImages,
-        },
-        { new: true }
-      );
-      sendUpdateResponse({
-        res,
-        what: operableEntities.product,
-        data: editResult,
-      });
-    } else {
-      sendErrorResponse({
+
+    if (!updatable) {
+      return sendErrorResponse({
         res,
         error: responseMap.id_not_found,
         what: operableEntities.product,
       });
     }
+
+    const maxCount = fieldsMap[operableEntities.product][0].maxCount;
+    const filesInBody = req?.files?.[fieldName]?.length || 0;
+
+    // Check for file upload limit
+    if (filesInBody > maxCount) {
+      return res.status(400).send({
+        success: false,
+        message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
+      });
+    }
+
+    let fileUrls = [];
+
+    // Handle file uploads
+    if (req?.files?.[fieldName]) {
+      for (const file of req.files[fieldName]) {
+        try {
+          const fileUrl = await uploadHandler({ what: fieldName, file });
+          fileUrls.push(fileUrl);
+        } catch (error) {
+          console.error("File upload error:", error.message);
+          // Remove previously uploaded files if any
+          await Promise.all(
+            fileUrls.map((url) => removeFile({ fileUrl: url }))
+          );
+          return res.status(500).send({
+            success: false,
+            message: "Error uploading files. Please try again.",
+          });
+        }
+      }
+    }
+
+    const { productName, category, productDetail } = req.body;
+
+    // Prepare fields to update
+    const updatedFields = {
+      productName: productName || updatable.productName,
+      category: category || updatable.category,
+      productDetail: productDetail || updatable.productDetail,
+      productImages:
+        filesInBody > 0
+          ? fileUrls
+          : req.body[fieldName] === undefined
+          ? updatable.productImages
+          : [],
+    };
+    console.log("req.body[fieldName]" + req.body[fieldName]);
+
+    // images are expected to be uploaded whether newly added or old - everytime there's a patch
+    // so field is present , no file present means - all images to be deleted
+    if (req.body[fieldName] !== undefined) {
+      await Promise.all(
+        updatable.productImages.map((url) => removeFile({ fileUrl: url }))
+      );
+    }
+
+    // Update product
+    const editResult = await Product.findByIdAndUpdate(
+      req.params.id,
+      updatedFields,
+      { new: true }
+    );
+
+    sendUpdateResponse({
+      res,
+      what: operableEntities.product,
+      data: editResult,
+    });
   } catch (error) {
-    console.log("error cash ... " + error.message);
+    console.error("Error updating product:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.product });
   }
 }
@@ -206,17 +266,7 @@ async function updateApprovalByAdmin(req, res) {
     res.status(400).send({ message: "Error updating status" });
   }
 }
-//
-function getUpdateFields({ updatable, body, fileUrls }) {
-  return {
-    productName: body.productName ? body.productName : updatable.productName,
-    category: body.category ? body.category : updatable.category,
-    productDetail: body.productDetail
-      ? body.productDetail
-      : updatable.productDetail,
-    productImages: fileUrls.length > 0 ? fileUrls : updatable.productImages,
-  };
-}
+ 
 //
 module.exports = {
   createProduct,

@@ -39,13 +39,7 @@ async function getProducts(query) {
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.product });
 
-    if (query?.["category"]) {
-      filterConditions["category"] = query[category];
-    }
-
-    console.log(
-      JSON.stringify(filterConditions) + "\n" + JSON.stringify(sortConditions)
-    );
+    console.log(JSON.stringify(filterConditions));
 
     const fetchResult = await Product.find(filterConditions)
       .sort(sortConditions)

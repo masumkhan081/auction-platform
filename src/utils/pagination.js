@@ -1,7 +1,11 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-unused-vars */
 
-const { defaultViewLimit, map_searchables } = require("../config/constants");
+const {
+  defaultViewLimit,
+  map_searchables,
+  map_filterables,
+} = require("../config/constants");
 
 function getSearchAndPagination({ query: query, what }) {
   const { search, page, limit, search_by, sort_by, sort_order } = query;
@@ -40,15 +44,21 @@ function getSearchAndPagination({ query: query, what }) {
   let sortConditions = { [sortBy]: sortOrder };
   let filterData;
 
-  for (let i = 0; i < map_searchables[what]?.length; i++) {
-    filterData = query[map_searchables[what][i]];
+  // Add filter conditions from map_filterables
+  for (let i = 0; i < map_filterables[what]?.length; i++) {
+    filterData = query[map_filterables[what][i]];
 
     if (filterData !== undefined && filterData !== "") {
-      filterConditions[map_searchables[what][i]] = filterData;
-    } else if (searchTerm) {
+      filterConditions[map_filterables[what][i]] = filterData;
+    }
+  }
+
+  for (let i = 0; i < map_searchables[what]?.length; i++) {
+    const searchableField = map_searchables[what][i];
+    if (searchTerm) {
       if (searchBy === "whole") {
         searchConditions.push({
-          [map_searchables[what][i]]: { $regex: new RegExp(searchTerm, "i") },
+          [searchableField]: { $regex: new RegExp(searchTerm, "i") },
         });
       } else {
         searchConditions.push({
@@ -58,9 +68,10 @@ function getSearchAndPagination({ query: query, what }) {
     }
   }
 
-  searchConditions.length > 0
-    ? (filterConditions["$or"] = searchConditions)
-    : searchConditions;
+  // Combine search conditions with filter conditions
+  if (searchConditions.length > 0) {
+    filterConditions["$or"] = searchConditions;
+  }
 
   return {
     currentPage,

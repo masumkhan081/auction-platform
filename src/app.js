@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/public", express.static("public"));
 //
 app.get("/", (req, res) => {
-  res.status(200).json({
+  res.status(200).send({
     statusCode: httpStatus.OK,
     success: true,
     message: "I am functional !",
@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api", RootRoutes);
 
 app.use((req, res, next) => {
-  res.status(httpStatus.NOT_FOUND).json({
+  res.status(httpStatus.NOT_FOUND).send({
     success: false,
     message: "Not Found",
     errorMessages: [
