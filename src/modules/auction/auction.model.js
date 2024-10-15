@@ -66,6 +66,7 @@ const auctionSchema = new Schema(
       default: "PENDING",
     },
     isFlagged: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

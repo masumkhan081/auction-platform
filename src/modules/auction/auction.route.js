@@ -16,6 +16,7 @@ router.post(
   validateRequest(auctionCreateSchema),
   auctionController.createAuction
 );
+//
 router.patch(
   "/:id",
   accessControl([allowedRoles.seller]),
@@ -24,6 +25,10 @@ router.patch(
 );
 router.get("/", auctionController.getAuctions);
 router.get("/:id", auctionController.getSingleAuction);
-router.delete("/:id", auctionController.deleteAuction);
+router.delete(
+  "/:id",
+  accessControl([allowedRoles.seller, allowedRoles.admin]),
+  auctionController.deleteAuction
+);
 
 module.exports = router;

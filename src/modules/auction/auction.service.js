@@ -9,65 +9,78 @@ const moment = require("moment-timezone");
 async function createAuction(data) {
   try {
     const addResult = await Auction.create(data);
-    const auctionId = addResult.id;
-    //
-    console.log("got hit !");
-    // Schedule a cron job to check the auction status every minute
-    cron.schedule("* * * * *", async () => {
-      const now = moment.utc(); // Current time in UTC
 
-      const targetAuction = await Auction.findById(auctionId);
-      console.log("checking ..." + targetAuction.status);
+    if (addResult) {
+      const auctionId = addResult.id;
 
-      // Check if the auction should be opened
-      if (
-        now.isSameOrAfter(moment(targetAuction.auctionStart)) &&
-        targetAuction.status !== "OPEN"
-      ) {
-        await Auction.findByIdAndUpdate(auctionId, { status: "OPEN" });
-      }
-      if (
-        now.isSameOrAfter(moment(targetAuction.auctionEnd)) &&
-        targetAuction.status === "OPEN" // Change from Open to UNSOLD
-      ) {
+      console.log("Auction created, scheduling cron job...");
+
+      const cronJob = cron.schedule("* * * * *", async () => {
         try {
-          //
-          const highestBid = await Bid.findOne({ auction: auctionId })
-            .sort({ bidAmount: -1 }) // sort by bidAmount in descending order
-            .limit(1) // i just need the highest
-            .exec();
-          //
-          if (highestBid) {
-            // having a highest bid doesn't mean it should be sold, have to be above the threshold
-            if (highestBid?.bidAmount >= targetAuction.threshold) {
-              targetAuction.status = "SOLD";
-              highestBid.isWinner = true;
-            } else {
-              targetAuction.isFlagged = true;
-              targetAuction.status = "UNSOLD";
-            }
-          } else {
-            targetAuction.status = "UNSOLD";
+          const now = moment.utc();
+          const targetAuction = await Auction.findById(auctionId);
+
+          if (!targetAuction) {
+            console.error("Auction not found! Stopping cron job.");
+            cronJob.stop();
+            return;
           }
-          await highestBid.save();
-          await targetAuction.save();
+
+          console.log("Checking auction status: " + targetAuction.status);
+
+          if (
+            now.isSameOrAfter(moment(targetAuction.auctionStart)) &&
+            targetAuction.status !== "OPEN"
+          ) {
+            await Auction.findByIdAndUpdate(auctionId, { status: "OPEN" });
+          }
+
+          if (
+            now.isSameOrAfter(moment(targetAuction.auctionEnd)) &&
+            targetAuction.status === "OPEN"
+          ) {
+            try {
+              const highestBid = await Bid.findOne({ auction: auctionId })
+                .sort({ bidAmount: -1 })
+                .limit(1)
+                .exec();
+
+              if (highestBid) {
+                if (highestBid.bidAmount >= targetAuction.threshold) {
+                  targetAuction.status = "SOLD";
+                  highestBid.isWinner = true;
+                  await highestBid.save();
+                } else {
+                  targetAuction.isFlagged = true;
+                  targetAuction.status = "UNSOLD";
+                }
+              } else {
+                targetAuction.status = "UNSOLD";
+              }
+
+              await targetAuction.save();
+              console.log("Auction finished, stopping the cron job.");
+              cronJob.stop();
+            } catch (error) {
+              console.log("Error deciding winner: " + error.message);
+            }
+          }
         } catch (error) {
-          console.log("error deciding winner " + error.message);
-          return error;
+          console.log("Error in cron job: " + error.message);
         }
-      }
-    });
+      });
+    }
 
     return addResult;
   } catch (error) {
-    console.log(error.message);
+    console.log("createAuction: " + error.message);
     return error;
   }
 }
 
 async function getSingleAuction(id) {
   try {
-    const getResult = await Auction.findById(id);
+    const getResult = await Auction.findById(id).populate("product");
     return getResult;
   } catch (error) {
     return error;
@@ -119,18 +132,9 @@ async function updateAuction({ id, data }) {
   }
 }
 //
-async function deleteAuction(id) {
-  try {
-    const deleteResult = await Auction.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
-    return error;
-  }
-}
 
 module.exports = {
   createAuction,
-  deleteAuction,
   getAuctions,
   getSingleAuction,
   updateAuction,
