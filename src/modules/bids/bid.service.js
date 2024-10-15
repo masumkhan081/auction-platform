@@ -43,7 +43,7 @@ async function getBids(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.category });
+    } = getSearchAndPagination({ query, what: operableEntities.bid });
 
     const fetchResult = await Bid.find(filterConditions)
       .sort(sortConditions)

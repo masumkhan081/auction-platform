@@ -8,6 +8,7 @@ const productRoutes = require("./modules/product/product.route");
 const auctionRoutes = require("./modules/auction/auction.route");
 const bidRoutes = require("./modules/bids/bid.route");
 const feedbackRoutes = require("./modules/feedback/feedback.route");
+const profileRoutes = require("./modules/profile/profile.route")
 
 //
 const routes = [
@@ -15,7 +16,6 @@ const routes = [
     path: "/auth",
     route: authRoutes,
   },
-  //
   {
     path: "/product-categories",
     route: categoryRoutes,
@@ -35,6 +35,10 @@ const routes = [
   {
     path: "/feedbacks",
     route: feedbackRoutes,
+  },
+  {
+    path: "/profile",
+    route: profileRoutes,
   },
 ];
 

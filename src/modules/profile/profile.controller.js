@@ -1,8 +1,7 @@
-const profileService = require("./seller.service");
+const profileService = require("./profile.service");
 const httpStatus = require("http-status");
 //
 const {
-  sendCreateResponse,
   sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
@@ -10,16 +9,7 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 //
-async function createSeller(req, res) {
-  const result = await profileService.createSeller(req.body);
-  if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.address });
-  } else {
-    sendCreateResponse({ res, data: result, what: operableEntities.address });
-  }
-}
-//
-async function getSellers(req, res) {
+async function getAuctionHistory(req, res) {
   const result = await profileService.getSellers(req.query);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
@@ -28,7 +18,52 @@ async function getSellers(req, res) {
   }
 }
 //
-async function updateSeller(req, res) {
+async function getBidHistory(req, res) {
+  const result = await profileService.getSellers(req.query);
+  if (result instanceof Error) {
+    sendErrorResponse({ res, error: result, what: operableEntities.address });
+  } else {
+    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  }
+}
+//
+async function getProductList(req, res) {
+  const result = await profileService.getSellers(req.query);
+  if (result instanceof Error) {
+    sendErrorResponse({ res, error: result, what: operableEntities.address });
+  } else {
+    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  }
+}
+//
+async function getBidderProfiles(req, res) {
+  const result = await profileService.getSellers(req.query);
+  if (result instanceof Error) {
+    sendErrorResponse({ res, error: result, what: operableEntities.address });
+  } else {
+    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  }
+}
+//
+async function getSellerProfiles(req, res) {
+  const result = await profileService.getSellers(req.query);
+  if (result instanceof Error) {
+    sendErrorResponse({ res, error: result, what: operableEntities.address });
+  } else {
+    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  }
+}
+//
+async function getProfileDetail(req, res) {
+  const result = await profileService.getSellers(req.query);
+  if (result instanceof Error) {
+    sendErrorResponse({ res, error: result, what: operableEntities.address });
+  } else {
+    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  }
+}
+//
+async function updateProfile(req, res) {
   const result = await profileService.updateSeller({
     id: req.params.id,
     data: req.body,
@@ -40,7 +75,7 @@ async function updateSeller(req, res) {
   }
 }
 //
-async function deleteSeller(req, res) {
+async function deleteProfile(req, res) {
   const result = await profileService.deleteSeller(req.params.id);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
@@ -50,8 +85,12 @@ async function deleteSeller(req, res) {
 }
 //
 module.exports = {
-  createSeller,
-  updateSeller,
-  deleteSeller,
-  getSellers,
+  updateProfile,
+  deleteProfile,
+  getBidderProfiles,
+  getSellerProfiles,
+  getProfileDetail,
+  getAuctionHistory,
+  getProductList,
+  getBidHistory,
 };

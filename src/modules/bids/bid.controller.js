@@ -33,7 +33,7 @@ async function getSingleBid(req, res) {
 
 async function getBidHistory(req, res) {
   try {
-    const result = await bidService.getSingleBid(req.params.id);
+    const result = await bidService.getBids({ bidder: req.user_id });
     if (result instanceof Error) {
       sendErrorResponse({
         res,
@@ -44,7 +44,11 @@ async function getBidHistory(req, res) {
       sendFetchResponse({ res, data: result, what: operableEntities.bid });
     }
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.bid });
+    sendErrorResponse({
+      res,
+      error,
+      what: operableEntities.bid,
+    });
   }
 }
 
