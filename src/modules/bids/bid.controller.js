@@ -11,6 +11,7 @@ const {
 const { operableEntities } = require("../../config/constants");
 const Auction = require("../auction/auction.model");
 const Bid = require("./bid.model");
+const { default: mongoose } = require("mongoose");
 //
 
 async function getSingleBid(req, res) {
@@ -70,11 +71,11 @@ async function createBid(req, res) {
     }
     // Check if the bid amount is higher than the current price + minBidIncrement
     const requiredBidAmount =
-      targetAuction.currentPrice + targetAuction.minBidIncrement;
+      targetAuction.currentHighest + targetAuction.minBidIncrement;
     if (bidAmount < requiredBidAmount) {
       return res.status(400).send({
         success: false,
-        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentPrice}) + MBI:(${targetAuction.minBidIncrement}) `,
+        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentHighest}) + MBI:(${targetAuction.minBidIncrement}) `,
       });
     }
 
@@ -91,13 +92,55 @@ async function createBid(req, res) {
     sendErrorResponse({ res, error, what: operableEntities.bid });
   }
 }
-//
+//  - can't se any use of it
 async function updateBid(req, res) {
   try {
-    const result = await bidService.updateCategory({
-      id: req.params.id,
-      data: req.body,
+    const targetBidId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(targetBidId)) {
+      return res.status(400).send({ message: "Invalid resource (bid) id" });
+    }
+
+    const targetBid = await Bid.findById(targetBidId);
+    if (!targetBid) {
+      return res
+        .status(400)
+        .send({ message: "Invalid bid ID or bid not found." });
+    }
+    const targetAuction = await Auction.findById(targetBid.auction);
+
+    if (!targetAuction || targetAuction?.isDeleted) {
+      return res.status(400).send({
+        message:
+          "Update failed as the belonging auction doesn't exist anymore.",
+      });
+    }
+
+    if (targetAuction.status !== "OPEN") {
+      return res.status(400).send({
+        message: `Update failed as the belonging auction (${targetAuction.status}) is not currently open for bidding.`,
+      });
+    }
+
+    //
+    const { bidAmount } = req.body;
+    // Check if the bid amount is higher than the current price + minBidIncrement
+    const requiredBidAmount =
+      targetAuction.currentHighest + targetAuction.minBidIncrement;
+    if (bidAmount < requiredBidAmount) {
+      return res.status(400).send({
+        success: false,
+        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentHighest}) + MBI:(${targetAuction.minBidIncrement}) `,
+      });
+    }
+    const isFlagged = bidAmount < targetAuction.startPrice * 0.5;
+
+    const result = await bidService.updateBid({
+      id: targetBidId,
+      data: { bidAmount, isFlagged },
     });
+    //
+
     if (result instanceof Error) {
       sendErrorResponse({
         res,
@@ -140,28 +183,44 @@ async function getBids(req, res) {
 async function deleteBid(req, res) {
   try {
     const targetBid = await Bid.findById(req.params.id);
-    console.log("isUsed  " + isUsed);
-    if (targetBid.isWinner) {
-      res.status(400).send({
-        success: false,
-        message: "Can't delete bid after declared winner",
-      });
-    } else {
-      const result = await bidService.deleteCategory(req.params.id);
-      if (result instanceof Error) {
-        sendErrorResponse({
-          res,
-          error: result,
-          what: operableEntities.bid,
-        });
-      } else {
-        sendDeletionResponse({
-          res,
-          data: result,
-          what: operableEntities.bid,
-        });
-      }
+    if (!targetBid) {
+      return res
+        .status(400)
+        .send({ message: "Invalid bid ID or bid not found." });
     }
+    const targetAuction = await Auction.findById(targetBid.auction);
+
+    if (targetAuction?.isDeleted) {
+      return res.status(400).send({
+        message: "The belonging auction doesn't exist anymore.",
+      });
+    }
+
+    if (targetAuction.status !== "OPEN") {
+      return res.status(400).send({
+        message: `Can't delete. The belonging auction is closed or cancelled.`,
+      });
+    }
+
+    if (targetBid.isWinner) {
+      return res.status(400).send({
+        success: false,
+        message: "Can't delete the winner bid after auction",
+      });
+    }
+    const result = await bidService.deleteBid(req.params.id);
+    if (result instanceof Error) {
+      return sendErrorResponse({
+        res,
+        error: result,
+        what: operableEntities.bid,
+      });
+    }
+    sendDeletionResponse({
+      res,
+      data: result,
+      what: operableEntities.bid,
+    });
   } catch (error) {
     sendErrorResponse({
       res,

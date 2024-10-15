@@ -12,6 +12,8 @@ const bidCreateSchema = z.object({
   bidAmount: z.number().min(1, "Bid amount must be positive"),
 });
 
-const bidUpdateSchema = bidCreateSchema.partial();
+const bidUpdateSchema = z.object({
+  bidAmount: z.number().min(1, "Bid amount must be positive"),
+});
 
 module.exports = { bidCreateSchema, bidUpdateSchema };

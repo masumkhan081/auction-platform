@@ -7,11 +7,10 @@ const Auction = require("../auction/auction.model");
 async function createBid(data) {
   let bid;
   try {
-    console.log("bid: " + JSON.stringify(data));
     bid = await Bid.create(data);
 
     await Auction.findByIdAndUpdate(data.auction, {
-      currentPrice: data.bidAmount,
+      currentHighest: data.bidAmount,
     });
     //
     return bid;
@@ -19,6 +18,7 @@ async function createBid(data) {
     if (bid) {
       await Bid.deleteOne({ _id: bid._id });
     }
+    console.log(" Service: createBid " + error.message);
     return error;
   }
 }
@@ -28,6 +28,7 @@ async function getSingleBid(updatableId) {
     const getResult = await Bid.findById(updatableId);
     return getResult;
   } catch (error) {
+    console.log(" Service: getSingleBid " + error.message);
     return error;
   }
 }
@@ -62,23 +63,17 @@ async function getBids(query) {
       data: fetchResult,
     };
   } catch (error) {
+    console.log(" Service: getBids " + error.message);
     return error;
   }
 }
 //
 async function updateBid({ id, data }) {
   try {
-    const { name, description } = data;
-    const updateResult = await Bid.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-      },
-      { new: true }
-    );
+    const updateResult = await Bid.findByIdAndUpdate(id, data, { new: true });
     return updateResult;
   } catch (error) {
+    console.log(" Service: updateBid " + error.message);
     return error;
   }
 }
@@ -88,6 +83,7 @@ async function deleteBid(id) {
     const deleteResult = await Bid.findByIdAndDelete(id);
     return deleteResult;
   } catch (error) {
+    console.log(" Service: deleteBid " + error.message);
     return error;
   }
 }

@@ -36,8 +36,8 @@ const map_searchables = {
 const map_filterables = {
   [operableEntities.category]: [],
   [operableEntities.product]: ["category", "status", "adminApproval"],
-  [operableEntities.auction]: ["status","isFlagged","timeZone"],
-  [operableEntities.bid]: [],
+  [operableEntities.auction]: ["status", "isFlagged", "timeZone"],
+  [operableEntities.bid]: ["bidder", "auction", "isWinner", "isFlagged"],
   [operableEntities.feedback]: ["reviewer", "auction"],
 };
 
