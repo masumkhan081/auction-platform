@@ -75,7 +75,7 @@ async function createAuction(req, res) {
 
       const addResult = await auctionService.createAuction({
         ...req.body,
-        seller: req.user_id,
+        seller: req.userId,
       });
       sendCreateResponse({
         res,

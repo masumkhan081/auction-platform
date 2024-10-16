@@ -65,7 +65,7 @@ async function createProduct(req, res) {
     // Create product
     const addResult = await Product.create({
       productName,
-      seller: req.user_id,
+      seller: req.userId,
       category,
       productDetail,
       productImages: fileUrls,
@@ -91,7 +91,7 @@ async function updateProduct(req, res) {
     if (!updatable) {
       return sendErrorResponse({
         res,
-        error: responseMap.id_not_found,
+        error: responseMap.idNotFound,
         what: operableEntities.product,
       });
     }
@@ -198,7 +198,7 @@ async function getSingleProduct(req, res) {
       console.log("going this way --");
       sendErrorResponse({
         res,
-        error: responseMap.id_not_found,
+        error: responseMap.idNotFound,
         what: operableEntities.product,
       });
     } else {
@@ -233,7 +233,7 @@ async function deleteProduct(req, res) {
     } else {
       sendErrorResponse({
         res,
-        error: responseMap.already_used,
+        error: responseMap.alreadyUsed,
         what: operableEntities.product,
       });
     }

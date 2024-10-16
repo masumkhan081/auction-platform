@@ -14,14 +14,14 @@ function accessControl(accessRoles) {
       console.log("accessRoles:  " + accessRoles);
 
       const { success, payload } = verifyToken(token);
-      console.log(JSON.stringify(payload))
+      console.log(JSON.stringify(payload));
 
       if (!success) {
         return forbid(res);
       }
 
       // Assign user ID and role for later use ( if i need for any further use)
-      req.user_id = payload?.user_id;
+      req.userId = payload?.userId;
       req.role = payload?.role;
 
       console.log(`${req.role} <> ${accessRoles}`);

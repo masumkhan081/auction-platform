@@ -3,16 +3,15 @@
 
 const {
   defaultViewLimit,
-  map_searchables,
-  map_filterables,
+  mapSearchable,
+  mapFilterables,
 } = require("../config/constants");
 
 function getSearchAndPagination({ query: query, what }) {
-  const { search, page, limit, search_by, sort_by, sort_order } = query;
+  const { search, page, limit, searchBy, sortBy, sortOrder } = query;
 
-  // sorting data with a particular field and order or by taking prefined defaults in this regard
-  const sortBy = sort_by || "createdAt";
-  const sortOrder = sort_order || "desc";
+  const sortField = sortBy || "createdAt"; // Default to "createdAt" if no sort_by is provided
+  const sortDirection = sortOrder || "desc";
 
   // page-number - pagination field
   const currentPage =
@@ -32,8 +31,8 @@ function getSearchAndPagination({ query: query, what }) {
   const viewSkip = viewLimit * (currentPage - 1);
 
   // what fild to be searched on
-  const searchBy =
-    search_by === undefined ? "whole" : search_by === "" ? "whole" : search_by;
+  const searchField =
+    searchBy === undefined ? "whole" : searchBy === "" ? "whole" : searchBy;
 
   // what to be searched by
   const searchTerm =
@@ -44,25 +43,25 @@ function getSearchAndPagination({ query: query, what }) {
   let sortConditions = { [sortBy]: sortOrder };
   let filterData;
 
-  // Add filter conditions from map_filterables
-  for (let i = 0; i < map_filterables[what]?.length; i++) {
-    filterData = query[map_filterables[what][i]];
+  // Add filter conditions from mapFilterables
+  for (let i = 0; i < mapFilterables[what]?.length; i++) {
+    filterData = query[mapFilterables[what][i]];
 
     if (filterData !== undefined && filterData !== "") {
-      filterConditions[map_filterables[what][i]] = filterData;
+      filterConditions[mapFilterables[what][i]] = filterData;
     }
   }
 
-  for (let i = 0; i < map_searchables[what]?.length; i++) {
-    const searchableField = map_searchables[what][i];
+  for (let i = 0; i < mapSearchable[what]?.length; i++) {
+    const searchableField = mapSearchable[what][i];
     if (searchTerm) {
-      if (searchBy === "whole") {
+      if (searchField === "whole") {
         searchConditions.push({
           [searchableField]: { $regex: new RegExp(searchTerm, "i") },
         });
       } else {
         searchConditions.push({
-          [searchBy]: { $regex: new RegExp(searchTerm, "i") },
+          [searchField]: { $regex: new RegExp(searchTerm, "i") },
         });
       }
     }

@@ -79,14 +79,14 @@ const getVerificationMessage = (otp) =>
 
 function getResetLink(user) {
   return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${
-    config.base_url
+    config.baseUrl
   }/auth/recovery/${jwt.sign(
     {
       id: user.id,
       email: user.email,
       expireAt: new Date().getTime() + 5 * 60000,
     },
-    config.tkn_secret
+    config.tokenSecret
   )}`;
 }
 
@@ -109,12 +109,12 @@ const getMailOptions = ({ to, subject, html }) => {
 
 const getTransporter = () =>
   nodemailer.createTransport({
-    host: config.mail_host,
+    host: config.mailHost,
     port: 465,
     secure: true,
     auth: {
-      user: config.host_email,
-      pass: config.host_mail_password,
+      user: config.hostEmail,
+      pass: config.hostEmailPassword,
     },
     tls: {
       rejectUnAuthorized: true,
@@ -129,7 +129,7 @@ const getOtpToken = ({ otp, email }) =>
       otp,
       expireAt: new Date().getTime() + 5 * 60000,
     }),
-    config.tkn_secret
+    config.tokenSecret
   ).toString();
 
 module.exports = {

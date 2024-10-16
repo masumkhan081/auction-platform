@@ -2,13 +2,13 @@ const httpStatus = require("http-status");
 //
 //
 function sendSingleFetchResponse({ res, data, what }) {
-  let statusCode = data ? responseMap.fetch.code : responseMap.not_found.code;
+  let statusCode = data ? responseMap.fetch.code : responseMap.notFound.code;
   res.status(statusCode).send({
     statusCode,
     success: data ? true : false,
     message: data
       ? responseMap.fetch.message(what)
-      : responseMap.id_not_found.message(what),
+      : responseMap.idNotFound.message(what),
     data,
   });
 }
@@ -34,25 +34,25 @@ function sendCreateResponse({ res, data, what }) {
 }
 
 function sendUpdateResponse({ res, data, what }) {
-  let statusCode = data ? responseMap.update.code : responseMap.not_found.code;
+  let statusCode = data ? responseMap.update.code : responseMap.notFound.code;
   res.status(statusCode).send({
     statusCode,
     success: data ? true : false,
     message: data
       ? responseMap.update.message(what)
-      : responseMap.id_not_found.message(what),
+      : responseMap.idNotFound.message(what),
     data,
   });
 }
 
 function sendDeletionResponse({ res, data, what }) {
-  let statusCode = data ? responseMap.delete.code : responseMap.not_found.code;
+  let statusCode = data ? responseMap.delete.code : responseMap.notFound.code;
   res.status(statusCode).send({
     statusCode,
     success: data ? true : false,
     message: data
       ? responseMap.delete.message(what)
-      : responseMap.id_not_found.message(what),
+      : responseMap.idNotFound.message(what),
     data,
   });
 }
@@ -77,8 +77,8 @@ function sendErrorResponse({ res, error, what }) {
   }
   // Duplicate key error code from db/schema
   else if (error?.code === 11000) {
-    statusCode = responseMap.already_exist.code;
-    message = responseMap.already_exist.message(what); // already exist message relating with the entity
+    statusCode = responseMap.alreadyExist.code;
+    message = responseMap.alreadyExist.message(what); // already exist message relating with the entity
   }
   //  Handles the case of - id not found (404), already exist(409), already used(409)
   else if (error?.code === 404 || error?.code === 409) {
@@ -88,8 +88,8 @@ function sendErrorResponse({ res, error, what }) {
   }
   // all the other cases
   else {
-    statusCode = responseMap.server_error.code;
-    message = responseMap.server_error.message;
+    statusCode = responseMap.serverError.code;
+    message = responseMap.serverError.message;
   }
   res.status(statusCode).send({
     statusCode,
@@ -109,33 +109,33 @@ const responseMap = {
   update: { code: 200, message: (what) => `${what} updated successfully` },
   fetch: { code: 200, message: (what) => `${what} fetched successfully` },
 
-  id_not_found: {
+  idNotFound: {
     code: 404,
     message: (what) => `No resource (${what}) with this ID.`,
   },
-  already_exist: {
+  alreadyExist: {
     code: 409, // Error code for "conflict" or "Already Exists" as mongodb return
     message: (what) => `Resource (${what}) already exists`,
   },
-  already_used: {
+  alreadyUsed: {
     code: 409, // HTTP status code for "Conflict"
     message: (what) =>
       `Cannot delete ${what}: Resource is already used by other entities`,
   },
   //
   invalid: { code: 500, message: "Invalid Request" },
-  bad_req: { code: 500, message: "Bad Request" },
-  not_found: { code: 404, message: (what) => `${what} not found` },
-  server_error: { code: 500, message: "Internal Server Error" },
-  something_went_wrong: { code: 500, message: "Something went wrong" },
+  badRequest: { code: 500, message: "Bad Request" },
+  notFound: { code: 404, message: (what) => `${what} not found` },
+  serverError: { code: 500, message: "Internal Server Error" },
+  somethingWentWrong: { code: 500, message: "Something went wrong" },
   unauthorized: { code: 500, message: "Unauthorized Access" },
   forbidden: { code: 500, message: "Forbidden Access" },
 
-  no_data: { code: 204, message: `No Data` },
-  fail_in_update: { code: 1000, message: (what) => `${what} failed to update` },
+  noData: { code: 204, message: `No Data` },
+  failInUpdate: { code: 1000, message: (what) => `${what} failed to update` },
   //
 
-  creation_failed: { code: 400, message: "Creation failed" },
+  creationFailed: { code: 400, message: "Creation failed" },
 };
 
 module.exports = {

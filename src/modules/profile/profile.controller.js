@@ -16,10 +16,10 @@ const { default: mongoose } = require("mongoose");
 //
 async function getProfileDetail(req, res) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.user_id)) {
+    if (!mongoose.Types.ObjectId.isValid(req.userId)) {
       return serverError(res);
     }
-    const result = await profileService.getProfileDetail(req.user_id);
+    const result = await profileService.getProfileDetail(req.userId);
     if (result instanceof Error) {
       sendErrorResponse({ res, error: result, what: operableEntities.profile });
     } else {
@@ -36,12 +36,12 @@ async function getProfileDetail(req, res) {
 //
 async function updateProfile(req, res) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.user_id)) {
-      console.log("invalid req.user_id at updateProfile");
+    if (!mongoose.Types.ObjectId.isValid(req.userId)) {
+      console.log("invalid req.userId at updateProfile");
       return serverError(res);
     }
     const result = await profileService.updateProfile({
-      id: req.user_id,
+      id: req.userId,
       data: req.body,
     });
     if (result instanceof Error) {
@@ -58,7 +58,7 @@ async function updateProfile(req, res) {
 async function deleteProfile(req, res) {
   try {
     const result = await profileService.deactivateProfile({
-      id: req.user_id,
+      id: req.userId,
       role: req.role,
     });
 
@@ -123,7 +123,7 @@ async function getSellerList(req, res) {
 //
 async function getBidHistory(req, res) {
   try {
-    const result = await bidService.getBids({ bidder: req.user_id });
+    const result = await bidService.getBids({ bidder: req.userId });
     if (result instanceof Error) {
       sendErrorResponse({
         res,
@@ -146,7 +146,7 @@ async function getBidHistory(req, res) {
 async function getProductList(req, res) {
   const result = await productService.getProducts({
     ...req.query,
-    seller: req.user_id,
+    seller: req.userId,
   });
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.product });
@@ -158,7 +158,7 @@ async function getProductList(req, res) {
 async function getAuctionHistory(req, res) {
   const result = await auctionService.getAuctions({
     ...req.query,
-    seller: req.user_id,
+    seller: req.userId,
   });
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.auction });

@@ -1,16 +1,16 @@
-const { map_searchables } = require("../config/constants");
+const { mapSearchable } = require("../config/constants");
 //
 //  not used
 const validateQueryParams = (what) => (req, res, next) => {
-  // search_by and search params can be present without not-filterable params
-  const validParams = [...map_searchables[what], "search_by", "search"];
+  // searchBy and search params can be present without not-filterable params
+  const validParams = [...mapSearchable[what], "searchBy", "search"];
 
   // Check if any unexpected parameters are present
   const invalidParams = Object.keys(req.query).filter(
     (key) => !validParams.includes(key)
   );
-  if (req.query["search_by"] && !validParams.includes(req.query["search_by"])) {
-    invalidParams.push(req.query["search_by"]);
+  if (req.query["searchBy"] && !validParams.includes(req.query["searchBy"])) {
+    invalidParams.push(req.query["searchBy"]);
   }
   if (invalidParams.length > 0) {
     return res

@@ -75,7 +75,7 @@ app.get("/", (req, res) => {
 app.use("/api", RootRoutes);
 
 app.use((req, res, next) => {
-  res.status(httpStatus.NOT_FOUND).send({
+  res.status(httpStatus.notFound).send({
     success: false,
     message: "Not Found",
     errorMessages: [

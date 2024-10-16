@@ -9,10 +9,10 @@ const upload = multer({ dest: "../../public/" });
 const storageMap = {
   productImages: {
     destination: "../../public/product-images",
-    max_upload_size: 1024 * 1024 * 3,
-    accepted_file_types: /jpeg|jpg|png|gif|webp|svg/,
-    save_directory: "public/product-images/",
-    unlink_directory: "../../public/product-images",
+    maxUploadSize: 1024 * 1024 * 3,
+    acceptedFileTypes: /jpeg|jpg|png|gif|webp|svg/,
+    saveDirectory: "public/product-images/",
+    unlinkDirectory: "../../public/product-images",
   },
 };
 //
@@ -40,7 +40,7 @@ async function uploadHandler({ type, what, file }) {
     const timestamp = Date.now();
     const ext = path.extname(file.originalname);
     const basename = path.basename(file.originalname, ext);
-    const newFilePath = `${storageMap[what].save_directory}${basename}-${timestamp}${ext}`;
+    const newFilePath = `${storageMap[what].saveDirectory}${basename}-${timestamp}${ext}`;
     //
     const writeData = fs.writeFileSync(newFilePath, readData);
     return newFilePath;

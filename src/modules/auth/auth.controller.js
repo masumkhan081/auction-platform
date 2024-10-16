@@ -88,7 +88,7 @@ async function login(req, res) {
 }
 
 // async function logout(req, res) {
-//   res.clearCookie(config.tkn_header_key);
+//   res.clearCookie(config.tokenHeaderKey);
 //   res.send({ status: 200, message: "User logged out succesfully" });
 // }
 

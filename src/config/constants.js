@@ -20,7 +20,7 @@ const defaultViewLimit = 20;
 const defaultSortOrder = "desc";
 
 // may be changed based on the outcome expected
-const map_default_sort_by = {
+const mapDefaultSortBy = {
   [operableEntities.category]: "",
   [operableEntities.product]: "",
   [operableEntities.auction]: "",
@@ -30,7 +30,7 @@ const map_default_sort_by = {
   [operableEntities.seller]: "",
 };
 
-const map_searchables = {
+const mapSearchable = {
   [operableEntities.category]: ["name"],
   [operableEntities.product]: ["productName", "productDetail"],
   [operableEntities.auction]: [],
@@ -40,7 +40,7 @@ const map_searchables = {
   [operableEntities.seller]: [],
 };
 
-const map_filterables = {
+const mapFilterables = {
   [operableEntities.category]: [],
   [operableEntities.product]: ["category", "status", "adminApproval","seller"],
   [operableEntities.auction]: ["status", "isFlagged", "timeZone","seller"],
@@ -54,10 +54,10 @@ const map_filterables = {
 module.exports = {
   paginationFields,
   defaultViewLimit,
-  map_searchables,
-  map_filterables,
+  mapSearchable,
+  mapFilterables,
   defaultSortOrder,
-  map_default_sort_by,
+  mapDefaultSortBy,
   operableEntities,
   allowedRoles,
   //

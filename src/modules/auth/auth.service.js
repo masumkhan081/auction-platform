@@ -48,7 +48,7 @@ async function verifyEmail({ data, res }) {
   try {
     // Decrypt OTP token and parse the data
     const { expireAt, otp, email } = JSON.parse(
-      crypto.AES.decrypt(data.token, config.tkn_secret).toString(
+      crypto.AES.decrypt(data.token, config.tokenSecret).toString(
         crypto.enc.Utf8
       )
     );
@@ -100,13 +100,13 @@ async function login({ res, email, password }) {
         if (user.isVerified) {
           token = jwt.sign(
             {
-              user_id: user.id, // i should remove id from here !
+              userId: user.id, // i should remove id from here !
               role: user.role,
               email: user.email,
               expire: 2628000000 + Date.now(),
             },
-            config.tkn_secret,
-            config.jwt_options
+            config.tokenSecret,
+            config.jwtOptions
           );
           //
           user.isActive = true; // if previously deleted own profile
@@ -142,7 +142,7 @@ async function login({ res, email, password }) {
 }
 
 // async function logout(req, res) {
-//   res.clearCookie(config.tkn_header_key);
+//   res.clearCookie(config.tokenHeaderKey);
 //   res.status(200).send("Pulled Out Succesfully");
 // }
 //
@@ -150,7 +150,7 @@ async function verifyAccountRecovery({ res, token }) {
   try {
     const { success, data } = verifyToken({
       token,
-      secret: config.tkn_secret,
+      secret: config.tokenSecret,
     });
 
     if (!success) {
@@ -204,7 +204,7 @@ async function updatePassword({
   try {
     const { expireAt, email } = verifyToken({
       token,
-      secret: config.tkn_secret,
+      secret: config.tokenSecret,
     });
     if (userEmail !== email) {
       return res.status(400).send({

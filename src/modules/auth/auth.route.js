@@ -61,12 +61,12 @@ router.post(
 // experiment ! needed time to make it more articulated ...
 router.get("/cookie-check", async (req, res) => {
   try {
-    const token = req.cookies[config.tkn_header_key];
+    const token = req.cookies[config.tokenHeaderKey];
     console.log(token);
 
-    const verified = verifyToken({ token, secret: config.tkn_secret });
+    const verified = verifyToken({ token, secret: config.tokenSecret });
 
-    const user = await User.findById(verified?.user_id);
+    const user = await User.findById(verified?.userId);
     const { role, email, phone, fullName } = user;
 
     if (user.isVerified) {
@@ -115,15 +115,15 @@ router.post("/test-auth-token", async (req, res) => {
 
     console.log(
       "token on user: \n" +
-        JSON.stringify({ user_id: user.id, role: user.role, email }) +
+        JSON.stringify({ userId: user.id, role: user.role, email }) +
         "\n" +
         JSON.stringify(user)
     );
     res.send(
       jwt.sign(
-        { user_id: user.id, role: user.role, email },
-        config.tkn_secret,
-        config.jwt_options
+        { userId: user.id, role: user.role, email },
+        config.tokenSecret,
+        config.jwtOptions
       )
     );
   } catch (error) {

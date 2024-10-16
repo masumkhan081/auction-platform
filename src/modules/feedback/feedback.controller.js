@@ -116,7 +116,7 @@ async function deleteFeedback(req, res) {
     } else {
       sendErrorResponse({
         res,
-        error: responseMap.already_used,
+        error: responseMap.alreadyUsed,
         what: operableEntities.feedback,
       });
     }

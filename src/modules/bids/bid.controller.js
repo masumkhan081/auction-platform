@@ -64,7 +64,7 @@ async function createBid(req, res) {
 
     const result = await bidService.createBid({
       auction,
-      bidder: req.user_id,
+      bidder: req.userId,
       bidAmount,
       isFlagged: bidAmount < targetAuction.startPrice * 0.5,
     });
