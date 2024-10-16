@@ -44,3 +44,7 @@
 {"level":"info","message":"::1 - - [16/Oct/2024:08:11:30 +0000] \"POST /api/products HTTP/1.1\" 500 70 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:11:30.912Z"}
 {"level":"info","message":"::1 - - [16/Oct/2024:08:13:49 +0000] \"POST /api/products HTTP/1.1\" 500 70 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:13:49.223Z"}
 {"level":"info","message":"::1 - - [16/Oct/2024:08:17:32 +0000] \"POST /api/products HTTP/1.1\" 400 134 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:17:32.998Z"}
+{"level":"info","message":"::1 - - [16/Oct/2024:08:18:53 +0000] \"POST /api/products HTTP/1.1\" 201 517 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:18:53.019Z"}
+{"level":"info","message":"::1 - - [16/Oct/2024:08:19:12 +0000] \"PATCH /api/products/670f76ec7956a024c11c171b HTTP/1.1\" 200 442 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:19:12.710Z"}
+{"level":"info","message":"::1 - - [16/Oct/2024:08:19:31 +0000] \"DELETE /api/products/670f76ec7956a024c11c171b HTTP/1.1\" 200 442 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:19:31.947Z"}
+{"level":"info","message":"::1 - - [16/Oct/2024:08:19:49 +0000] \"DELETE /api/products/670f76ec7956a024c11c171b HTTP/1.1\" 404 94 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-16T08:19:49.102Z"}
