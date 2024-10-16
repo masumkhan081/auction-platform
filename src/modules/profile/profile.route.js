@@ -2,7 +2,9 @@ const { Router } = require("express");
 const router = Router();
 const profileController = require("./profile.controller");
 const accessControl = require("../../middlewares/verifyToken");
-const {allowedRoles} = require("../../config/constants");
+const validateRequest = require("../../middlewares/validateRequest");
+const { allowedRoles } = require("../../config/constants");
+const { profileCreateSchema } = require("./profile.validate");
 //
 router.get(
   "/my-profile",
@@ -13,6 +15,7 @@ router.get(
 router.patch(
   "/my-profile",
   accessControl([allowedRoles.bidder, allowedRoles.admin, allowedRoles.seller]),
+  validateRequest(profileCreateSchema),
   profileController.updateProfile
 );
 //
@@ -27,6 +30,7 @@ router.get(
   accessControl([allowedRoles.admin]),
   profileController.getBidderList
 );
+// 
 router.get(
   "/seller-list",
   accessControl([allowedRoles.admin]),

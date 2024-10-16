@@ -25,7 +25,7 @@ const userSchema = new Schema(
       },
     },
     isVerified: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true }, // at deleting own profile, just switching isActive to false
     profile: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, 'Profile ID is required'],

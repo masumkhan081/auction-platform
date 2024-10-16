@@ -1,7 +1,3 @@
-var http = require("http");
-var util = require("util");
-const multer = require("multer");
-const upload = multer();
 
 const validateRequest = (requestBodySchema) => async (req, res, next) => {
   try {

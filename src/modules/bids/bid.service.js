@@ -45,10 +45,21 @@ async function getBids(query) {
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.bid });
 
+    console.log(
+      currentPage,
+      viewLimit,
+      viewSkip,
+      sortBy,
+      sortOrder,
+      filterConditions,
+      sortConditions
+    );
+
     const fetchResult = await Bid.find(filterConditions)
       .sort(sortConditions)
       .skip(viewSkip)
-      .limit(viewLimit);
+      .limit(viewLimit)
+      .populate("auction");
 
     const total = await Bid.countDocuments(filterConditions);
     return {

@@ -45,7 +45,8 @@ async function uploadHandler({ type, what, file }) {
     const writeData = fs.writeFileSync(newFilePath, readData);
     return newFilePath;
   } catch (error) {
-    res.status(400).send({ message: "error processing file" });
+    console.log("uploadHandler: error processing file: " + error.message);
+    throw new Error("File upload failed");
   }
 }
 function checkFileType({ file, fileTypes, cb }) {

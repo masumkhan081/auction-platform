@@ -24,7 +24,7 @@ async function register({ res, data }) {
       email,
       password,
       role,
-      profileId: profile.id,
+      profile: profile.id,
     }).save();
 
     sendOTPMail({
@@ -108,6 +108,10 @@ async function login({ res, email, password }) {
             config.tkn_secret,
             config.jwt_options
           );
+          //
+          user.isActive = true; // if previously deleted own profile
+          await user.save();
+          //
           res.status(200).send({
             success: true,
             message: "You are successfully logged in",

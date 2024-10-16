@@ -24,6 +24,11 @@ const productSchema = new mongoose.Schema(
       ref: "categories",
       required: [true, "Category is required"],
     },
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: [true, "Seller user id is required"],
+    },
     productImages: [
       {
         type: String,

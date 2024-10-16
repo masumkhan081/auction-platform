@@ -102,14 +102,23 @@ router.post("/test-auth-token", async (req, res) => {
   const { email, role, password } = req.body;
   try {
     let user = await User.findOne({ email, role, password });
+
     if (!user) {
+      console.log("test-token:  doesn't exist !");
       user = User.create({
         email,
         password,
         role,
-        profile_id: "66f25cf57ed2cbf857beb03f",
+        profile: "66f25cf57ed2cbf857beb03f",
       });
     }
+
+    console.log(
+      "token on user: \n" +
+        JSON.stringify({ user_id: user.id, role: user.role, email }) +
+        "\n" +
+        JSON.stringify(user)
+    );
     res.send(
       jwt.sign(
         { user_id: user.id, role: user.role, email },

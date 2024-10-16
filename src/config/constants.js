@@ -10,7 +10,9 @@ const operableEntities = {
   auction: "Auction",
   bid: "Bid",
   feedback: "Feedback",
-  profile:"Profile"
+  profile: "Profile",
+  bidder: "Bidder",
+  seller: "Seller",
 };
 
 const paginationFields = ["page", "limit", "sortBy", "sortOrder"];
@@ -24,6 +26,8 @@ const map_default_sort_by = {
   [operableEntities.auction]: "",
   [operableEntities.bid]: "",
   [operableEntities.feedback]: "",
+  [operableEntities.bidder]: "",
+  [operableEntities.seller]: "",
 };
 
 const map_searchables = {
@@ -32,14 +36,19 @@ const map_searchables = {
   [operableEntities.auction]: [],
   [operableEntities.bid]: [],
   [operableEntities.feedback]: [],
+  [operableEntities.bidder]: [],
+  [operableEntities.seller]: [],
 };
 
 const map_filterables = {
   [operableEntities.category]: [],
-  [operableEntities.product]: ["category", "status", "adminApproval"],
-  [operableEntities.auction]: ["status", "isFlagged", "timeZone"],
+  [operableEntities.product]: ["category", "status", "adminApproval","seller"],
+  [operableEntities.auction]: ["status", "isFlagged", "timeZone","seller"],
   [operableEntities.bid]: ["bidder", "auction", "isWinner", "isFlagged"],
   [operableEntities.feedback]: ["reviewer", "auction"],
+  [operableEntities.profile]: ["role", "isActive"],
+  [operableEntities.bidder]: [],
+  [operableEntities.seller]: [],
 };
 
 module.exports = {

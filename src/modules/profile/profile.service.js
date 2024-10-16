@@ -10,17 +10,41 @@ async function getProfileDetail(userID) {
     const profileInfo = await User.findById(userID)
       .select("-password -isActive")
       .populate("profile");
-
+     
     return profileInfo;
   } catch (error) {
     return error;
   }
 }
-
 //
-async function getSellers(query) {
+async function updateProfile({ id, data }) {
   try {
-    const {
+    const editResult = await Profile.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+    return editResult;
+  } catch (error) {
+    console.log("service: updateProfile: " + error.message);
+    return error;
+  }
+}
+//
+async function deactivateProfile({ id, role }) {
+  try {
+    const deleteResult = await User.findOneAndUpdate(
+      { id, role },
+      { isActive: false },
+      { new: true }
+    );
+    return deleteResult;
+  } catch (error) {
+    return error;
+  }
+}
+//
+async function getList(query) {
+  try {
+    let {
       currentPage,
       viewLimit,
       viewSkip,
@@ -28,14 +52,15 @@ async function getSellers(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.address });
+    } = getSearchAndPagination({ query, what: operableEntities.profile });
 
-    const fetchResult = await Seller.find(filterConditions)
-      .sort(sortConditions)
+    const fetchResult = await User.find(filterConditions)
       .skip(viewSkip)
-      .limit(viewLimit);
+      .limit(viewLimit)
+      .populate("profile")
+      .exec();
 
-    const total = await Seller.countDocuments(filterConditions);
+    const total = await User.countDocuments(filterConditions);
     return {
       meta: {
         total,
@@ -48,33 +73,14 @@ async function getSellers(query) {
       data: fetchResult,
     };
   } catch (error) {
-    return error;
-  }
-}
-//
-async function updateSeller({ id, data }) {
-  try {
-    const editResult = await Seller.findByIdAndUpdate(id, data, {
-      new: true,
-    });
-    return editResult;
-  } catch (error) {
-    return error;
-  }
-}
-//
-async function deleteSeller(id) {
-  try {
-    const deleteResult = await Seller.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
+    console.log(" Service: getList: " + error.message);
     return error;
   }
 }
 
 module.exports = {
   getProfileDetail,
-  updateSeller,
-  deleteSeller,
-  getSellers,
+  updateProfile,
+  deactivateProfile,
+  getList,
 };

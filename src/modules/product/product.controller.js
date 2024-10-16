@@ -65,6 +65,7 @@ async function createProduct(req, res) {
     // Create product
     const addResult = await Product.create({
       productName,
+      seller: req.user_id,
       category,
       productDetail,
       productImages: fileUrls,
@@ -266,7 +267,7 @@ async function updateApprovalByAdmin(req, res) {
     res.status(400).send({ message: "Error updating status" });
   }
 }
- 
+
 //
 module.exports = {
   createProduct,

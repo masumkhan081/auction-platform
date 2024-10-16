@@ -1,13 +1,35 @@
 const { z } = require("zod");
+const Profile = require("./profile.model");
 
-// Define a Zod schema for address validation
+const profileCreateSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, { message: "Full name is required." })
+    .max(100, { message: "Full name must be at most 100 characters long." }),
 
-const profileSchema = z.object({
-  firstName: z.string().min(15).max(75),
-  lastName: z.string().min(6).max(50),
-  phone: z.string().min(11).max(50).optional(),
-  address: z.string().min(11).max(50).optional(),
+  phone: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 characters long." })
+    .max(15, { message: "Phone number must be at most 15 characters long." })
+    .regex(/^\+?[1-9]\d{1,14}$/, {
+      message: "Phone number must be a valid format.",
+    }),
+  /*
+    .refine(
+      async (value) => {
+        const isUnique = await checkIfPhoneIsUnique(value);
+        return isUnique;
+      },
+      { message: "Phone number must be unique." }
+    ),
+  */
   gender: z.enum(["Male", "Female", "Other"]).optional(),
+  address: z.string().optional(),
 });
 
-module.exports = profileSchema;
+async function checkIfPhoneIsUnique(phone) {
+  const isExist = await Profile.findOne({ phone });
+  return isExist ? false : true;
+}
+
+module.exports = { profileCreateSchema };

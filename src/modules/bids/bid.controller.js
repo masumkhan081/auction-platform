@@ -144,7 +144,10 @@ async function updateBid(req, res) {
 //
 async function getBids(req, res) {
   try {
+    console.log("got hit !");
     const result = await bidService.getBids(req.query);
+    console.log("got hit 2!");
+
     if (result instanceof Error) {
       sendErrorResponse({
         res,
@@ -218,5 +221,5 @@ module.exports = {
   updateBid,
   deleteBid,
   getBids,
-  getSingleBid
+  getSingleBid,
 };

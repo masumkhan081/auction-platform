@@ -99,6 +99,8 @@ async function getAuctions(query) {
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.auction });
 
+    console.log("query:" + JSON.stringify(query));
+
     const fetchResult = await Auction.find(filterConditions)
       .sort(sortConditions)
       .skip(viewSkip)
