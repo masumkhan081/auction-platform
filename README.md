@@ -8,7 +8,7 @@ auction created by seller ( product approved by admin), and find a winner after 
 
 ---
 
-# Features
+# Features (Role Wise)
 
 # Admin: Manages users, approves auctions, and monitors auction activities.
 
@@ -21,10 +21,8 @@ auction created by seller ( product approved by admin), and find a winner after 
 # Tech Used
 
 ---
+
 # DB Models
-
-
-
 
 # Authentication & Validations
 
@@ -46,8 +44,4 @@ auction created by seller ( product approved by admin), and find a winner after 
 2. Install dependencies.
 3. Run the application.
 
-
-
 # API Endpoints
-
-
