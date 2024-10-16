@@ -31,27 +31,6 @@ async function getSingleBid(req, res) {
   }
 }
 
-async function getBidHistory(req, res) {
-  try {
-    const result = await bidService.getBids({ bidder: req.user_id });
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.bid,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.bid });
-    }
-  } catch (error) {
-    sendErrorResponse({
-      res,
-      error,
-      what: operableEntities.bid,
-    });
-  }
-}
-
 async function createBid(req, res) {
   try {
     const { auction, bidAmount } = req.body;
@@ -239,6 +218,5 @@ module.exports = {
   updateBid,
   deleteBid,
   getBids,
-  getSingleBid,
-  getBidHistory,
+  getSingleBid
 };

@@ -11,6 +11,8 @@ function accessControl(accessRoles) {
         return forbid(res);
       }
 
+      console.log("accessRoles:  " + accessRoles);
+
       const { success, payload } = verifyToken(token);
       console.log("verified:payload: " + JSON.stringify(payload));
 

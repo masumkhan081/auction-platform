@@ -1,16 +1,22 @@
 /* eslint-disable no-unused-vars */
 const { operableEntities } = require("../../config/constants");
-const Seller = require("./profile.model");
+const Profile = require("./profile.model");
+const User = require("../auth/auth.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
+//
 
-async function createSeller(data) {
+async function getProfileDetail(userID) {
   try {
-    const addResult = await Seller.create(data);
-    return addResult;
+    const profileInfo = await User.findById(userID)
+      .select("-password -isActive")
+      .populate("profile");
+
+    return profileInfo;
   } catch (error) {
     return error;
   }
 }
+
 //
 async function getSellers(query) {
   try {
@@ -67,7 +73,7 @@ async function deleteSeller(id) {
 }
 
 module.exports = {
-  createSeller,
+  getProfileDetail,
   updateSeller,
   deleteSeller,
   getSellers,

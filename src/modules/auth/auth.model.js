@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: false },
-    profileId: {
+    profile: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, 'Profile ID is required'],
       ref: 'Profile', // assuming there's a 'Profile' model

@@ -2,7 +2,7 @@ const { Router } = require("express");
 const router = Router();
 const profileController = require("./profile.controller");
 const accessControl = require("../../middlewares/verifyToken");
-const allowedRoles = require("../../config/constants");
+const {allowedRoles} = require("../../config/constants");
 //
 router.get(
   "/my-profile",
@@ -25,12 +25,12 @@ router.delete(
 router.get(
   "/bidder-list",
   accessControl([allowedRoles.admin]),
-  profileController.getBidderProfiles
+  profileController.getBidderList
 );
 router.get(
   "/seller-list",
   accessControl([allowedRoles.admin]),
-  profileController.getSellerProfiles
+  profileController.getSellerList
 );
 router.get(
   "/my-bids",

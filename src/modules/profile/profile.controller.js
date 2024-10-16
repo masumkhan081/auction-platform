@@ -9,6 +9,19 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 //
+async function getProfileDetail(req, res) {
+  try {
+    const result = await profileService.getProfileDetail(req.user_id);
+    if (result instanceof Error) {
+      sendErrorResponse({ res, error: result, what: operableEntities.profile });
+    } else {
+      sendFetchResponse({ res, data: result, what: operableEntities.profile });
+    }
+  } catch (error) {
+    serverError(res);
+  }
+}
+//
 async function getAuctionHistory(req, res) {
   const result = await profileService.getSellers(req.query);
   if (result instanceof Error) {
@@ -19,11 +32,23 @@ async function getAuctionHistory(req, res) {
 }
 //
 async function getBidHistory(req, res) {
-  const result = await profileService.getSellers(req.query);
-  if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.address });
-  } else {
-    sendFetchResponse({ res, data: result, what: operableEntities.address });
+  try {
+    const result = await bidService.getBids({ bidder: req.user_id });
+    if (result instanceof Error) {
+      sendErrorResponse({
+        res,
+        error: result,
+        what: operableEntities.bid,
+      });
+    } else {
+      sendFetchResponse({ res, data: result, what: operableEntities.bid });
+    }
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: operableEntities.bid,
+    });
   }
 }
 //
@@ -36,7 +61,7 @@ async function getProductList(req, res) {
   }
 }
 //
-async function getBidderProfiles(req, res) {
+async function getBidderList(req, res) {
   const result = await profileService.getSellers(req.query);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
@@ -45,16 +70,7 @@ async function getBidderProfiles(req, res) {
   }
 }
 //
-async function getSellerProfiles(req, res) {
-  const result = await profileService.getSellers(req.query);
-  if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.address });
-  } else {
-    sendFetchResponse({ res, data: result, what: operableEntities.address });
-  }
-}
-//
-async function getProfileDetail(req, res) {
+async function getSellerList(req, res) {
   const result = await profileService.getSellers(req.query);
   if (result instanceof Error) {
     sendErrorResponse({ res, error: result, what: operableEntities.address });
@@ -84,11 +100,18 @@ async function deleteProfile(req, res) {
   }
 }
 //
+const serverError = (res) =>
+  res.status(500).send({
+    success: false,
+    message: "Server error",
+  });
+
+//
 module.exports = {
   updateProfile,
   deleteProfile,
-  getBidderProfiles,
-  getSellerProfiles,
+  getBidderList,
+  getSellerList,
   getProfileDetail,
   getAuctionHistory,
   getProductList,

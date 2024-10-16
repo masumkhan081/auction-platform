@@ -10,6 +10,7 @@ const operableEntities = {
   auction: "Auction",
   bid: "Bid",
   feedback: "Feedback",
+  profile:"Profile"
 };
 
 const paginationFields = ["page", "limit", "sortBy", "sortOrder"];
