@@ -24,17 +24,28 @@ auction created by seller ( product approved by admin), and find a winner after 
 
 # DB Models
 
+User
+Profile
+Category
+Product
+Auction
+Bid
+
+
 # Authentication & Validations
 
-- User input validations for login and bidding.
-- Auction time validations (start/end times).
-- Bid amount validation (minimum/maximum bid).
+- post & patch body validation with zod
+- access control with auth middleware based on role
+- control of status transition (from one status to another status) regarding product status/ auction status etc
+- Auction time validations (start/end times) while converting it to standard utc time from given user time and time zone.
+- Bid amount validation in the context of current highest, minimum increment value.
 
 ---
 
 # Unhandled concerns/ Could be better
 
-1. prevent sudden update of auction end time. cause:
+1. prevent sudden update of auction end time.
+2.
 
 ---
 

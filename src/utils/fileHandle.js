@@ -66,7 +66,7 @@ async function removeFile({ fileUrl }) {
       await unlinkAsync(deleteUrl);
     }
   } catch (error) {
-    console.log(" ---- " + JSON.stringify(error));
+    console.log(" removeFile: " + error.message);
   }
 }
 //

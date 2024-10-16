@@ -20,7 +20,7 @@ async function bootstrap() {
   };
 
   const unexpectedErrorHandler = (error) => {
-    console.log(error);
+    console.log("unexpectedErrorHandler: " + error.message);
     exitHandler();
   };
 
@@ -29,5 +29,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-
