@@ -8,36 +8,43 @@ auction created by seller ( product approved by admin), and find a winner after 
 
 ---
 
-# Features (Role Wise)
+# Description (Role Wise)
 
 # Admin:
-1. Approves products added by seller, view bidder-list, seller-list, auction-list etc.
-2. 
+1. Approves products added by seller, or cancel product request with a review note rather than disapprove.
+2. view bidder-list, seller-list, auction-list etc.
+3. manage product-categories
 
 # Seller
-1. create product request
-2. create auction with approved product giving a valid auc. start time and end time
-3. can give feedback on a closed auction to a bidder
+1. create product request; every product must belong to a category, default status - PENDING
+2. create auction with approved product only giving a valid auction s.t and e.t. , and can cancel it until auction is OPEN
+3. can delete an auction if cancelled or pending (complete delete)
+4. can delete a unsold auction only to deactivate it (Record will be available in db)
+5. can give feedback on a closed auction to a bidder
+6. can see profile detail, update profile, and view auction history
 
 # Bidder: 
 1. register as bidder, login, recover account ( forget password )
-2. can place bids
-3. can give feedback on a closed auction to a seller
----
+2. can place bids even below treshold, but must above - current highest+minimum required increment
+3. a bid/bidder would not be declared winner if bid is below 50% of start price would be flagged for review
+4. auction would be flagged if final price is below treshold
+5. can give feedback on a closed auction to a seller
+6. can see profile detail, update profile, and view bid history
+
+
 
 # Tech Used
 * node, express, mongodb, nodemailer, node-cron, multer, jwt, bcrypt, cryptojs
----
+
 
 # DB Models
-
-User
-Profile
-Category
-Product
-Auction
-Bid
-Feedback
+* User 
+* Profile
+* Category
+* Product
+* Auction
+* Bid
+* Feedback
 
 
 # Authentication & Validations
@@ -53,7 +60,8 @@ Feedback
 # Unhandled concerns/ Could be better
 
 1. prevent sudden update of auction end time to prevent unfair advantage
-2.
+2. notification could have sent to winner bidder at winning, to seller at auction start and end, to admin at new product request etc
+
 
 ---
 
