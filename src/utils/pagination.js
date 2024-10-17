@@ -40,7 +40,7 @@ function getSearchAndPagination({ query: query, what }) {
 
   let searchConditions = [];
   let filterConditions = {};
-  let sortConditions = { [sortBy]: sortOrder };
+  let sortConditions = { [sortField]: sortDirection };
   let filterData;
 
   // Add filter conditions from mapFilterables
