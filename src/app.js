@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const express = require("express");
 const httpStatus = require("http-status");
