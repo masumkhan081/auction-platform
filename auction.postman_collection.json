@@ -19,7 +19,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\":\"test.seller@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"role\":\"SELLER\",\r\n    \"profile_id\": \"60c72b2f9f1b2c001c8d3e4a\"\r\n}",
+									"raw": "{\r\n    \"email\": \"test.seller@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"SELLER\",\r\n    \"fullName\": \"seller khan\",\r\n    \"phone\":\"01833347848\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"i am acting address ...\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -47,7 +47,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"test.bidder@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"BIDDER\",\r\n    \"profile_id\": \"62a4d7c65b6d9c001c1a1f0e\"\r\n}",
+									"raw": "{\r\n    \"email\": \"test.bidder@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"BIDDER\",\r\n    \"fullName\": \"bidder khan\",\r\n    \"phone\":\"01833347847\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"i am acting address ...\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -75,7 +75,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"test.admin@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"ADMIN\",\r\n    \"profile_id\": \"5f3a2b1e7c4e3a001c7d7e8b\"\r\n}\r\n",
+									"raw": "{\r\n    \"email\": \"test.admin@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"ADMIN\",\r\n    \"fullName\": \"Mr. Admin khan\",\r\n    \"phone\": \"01833347846\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"i am acting address ...\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -250,7 +250,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"masumkhan081@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"fullName\": \"John Doe\",\r\n    \"phone\": \"1833347848\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"raw": "{\r\n    \"email\": \"masumkhan081@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"fullName\": \"John Doe\",\r\n    \"phone\": \"1833347848\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -278,7 +278,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"masumkhan.axilsoft@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"fullName\": \"MK \",\r\n    \"phone\": \"+1234567890\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"raw": "{\r\n    \"email\": \"masumkhan.axilsoft@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"fullName\": \"MK \",\r\n    \"phone\": \"+1234567890\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -311,7 +311,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\":\"masumkhan081@gmail.com\",\r\n    \"password\":\"123455\" \r\n}",
+									"raw": "{\r\n    \"email\":\"test.admin@gmail.com\",\r\n    \"password\":\"123456\" \r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -433,7 +433,7 @@
 								},
 								{
 									"key": "category",
-									"value": "670c6a2ca07e19ae3628471d",
+									"value": "67110fcf452e64b032e9f59d",
 									"type": "text"
 								},
 								{
@@ -557,7 +557,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{3000}}/api/products/admin-approval/670c7a972d82ee3600507d56",
+							"raw": "{{3000}}/api/products/admin-approval/67111015452e64b032e9f5a6",
 							"host": [
 								"{{3000}}"
 							],
@@ -565,7 +565,7 @@
 								"api",
 								"products",
 								"admin-approval",
-								"670c7a972d82ee3600507d56"
+								"67111015452e64b032e9f5a6"
 							]
 						}
 					},
@@ -693,14 +693,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{3000}}/api/product-categories/670c6503fccdc9c7e3f22f61",
+							"raw": "{{3000}}/api/product-categories/67110fcf452e64b032e9f59d",
 							"host": [
 								"{{3000}}"
 							],
 							"path": [
 								"api",
 								"product-categories",
-								"670c6503fccdc9c7e3f22f61"
+								"67110fcf452e64b032e9f59d"
 							]
 						}
 					},
@@ -714,8 +714,7 @@
 							{
 								"key": "authorization",
 								"value": "{{tkn_admin}}",
-								"type": "text",
-								"disabled": true
+								"type": "text"
 							}
 						],
 						"url": {
@@ -817,13 +816,13 @@
 						"header": [
 							{
 								"key": "authorization",
-								"value": "{{tkn_bidder_real}}",
+								"value": "{{tkn_bidder}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"auction\": \"670dde3ba1f07aba7b45ed80\",  \r\n  \"bidAmount\": 93\r\n}\r\n",
+							"raw": "{\r\n  \"auction\": \"6711114f2c01d52c74c5d22c\",  \r\n  \"bidAmount\": 93\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1018,14 +1017,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{3000}}/api/auctions/670dde3ba1f07aba7b45ed80",
+							"raw": "{{3000}}/api/auctions/6711114f2c01d52c74c5d22c",
 							"host": [
 								"{{3000}}"
 							],
 							"path": [
 								"api",
 								"auctions",
-								"670dde3ba1f07aba7b45ed80"
+								"6711114f2c01d52c74c5d22c"
 							]
 						}
 					},
@@ -1052,14 +1051,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{3000}}/api/auctions/670a3163704229a2b9fb46fd",
+							"raw": "{{3000}}/api/auctions/6711114f2c01d52c74c5d22c",
 							"host": [
 								"{{3000}}"
 							],
 							"path": [
 								"api",
 								"auctions",
-								"670a3163704229a2b9fb46fd"
+								"6711114f2c01d52c74c5d22c"
 							]
 						}
 					},
@@ -1078,7 +1077,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"product\": \"670c7a972d82ee3600507d56\",\r\n    \"timeZone\": \"Asia/Dhaka\",\r\n    \"auctionStart\": \"2024-10-15T09:15:15.258953+06:00\",\r\n    \"auctionEnd\": \"2024-10-15T09:17:15.258953+06:00\",\r\n    \"startPrice\": 100.00,\r\n    \"threshold\": 55.00,\r\n    \"minBidIncrement\": 5.00\r\n}",
+							"raw": "{\r\n    \"product\": \"67111015452e64b032e9f5a6\",\r\n    \"timeZone\": \"Asia/Dhaka\",\r\n    \"auctionStart\": \"2024-10-17T19:30:15.258953+06:00\",\r\n    \"auctionEnd\": \"2024-10-17T19:31:15.258953+06:00\",\r\n    \"startPrice\": 100.00,\r\n    \"threshold\": 55.00,\r\n    \"minBidIncrement\": 5.00\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1102,7 +1101,13 @@
 					"name": "delete-auction",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{3000}}/api/auctions/670a2f8b704229a2b9fb46dc",
 							"host": [
@@ -1277,7 +1282,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"phone\": \"+1234567890\",\r\n  \"gender\": \"MALE\",\r\n  \"address\": \"123 Main St, Anytown, USA\"\r\n}\r\n",
+							"raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"phone\": \"+1234567890\",\r\n  \"gender\": \"Male\",\r\n  \"address\": \"123 Main St, Anytown, USA\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
