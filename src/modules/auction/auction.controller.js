@@ -38,34 +38,34 @@ async function createAuction(req, res) {
     const targetProduct = await Product.findById(product);
     //
     if (!targetProduct) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "Product not found.",
       });
     } else if (["SOLD", "ON_AUCTION"].includes(targetProduct.status)) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Target product is already ${targetProduct.status}.`,
       });
     } else if (targetProduct.adminApproval !== "APPROVED") {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `The product must be approved to set on auction. Current status: ${targetProduct.adminApproval}.`,
       });
     } else if (!success) {
-      return res.status(400).send({
+      return res.status(400).json({
         success,
         message,
       });
     } else if (threshold > startPrice) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "threshold can't be higher than starting price",
       });
     }
     // this is not realistic but this is the least and mendatory validation
     else if (minBidIncrement > threshold / 3) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Minimum bid increment must be 1/3 of threshold value",
       });
@@ -93,7 +93,7 @@ async function getSingleAuction(req, res) {
   try {
     const targetAuctionId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
-      return res.status(400).send({ message: "Invalid resource (auction) id" });
+      return res.status(400).json({ message: "Invalid resource (auction) id" });
     }
 
     const result = await auctionService.getSingleAuction(targetAuctionId);
@@ -121,12 +121,12 @@ async function updateAuction(req, res) {
     //
     const targetAuctionId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
-      return res.status(400).send({ message: "Invalid resource (auction) id" });
+      return res.status(400).json({ message: "Invalid resource (auction) id" });
     }
     //
     const targetAuction = await Auction.findById(targetAuctionId);
     if (!targetAuction) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "Auction not found.",
       });
@@ -135,7 +135,7 @@ async function updateAuction(req, res) {
     const invalidStatusChangeFromAndTo = ["SOLD", "OPEN", "UNSOLD"]; // no change allowed while status being any of these
     //
     if (invalidStatusChangeFromAndTo.includes(targetAuction.status)) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: `Can't bring change to ${targetAuction.status} Auction.`,
       });
@@ -144,7 +144,7 @@ async function updateAuction(req, res) {
 
     // map of what status can be changed to which statuses; control of transition of status
     if (invalidStatusChangeFromAndTo.includes(statusChangeTo)) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Changing status from ${targetAuction.status} to ${data.status} is restricted for seller`,
       });
@@ -176,7 +176,7 @@ async function updateAuction(req, res) {
       });
 
       if (!success) {
-        return res.status(400).send({ success, message });
+        return res.status(400).json({ success, message });
       }
       data.auctionStart = convertedStart;
       data.auctionEnd = convertedEnd;
@@ -188,32 +188,32 @@ async function updateAuction(req, res) {
     if (!targetProduct) {
       return res
         .status(404)
-        .send({ success: false, message: "Product not found." });
+        .json({ success: false, message: "Product not found." });
     }
 
     if (["SOLD", "ON_AUCTION"].includes(targetProduct.status)) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Target product is already ${targetProduct.status}.`,
       });
     }
 
     if (targetProduct.adminApproval !== "APPROVED") {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `The product must be approved to set on auction. Current status: ${targetProduct.adminApproval}.`,
       });
     }
 
     if (data.threshold > data.startPrice) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Threshold can't be higher than starting price",
       });
     }
 
     if (data.minBidIncrement > data.threshold / 3) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Minimum bid increment must be 1/3 of threshold value",
       });
@@ -271,12 +271,12 @@ async function deleteAuction(req, res) {
   try {
     const targetAuctionId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
-      return res.status(400).send({ message: "Invalid resource (auction) id" });
+      return res.status(400).json({ message: "Invalid resource (auction) id" });
     }
 
     const targetAuction = await Auction.findById(targetAuctionId);
     if (!targetAuction) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "Auction doesn't exist.",
       });
@@ -299,7 +299,7 @@ async function deleteAuction(req, res) {
         totalDeleteMap[allowedRoles.seller].includes(targetAuction.status))
     ) {
       resultDeletion = await Auction.findByIdAndDelete(targetAuctionId);
-      return res.status(200).send({
+      return res.status(200).json({
         success: true,
         message: "Auction deleted permanently.",
       });
@@ -320,7 +320,7 @@ async function deleteAuction(req, res) {
         { isDeleted: true },
         { new: true }
       );
-      return res.status(200).send({
+      return res.status(200).json({
         success: true,
         message: "Auction deleted successfully.",
       });

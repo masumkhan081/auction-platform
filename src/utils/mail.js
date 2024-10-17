@@ -17,21 +17,21 @@ const sendOTPMail = ({ user, res, successMessage }) => {
     //
     const transporter = getTransporter();
     transporter
-      .sendMail(mailOptions)
+      .jsonMail(mailOptions)
       .then((result) => {
         result.accepted.includes(user.email)
-          ? res.status(200).send({
-              message: successMessage,
-              token: getOtpToken({ otp: generatedOTP, email: user.email }),
-            })
-          : res.status(400).send({ message: "Error sending otp to the mail" });
+          ? res.status(200).json({
+            message: successMessage,
+            token: getOtpToken({ otp: generatedOTP, email: user.email }),
+          })
+          : res.status(400).json({ message: "Error sending otp to the mail" });
       })
       .catch((err) => {
         console.log("err: sending mail  " + err.message);
-        res.status(500).send({ message: "Error sending otp to the mail" });
+        res.status(500).json({ message: "Error sending otp to the mail" });
       });
   } catch (error) {
-    res.status(500).send({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -48,20 +48,20 @@ async function sendResetMail({ user, res, successMessage }) {
     const transporter = getTransporter();
     //
     transporter
-      .sendMail(mailOptions)
+      .jsonMail(mailOptions)
       .then((result) => {
         result
-          ? res.status(200).send({ message: successMessage })
+          ? res.status(200).json({ message: successMessage })
           : res
-              .status(400)
-              .send({ message: "Error sending password reset mail" });
+            .status(400)
+            .json({ message: "Error sending password reset mail" });
       })
       .catch((err) => {
         console.log("err: sending mail  " + err.message);
-        res.status(500).send({ message: "Error sending password reset mail" });
+        res.status(500).json({ message: "Error sending password reset mail" });
       });
   } catch (error) {
-    res.status(500).send({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -78,16 +78,15 @@ const getVerificationMessage = (otp) =>
   `<h4 style="color:blue;text-align:center;">Please copy or type the OTP provided below: <br><br>${otp}`;
 
 function getResetLink(user) {
-  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${
-    config.baseUrl
-  }/auth/recovery/${jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      expireAt: new Date().getTime() + 5 * 60000,
-    },
-    config.tokenSecret
-  )}`;
+  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${config.baseUrl
+    }/auth/recovery/${jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        expireAt: new Date().getTime() + 5 * 60000,
+      },
+      config.tokenSecret
+    )}`;
 }
 
 // return a relatable email sibject based on purpose of the mail
@@ -95,12 +94,12 @@ const setSubject = (action) =>
   action === "recovery"
     ? "Auction-platform: Recover Your Password"
     : action === "verification"
-    ? "Auction-platform: Verify Your Email"
-    : "";
+      ? "Auction-platform: Verify Your Email"
+      : "";
 
 const getMailOptions = ({ to, subject, html }) => {
   return {
-    from: process.env.SENDER,
+    from: process.env.jsonER,
     to,
     subject: subject(),
     html: html(),

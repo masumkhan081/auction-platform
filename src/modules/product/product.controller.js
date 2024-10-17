@@ -28,7 +28,7 @@ async function createProduct(req, res) {
 
     // Check for file upload limit
     if (filesInBody > maxCount) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
       });
@@ -46,7 +46,7 @@ async function createProduct(req, res) {
           await Promise.all(
             fileUrls.map((url) => removeFile({ fileUrl: url }))
           );
-          return res.status(500).send({
+          return res.status(500).json({
             success: false,
             message: "Error uploading files. Please try again.",
           });
@@ -59,7 +59,7 @@ async function createProduct(req, res) {
     if (!categoryExist) {
       return res
         .status(400)
-        .send({ success: false, message: "Category doesn't exist" });
+        .json({ success: false, message: "Category doesn't exist" });
     }
 
     // Create product
@@ -101,7 +101,7 @@ async function updateProduct(req, res) {
 
     // Check for file upload limit
     if (filesInBody > maxCount) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
       });
@@ -121,7 +121,7 @@ async function updateProduct(req, res) {
           await Promise.all(
             fileUrls.map((url) => removeFile({ fileUrl: url }))
           );
-          return res.status(500).send({
+          return res.status(500).json({
             success: false,
             message: "Error uploading files. Please try again.",
           });
@@ -140,8 +140,8 @@ async function updateProduct(req, res) {
         filesInBody > 0
           ? fileUrls
           : req.body[fieldName] === undefined
-          ? updatable.productImages
-          : [],
+            ? updatable.productImages
+            : [],
     };
     console.log("req.body[fieldName]" + req.body[fieldName]);
 
@@ -205,7 +205,7 @@ async function getSingleProduct(req, res) {
       sendFetchResponse({ res, data: result, what: operableEntities.product });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error fetching the product" });
+    res.status(400).json({ message: "Error fetching the product" });
   }
 }
 //
@@ -238,7 +238,7 @@ async function deleteProduct(req, res) {
       });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error deleting product" });
+    res.status(400).json({ message: "Error deleting product" });
   }
 }
 //
@@ -264,7 +264,7 @@ async function updateApprovalByAdmin(req, res) {
       });
     }
   } catch (error) {
-    res.status(400).send({ message: "Error updating status" });
+    res.status(400).json({ message: "Error updating status" });
   }
 }
 

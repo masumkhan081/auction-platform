@@ -21,7 +21,7 @@ const validateRequest = (requestBodySchema) => async (req, res, next) => {
         }
       }
       //
-      res.status(400).send({
+      res.status(400).json({
         success: false,
         message: "Invalid data",
         messages,
@@ -29,8 +29,8 @@ const validateRequest = (requestBodySchema) => async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.log("Error proccessing zod schema: "+error.message);
-    res.status(400).send({
+    console.log("Error proccessing zod schema: " + error.message);
+    res.status(400).json({
       success: false,
       message: "Invalid data",
     });

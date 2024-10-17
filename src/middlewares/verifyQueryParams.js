@@ -15,7 +15,7 @@ const validateQueryParams = (what) => (req, res, next) => {
   if (invalidParams.length > 0) {
     return res
       .status(400)
-      .send({ error: `Invalid query parameters: ${invalidParams.join(", ")}` });
+      .json({ error: `Invalid query parameters: ${invalidParams.join(", ")}` });
   }
 
   // If all parameters are valid, proceed to the next middleware or route handler

@@ -3,7 +3,7 @@ const httpStatus = require("http-status");
 //
 function sendSingleFetchResponse({ res, data, what }) {
   let statusCode = data ? responseMap.fetch.code : responseMap.notFound.code;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: data ? true : false,
     message: data
@@ -15,7 +15,7 @@ function sendSingleFetchResponse({ res, data, what }) {
 //
 function sendFetchResponse({ res, data, what }) {
   let statusCode = responseMap.fetch.code;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: true,
     message: responseMap.fetch.message(what),
@@ -25,7 +25,7 @@ function sendFetchResponse({ res, data, what }) {
 
 function sendCreateResponse({ res, data, what }) {
   let statusCode = responseMap.create.code;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: true,
     message: responseMap.create.message(what),
@@ -35,7 +35,7 @@ function sendCreateResponse({ res, data, what }) {
 
 function sendUpdateResponse({ res, data, what }) {
   let statusCode = data ? responseMap.update.code : responseMap.notFound.code;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: data ? true : false,
     message: data
@@ -47,7 +47,7 @@ function sendUpdateResponse({ res, data, what }) {
 
 function sendDeletionResponse({ res, data, what }) {
   let statusCode = data ? responseMap.delete.code : responseMap.notFound.code;
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: data ? true : false,
     message: data
@@ -91,7 +91,7 @@ function sendErrorResponse({ res, error, what }) {
     statusCode = responseMap.serverError.code;
     message = responseMap.serverError.message;
   }
-  res.status(statusCode).send({
+  res.status(statusCode).json({
     statusCode,
     success: false,
     message,

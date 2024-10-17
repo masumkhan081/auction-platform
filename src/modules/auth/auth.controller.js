@@ -20,9 +20,9 @@ const registerUser = (role) => async (req, res) => {
   try {
     const isExist = await User.findOne({ email: req.body.email });
     if (isExist) {
-      return res.status(409).send({
+      return res.status(409).json({
         success: false,
-        message: "Email already registered. You may login",
+        message: "Email already registered.",
       });
     } else {
       req.body.password = await getHashedPassword(req.body.password);
@@ -33,8 +33,8 @@ const registerUser = (role) => async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("err in controller: " + error.message);
-    res.status(500).send({ message: "Error processing request" });
+    console.log("controller: registerUser: " + error.message);
+    res.status(500).json({ success: false, message: "Error processing request" });
   }
 };
 
@@ -43,7 +43,7 @@ async function requestEmailVerfication(req, res) {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       if (user.isVerified) {
-        res.status(200).send({ message: "Account already verified" });
+        res.status(200).json({ message: "Account already verified" });
       } else {
         sendOTPMail({
           user,
@@ -53,13 +53,13 @@ async function requestEmailVerfication(req, res) {
         });
       }
     } else {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "No user associated with that email",
       });
     }
   } catch (error) {
-    res.status(500).send({ success: false, message: "Interval server error" });
+    res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
 
@@ -71,7 +71,7 @@ async function verifyEmail(req, res) {
     });
   } catch (error) {
     console.log("err in controller: " + error.message);
-    res.status(500).send({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -80,7 +80,7 @@ async function login(req, res) {
     const { email, password } = req.body;
     await authService.login({ res, email, password });
   } catch (error) {
-    res.status(500).send({
+    res.status(500).json({
       success: false,
       message: "Internal server error",
     });
@@ -89,7 +89,7 @@ async function login(req, res) {
 
 // async function logout(req, res) {
 //   res.clearCookie(config.tokenHeaderKey);
-//   res.send({ status: 200, message: "User logged out succesfully" });
+//   res.json({ status: 200, message: "User logged out succesfully" });
 // }
 
 async function requestAccountRecovery(req, res) {
@@ -103,15 +103,15 @@ async function requestAccountRecovery(req, res) {
           successMessage: "A password reset link has been sent to your email.",
         });
       } else {
-        res.status(400).send({ message: "Your account is not verified yet" });
+        res.status(400).json({ message: "Your account is not verified yet" });
       }
     } else {
       res
         .status(400)
-        .send({ message: "No account associated with that email" });
+        .json({ message: "No account associated with that email" });
     }
   } catch (error) {
-    res.status(500).send({ success: false, message: "Interval server error" });
+    res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
 
@@ -119,16 +119,16 @@ async function verifyAccountRecovery(req, res) {
   try {
     await authService.verifyAccountRecovery({ token: req.params.token, res });
   } catch (error) {
-    res.status(500).send({ success: false, message: "Interval server error" });
+    res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
 
 async function updatePassword(req, res) {
   try {
-    const { token,email, password, confirmPassword } = req.body;
-    await authService.updatePassword({ res,token, email, password, confirmPassword });
+    const { token, email, password, confirmPassword } = req.body;
+    await authService.updatePassword({ res, token, email, password, confirmPassword });
   } catch (error) {
-    res.status(500).send({ success: false, message: "Interval server error" });
+    res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
 

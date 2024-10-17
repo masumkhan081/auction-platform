@@ -40,14 +40,14 @@ async function createBid(req, res) {
 
     // Check if auction exists
     if (!targetAuction) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "Auction not found.",
       });
     }
     // Ensure the auction status is 'OPEN'
     if (targetAuction.status !== "OPEN") {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "The auction is not open for bidding",
       });
@@ -56,7 +56,7 @@ async function createBid(req, res) {
     const requiredBidAmount =
       targetAuction.currentHighest + targetAuction.minBidIncrement;
     if (bidAmount < requiredBidAmount) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentHighest}) + MBI:(${targetAuction.minBidIncrement}) `,
       });
@@ -81,26 +81,26 @@ async function updateBid(req, res) {
     const targetBidId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(targetBidId)) {
-      return res.status(400).send({ message: "Invalid resource (bid) id" });
+      return res.status(400).json({ message: "Invalid resource (bid) id" });
     }
 
     const targetBid = await Bid.findById(targetBidId);
     if (!targetBid) {
       return res
         .status(400)
-        .send({ message: "Invalid bid ID or bid not found." });
+        .json({ message: "Invalid bid ID or bid not found." });
     }
     const targetAuction = await Auction.findById(targetBid.auction);
 
     if (!targetAuction || targetAuction?.isDeleted) {
-      return res.status(400).send({
+      return res.status(400).json({
         message:
           "Update failed as the belonging auction doesn't exist anymore.",
       });
     }
 
     if (targetAuction.status !== "OPEN") {
-      return res.status(400).send({
+      return res.status(400).json({
         message: `Update failed as the belonging auction (${targetAuction.status}) is not currently open for bidding.`,
       });
     }
@@ -111,7 +111,7 @@ async function updateBid(req, res) {
     const requiredBidAmount =
       targetAuction.currentHighest + targetAuction.minBidIncrement;
     if (bidAmount < requiredBidAmount) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentHighest}) + MBI:(${targetAuction.minBidIncrement}) `,
       });
@@ -172,24 +172,24 @@ async function deleteBid(req, res) {
     if (!targetBid) {
       return res
         .status(400)
-        .send({ message: "Invalid bid ID or bid not found." });
+        .json({ message: "Invalid bid ID or bid not found." });
     }
     const targetAuction = await Auction.findById(targetBid.auction);
 
     if (targetAuction?.isDeleted) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: "The belonging auction doesn't exist anymore.",
       });
     }
 
     if (targetAuction.status !== "OPEN") {
-      return res.status(400).send({
+      return res.status(400).json({
         message: `Can't delete. The belonging auction is closed or cancelled.`,
       });
     }
 
     if (targetBid.isWinner) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Can't delete the winner bid after auction",
       });

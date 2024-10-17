@@ -39,7 +39,7 @@ function accessControl(accessRoles) {
 }
 
 const forbid = (res) =>
-  res.status(403).send({
+  res.status(403).json({
     success: false,
     message: "Access Forbidden !",
   });

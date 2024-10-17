@@ -168,7 +168,7 @@ async function getAuctionHistory(req, res) {
 }
 //
 const serverError = (res) =>
-  res.status(500).send({
+  res.status(500).json({
     success: false,
     message: "Server error",
   });

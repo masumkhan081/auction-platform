@@ -40,7 +40,7 @@ async function register({ res, data }) {
       await User.findByIdAndDelete(user.id);
     }
     console.log("err:: " + error.message);
-    res.status(500).send({ message: "Error creating bidder profile" });
+    res.status(500).json({ message: "Error creating bidder profile" });
   }
 }
 
@@ -58,7 +58,7 @@ async function verifyEmail({ data, res }) {
 
     // Check if OTP has expired
     if (new Date().getTime() > expireAt) {
-      return res.status(400).send({ success: false, message: "OTP expired" });
+      return res.status(400).json({ success: false, message: "OTP expired" });
     }
 
     // Validate OTP and email
@@ -66,12 +66,12 @@ async function verifyEmail({ data, res }) {
       const user = await User.findOneAndUpdate({ email }, { isVerified: true });
 
       if (user) {
-        return res.status(200).send({
+        return res.status(200).json({
           success: true,
           message: "Account verified. You may login",
         });
       } else {
-        return res.status(404).send({
+        return res.status(404).json({
           success: false,
           message: "No user associated with that email",
         });
@@ -79,13 +79,13 @@ async function verifyEmail({ data, res }) {
     } else {
       return res
         .status(400)
-        .send({ success: false, message: "Invalid OTP or email" });
+        .json({ success: false, message: "Invalid OTP or email" });
     }
   } catch (error) {
     console.error("Error verifying email:", error);
     return res
       .status(500)
-      .send({ success: false, message: "Internal Server Error" });
+      .json({ success: false, message: "Internal Server Error" });
   }
 }
 
@@ -112,7 +112,7 @@ async function login({ res, email, password }) {
           user.isActive = true; // if previously deleted own profile
           await user.save();
           //
-          res.status(200).send({
+          res.status(200).json({
             success: true,
             message: "You are successfully logged in",
             token,
@@ -128,22 +128,22 @@ async function login({ res, email, password }) {
           });
         }
       } else {
-        res.status(400).send({ success: false, message: "Wrong Credentials" });
+        res.status(400).json({ success: false, message: "Wrong Credentials" });
       }
     }
     // no user with that username in system
     else {
-      res.status(400).send({ success: false, message: "Wrong Credentials" });
+      res.status(400).json({ success: false, message: "Wrong Credentials" });
     }
   } catch (error) {
     console.error("Inside service func:", error.message);
-    res.status(500).send({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
 // async function logout(req, res) {
 //   res.clearCookie(config.tokenHeaderKey);
-//   res.status(200).send("Pulled Out Succesfully");
+//   res.status(200).json("Pulled Out Succesfully");
 // }
 //
 async function verifyAccountRecovery({ res, token }) {
@@ -154,7 +154,7 @@ async function verifyAccountRecovery({ res, token }) {
     });
 
     if (!success) {
-      return res.status(401).send({
+      return res.status(401).json({
         success: false,
         message: "The provided token is invalid or has changed.",
       });
@@ -164,7 +164,7 @@ async function verifyAccountRecovery({ res, token }) {
 
     // Check if the token has expired
     if (new Date().getTime() >= expireAt) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Password reset link expired.",
       });
@@ -173,21 +173,21 @@ async function verifyAccountRecovery({ res, token }) {
     // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "User not found.",
       });
     }
 
     // If everything is valid, allow password update, would expect the token at update password post req
-    return res.status(200).send({
+    return res.status(200).json({
       success: true,
       message: "You can update your password now.",
       token,
     });
   } catch (error) {
     console.error("Error in verifyAccountRecovery:", error.message);
-    res.status(500).send({
+    res.status(500).json({
       success: false,
       message: "Server error: " + error.message,
     });
@@ -207,19 +207,19 @@ async function updatePassword({
       secret: config.tokenSecret,
     });
     if (userEmail !== email) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Token does not match the email provided",
       });
     }
     if (password !== confirmPassword) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Password and confirm password do not match.",
       });
     }
     if (new Date().getTime() < expireAt) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: "Timeout. Request for new password reset link",
       });
@@ -235,18 +235,18 @@ async function updatePassword({
 
     // Check if the user was found and updated
     if (!updatedUser) {
-      return res.status(404).send({
+      return res.status(404).json({
         success: false,
         message: "No user found with that email.",
       });
     }
 
-    return res.status(200).send({
+    return res.status(200).json({
       success: true,
       message: "Password updated successfully. You may log in.",
     });
   } catch (error) {
-    res.status(500).send({
+    res.status(500).json({
       success: false,
       message: "Internal server error",
     });
