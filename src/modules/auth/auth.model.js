@@ -29,7 +29,7 @@ const userSchema = new Schema(
     profile: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, 'Profile ID is required'],
-      ref: 'Profile', // assuming there's a 'Profile' model
+      ref: 'profiles', // assuming there's a 'Profile' model
     },
   },
   {

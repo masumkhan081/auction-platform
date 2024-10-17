@@ -19,8 +19,7 @@ router.post(
 //
 router.patch(
   "/:id",
-  accessControl([allowedRoles.seller]),
-  validateRequest(auctionEditSchema),
+  accessControl([allowedRoles.seller]), 
   auctionController.updateAuction
 );
 router.get("/", auctionController.getAuctions);

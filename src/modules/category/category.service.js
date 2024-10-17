@@ -2,7 +2,6 @@
 const { operableEntities } = require("../../config/constants");
 const Category = require("./category.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
-
 //
 
 async function getSingleCategory(updatableId) {

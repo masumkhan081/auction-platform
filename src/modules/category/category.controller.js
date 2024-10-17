@@ -12,7 +12,7 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const productModel = require("../product/product.model");
-
+// 
 async function getSingleCategory(req, res) {
   try {
     const result = await categoryService.getSingleCategory(req.params.id);

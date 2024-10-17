@@ -26,6 +26,13 @@ async function createProduct(req, res) {
     const maxCount = fieldsMap[operableEntities.product][0].maxCount;
     const filesInBody = req?.files?.[fieldName]?.length || 0;
 
+    const categoryExist = await Category.findById(category);
+    if (!categoryExist) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Category doesn't exist" });
+    }
+
     // Check for file upload limit
     if (filesInBody > maxCount) {
       return res.status(400).json({
@@ -53,13 +60,6 @@ async function createProduct(req, res) {
         }
       }
       console.log(JSON.stringify(fileUrls));
-    }
-
-    const categoryExist = await Category.findById(category);
-    if (!categoryExist) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category doesn't exist" });
     }
 
     // Create product
@@ -173,7 +173,6 @@ async function updateProduct(req, res) {
 
 async function getProducts(req, res) {
   try {
- 
     const result = await productService.getProducts(req.query);
     if (result instanceof Error) {
       sendErrorResponse({ res, error: result, what: operableEntities.product });
@@ -181,7 +180,6 @@ async function getProducts(req, res) {
       sendFetchResponse({ res, data: result, what: operableEntities.product });
     }
   } catch (error) {
-    
     sendErrorResponse({
       res,
       error,

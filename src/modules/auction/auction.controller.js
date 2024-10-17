@@ -13,6 +13,7 @@ const {
 const { operableEntities, allowedRoles } = require("../../config/constants");
 const { validateAndConvertToUTC } = require("./auction.validate");
 const Product = require("../product/product.model");
+const { default: mongoose } = require("mongoose");
 
 //
 async function createAuction(req, res) {
@@ -120,6 +121,7 @@ async function updateAuction(req, res) {
   try {
     //
     const targetAuctionId = req.params.id;
+
     if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
       return res.status(400).json({ message: "Invalid resource (auction) id" });
     }
