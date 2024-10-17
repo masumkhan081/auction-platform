@@ -1,0 +1,1393 @@
+{
+	"info": {
+		"_postman_id": "9aad3fd0-4cae-4335-a73e-59d4a11218d4",
+		"name": "auction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36829398"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "test-token-role-wise",
+					"item": [
+						{
+							"name": "generate-seller-test-token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"test.seller@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"role\":\"SELLER\",\r\n    \"profile_id\": \"60c72b2f9f1b2c001c8d3e4a\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/test-auth-token",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"test-auth-token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "generate-biddder-test-token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test.bidder@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"BIDDER\",\r\n    \"profile_id\": \"62a4d7c65b6d9c001c1a1f0e\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/test-auth-token",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"test-auth-token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "generate-admin-test-token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test.admin@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"role\": \"ADMIN\",\r\n    \"profile_id\": \"5f3a2b1e7c4e3a001c7d7e8b\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/test-auth-token",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"test-auth-token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "forget-pw",
+					"item": [
+						{
+							"name": "reset-password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"masumkhan081@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"confirmPassword\":\"123456\",\r\n    \"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MGI5ZDhlOTA3MDk5MGQ2YmNkMzYwMSIsImVtYWlsIjoibWFzdW1raGFuMDgxQGdtYWlsLmNvbSIsImV4cGlyZUF0IjoxNzI4ODE0OTI5Mjk4LCJpYXQiOjE3Mjg4MTQ2Mjl9.5DBapRnNGoBduYSwI9OfXvgXxeuZ7uYl2Hv8LDAQzOM\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/reset-password",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "request-account-recovery",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"masumkhan081@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/recovery",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"recovery"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify-account-recovery",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{3000}}/api/auth/recovery/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MGI5ZDhlOTA3MDk5MGQ2YmNkMzYwMSIsImVtYWlsIjoibWFzdW1raGFuMDgxQGdtYWlsLmNvbSIsImV4cGlyZUF0IjoxNzI4ODE0OTI5Mjk4LCJpYXQiOjE3Mjg4MTQ2Mjl9.5DBapRnNGoBduYSwI9OfXvgXxeuZ7uYl2Hv8LDAQzOM0",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"recovery",
+										"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MGI5ZDhlOTA3MDk5MGQ2YmNkMzYwMSIsImVtYWlsIjoibWFzdW1raGFuMDgxQGdtYWlsLmNvbSIsImV4cGlyZUF0IjoxNzI4ODE0OTI5Mjk4LCJpYXQiOjE3Mjg4MTQ2Mjl9.5DBapRnNGoBduYSwI9OfXvgXxeuZ7uYl2Hv8LDAQzOM0"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "email-verification",
+					"item": [
+						{
+							"name": "request-email-ver",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"masumkhan.axilsoft@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/request-email-verification",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"request-email-verification"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "email-verification",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"masumkhan081@gmail.com\",\r\n    \"otp\":\"1997\",\r\n    \"token\":\"U2FsdGVkX18IKbUls9JrBtuYTnBPQmLTyzvFQRUZRPPUqmvGSLzsiL79XIStGVHrDIZivAkKmXxV3D2Gg5x2GPICdWIXWQJw7HkoCddDORBtGB0q5f6fidtu3HQZ4NsL\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/email-verification",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"email-verification"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "register",
+					"item": [
+						{
+							"name": "become-a-bidder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"masumkhan081@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"fullName\": \"John Doe\",\r\n    \"phone\": \"1833347848\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/register-as-bidder",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register-as-bidder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "become-a-seller",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"masumkhan.axilsoft@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"fullName\": \"MK \",\r\n    \"phone\": \"+1234567890\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/register-as-seller",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register-as-seller"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "login",
+					"item": [
+						{
+							"name": "login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"masumkhan081@gmail.com\",\r\n    \"password\":\"123455\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{3000}}/api/auth/login",
+									"host": [
+										"{{3000}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "product",
+			"item": [
+				{
+					"name": "product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/products",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "INACTIVE",
+									"disabled": true
+								},
+								{
+									"key": "adminApproval",
+									"value": "PENDING",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "detail",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "670c6a2ca07e19ae3628471d",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/products/670c7a972d82ee3600507d56",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"670c7a972d82ee3600507d56"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-seller",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productName",
+									"value": "marco cors leo-43",
+									"type": "text"
+								},
+								{
+									"key": "productImages",
+									"type": "file",
+									"src": [
+										"postman-cloud:///1ef74c12-7011-4ff0-8370-7ca3b462ea84",
+										"postman-cloud:///1ef74be3-0733-46c0-a954-e63b9dc19308"
+									]
+								},
+								{
+									"key": "category",
+									"value": "670c6a2ca07e19ae3628471d",
+									"type": "text"
+								},
+								{
+									"key": "productDetail",
+									"value": "i am detail",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{3000}}/api/products",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit-seller",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productName",
+									"value": "what the hell i am doing",
+									"type": "text"
+								},
+								{
+									"key": "productImages",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "category",
+									"value": "670c6a2ca07e19ae3628471d",
+									"type": "text"
+								},
+								{
+									"key": "productDetail",
+									"value": "i am detail updtd",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "SOLD",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{3000}}/api/products/670f76ec7956a024c11c171b",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"670f76ec7956a024c11c171b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/products/670f76ec7956a024c11c171b",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"670f76ec7956a024c11c171b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "approval-admin",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"adminApproval\":\"APPROVED\",\r\n    \"reviewNote\":\"we need more detail on this product\"  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/products/admin-approval/670c7a972d82ee3600507d56",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"admin-approval",
+								"670c7a972d82ee3600507d56"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/product-categories?search=6",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"product-categories"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "6"
+								},
+								{
+									"key": "search_by",
+									"value": "description",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "cat name 2",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/product-categories/6707fe9402396113fd0d472c",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"product-categories",
+								"6707fe9402396113fd0d472c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\" cat name 2\",\r\n    \"description\":\"67\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/product-categories",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"product-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"House\",\r\n    \"description\":\"cannot exceed 500 characters. Wooden two floor house bla bla bla\"   \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/product-categories/670c6503fccdc9c7e3f22f61",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"product-categories",
+								"670c6503fccdc9c7e3f22f61"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/product-categories/670c66dd63c6e56f8ead89ee",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"product-categories",
+								"670c66dd63c6e56f8ead89ee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bids",
+			"item": [
+				{
+					"name": "bids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/bids?bidder=670ac4009de09ad01828eb08",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"bids"
+							],
+							"query": [
+								{
+									"key": "bidder",
+									"value": "670ac4009de09ad01828eb08"
+								},
+								{
+									"key": "auction",
+									"value": "670dde3ba1f07aba7b45ed80",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single bid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/bids/67014d8682a33150df00dc36",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"bids",
+								"67014d8682a33150df00dc36"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/bids/670e3919a4d1775370519d29",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"bids",
+								"670e3919a4d1775370519d29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-bid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_bidder_real}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"auction\": \"670dde3ba1f07aba7b45ed80\",  \r\n  \"bidAmount\": 93\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/bids",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"bids"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_bidder_real}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bidAmount\": 98\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/bids/670e3919a4d1775370519d29",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"bids",
+								"670e3919a4d1775370519d29"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "feedback",
+			"item": [
+				{
+					"name": "feedbacks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/feedbacks?reviewer=60b8c0f3f1d3f72c4c5b3a91&auction=60b8c0f3f1d3f72c4c5b3a90",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"feedbacks"
+							],
+							"query": [
+								{
+									"key": "reviewer",
+									"value": "60b8c0f3f1d3f72c4c5b3a91"
+								},
+								{
+									"key": "auction",
+									"value": "60b8c0f3f1d3f72c4c5b3a90"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "feedback-single",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/feedbacks/670b921c054c5136fb1b3917",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"feedbacks",
+								"670b921c054c5136fb1b3917"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "feedbacks",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"auction\": \"60b8c0f3f1d3f72c4c5b3a90\",\r\n  \"reviewer\": \"60b8c0f3f1d3f72c4c5b3a91\",  \r\n  \"reviewText\": \"The transaction went smoothly, and I am very satisfied with the service provided.\",\r\n  \"rating\": 5\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/feedbacks",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"feedbacks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "feedback",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/feedbacks",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"feedbacks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auction",
+			"item": [
+				{
+					"name": "auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/auctions",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/auctions/670dde3ba1f07aba7b45ed80",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								"670dde3ba1f07aba7b45ed80"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-auction",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"product\": \"670987d336efa9253adfe509\",\r\n    \"timeZone\": \"Asia/Dhaka\",\r\n    \"auctionStart\": \"2024-10-12T14:31:15.258953+06:00\",\r\n    \"auctionEnd\": \"2024-10-12T14:32:15.258953+06:00\",\r\n    \"startPrice\": 100.00, \r\n    \"minBidIncrement\": 5.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/auctions/670a3163704229a2b9fb46fd",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								"670a3163704229a2b9fb46fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-auction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"product\": \"670c7a972d82ee3600507d56\",\r\n    \"timeZone\": \"Asia/Dhaka\",\r\n    \"auctionStart\": \"2024-10-15T09:15:15.258953+06:00\",\r\n    \"auctionEnd\": \"2024-10-15T09:17:15.258953+06:00\",\r\n    \"startPrice\": 100.00,\r\n    \"threshold\": 55.00,\r\n    \"minBidIncrement\": 5.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/auctions",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-auction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{3000}}/api/auctions/670a2f8b704229a2b9fb46dc",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								"670a2f8b704229a2b9fb46dc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sample-auction-times",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"timeZone\": \"Asia/Dhaka\",\r\n  \"auctionStart\": \"2024-10-11T09:27:56.029Z\",\r\n  \"auctionEnd\": \"2024-10-11T09:29:56.029Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/auctions/test-auction-times",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								"test-auction-times"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile",
+			"item": [
+				{
+					"name": "seller-list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/seller-list",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"seller-list"
+							],
+							"query": [
+								{
+									"key": "isActive",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "bidder-list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/bidder-list",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"bidder-list"
+							],
+							"query": [
+								{
+									"key": "isActive",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/my-profile",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-profile",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_bidder}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/my-profile",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"phone\": \"+1234567890\",\r\n  \"gender\": \"Male\",\r\n  \"address\": \"123 Main St, Anytown, USA\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{3000}}/api/profile/my-profile",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-bids",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_bidder}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/my-bids",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-bids"
+							],
+							"query": [
+								{
+									"key": "bidder",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-auctions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/my-auctions",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-auctions"
+							],
+							"query": [
+								{
+									"key": "isFlagged",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{tkn_seller}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{3000}}/api/profile/my-products",
+							"host": [
+								"{{3000}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"my-products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
