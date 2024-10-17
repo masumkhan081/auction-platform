@@ -18,7 +18,7 @@ const profileSchema = new Schema(
       maxlength: [15, "Phone number must be at most 15 characters long."],
       validate: {
         validator: function (value) {
-          return /^\+?[1-9]\d{1,14}$/.test(value); // Validate phone format
+          return /^(?:\+?[1-9]\d{0,14}|0\d{9,14})$/.test(value);
         },
         message: "Phone number must be a valid format.",
       },
@@ -26,8 +26,8 @@ const profileSchema = new Schema(
     gender: {
       type: String,
       enum: {
-        values: ["Male", "Female", "Other"],
-        message: "Gender must be either Male, Female, or Other.",
+        values: ["MALE", "FEMALE", "OTHER"],
+        message: "Gender must be either MALE, FEMALE, or OTHER.",
       },
     },
     address: {

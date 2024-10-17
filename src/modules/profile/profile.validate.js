@@ -23,7 +23,7 @@ const profileCreateSchema = z.object({
       { message: "Phone number must be unique." }
     ),
   */
-  gender: z.enum(["Male", "Female", "Other"]).optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   address: z.string().optional(),
 });
 

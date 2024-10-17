@@ -52,3 +52,28 @@
 {"level":"info","message":"::1 - - [17/Oct/2024:04:57:49 +0000] \"GET /cd HTTP/1.1\" 404 60 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0\"","timestamp":"2024-10-17T04:57:49.579Z"}
 {"level":"info","message":"::1 - - [17/Oct/2024:05:00:25 +0000] \"GET /cd HTTP/1.1\" 404 65 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0\"","timestamp":"2024-10-17T05:00:25.364Z"}
 {"level":"info","message":"::1 - - [17/Oct/2024:05:00:33 +0000] \"GET / HTTP/1.1\" 200 58 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0\"","timestamp":"2024-10-17T05:00:33.580Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:32:00 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 500 156 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:32:00.727Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:35:41 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 198 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:35:41.266Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:38:03 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 400 137 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:38:03.049Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:39:41 +0000] \"POST /api/products HTTP/1.1\" 400 134 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:39:41.977Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:45:23 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 244 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:45:23.259Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:46:16 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 244 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:46:16.230Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:49:04 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 400 137 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:49:04.192Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:51:53 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 244 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:51:53.971Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:52:28 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 500 42 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:52:28.484Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:53:31 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 400 150 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:53:31.979Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:53:44 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 313 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:53:44.386Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:54:25 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 310 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:54:25.655Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:55:05 +0000] \"POST /api/auth/login HTTP/1.1\" 400 47 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:55:05.871Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:55:12 +0000] \"POST /api/auth/login HTTP/1.1\" 400 47 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:55:12.169Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:55:35 +0000] \"POST /api/auth/login HTTP/1.1\" 400 47 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:55:35.042Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:55:43 +0000] \"POST /api/auth/login HTTP/1.1\" 400 47 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:55:43.354Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:55:47 +0000] \"POST /api/auth/login HTTP/1.1\" 400 47 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:55:47.654Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:57:41 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 310 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:57:41.987Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:58:26 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 400 137 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:58:26.340Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:58:52 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 310 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:58:52.112Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:59:03 +0000] \"POST /api/auth/login HTTP/1.1\" 200 338 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:59:03.971Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:59:21 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 313 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:59:21.740Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:12:59:56 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 200 313 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T12:59:56.222Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:13:00:02 +0000] \"POST /api/auth/test-auth-token HTTP/1.1\" 400 137 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T13:00:02.660Z"}
+{"level":"info","message":"::1 - - [17/Oct/2024:13:00:39 +0000] \"GET /api/products HTTP/1.1\" 500 82 \"-\" \"PostmanRuntime/7.42.0\"","timestamp":"2024-10-17T13:00:39.377Z"}

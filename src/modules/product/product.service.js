@@ -38,8 +38,7 @@ async function getProducts(query) {
       filterConditions,
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.product });
-
-    console.log(JSON.stringify(filterConditions));
+ 
 
     const fetchResult = await Product.find(filterConditions)
       .sort(sortConditions)
@@ -61,6 +60,7 @@ async function getProducts(query) {
       data: fetchResult,
     };
   } catch (error) {
+    console.log("service: getProducts: "+error.message)
     return error;
   }
 }

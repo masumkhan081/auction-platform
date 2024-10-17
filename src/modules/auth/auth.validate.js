@@ -18,7 +18,7 @@ const registerSchema = z.object({
     .max(50, { message: "Full name must be at most 50 characters long" }),
 
   phone: z.string().nonempty({ message: "Phone number is required" }),
-  gender: z.enum(["Male", "Female", "Other"]).optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   address: z.string().optional(),
 });
 //

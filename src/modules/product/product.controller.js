@@ -140,8 +140,8 @@ async function updateProduct(req, res) {
         filesInBody > 0
           ? fileUrls
           : req.body[fieldName] === undefined
-            ? updatable.productImages
-            : [],
+          ? updatable.productImages
+          : [],
     };
     console.log("req.body[fieldName]" + req.body[fieldName]);
 
@@ -173,6 +173,7 @@ async function updateProduct(req, res) {
 
 async function getProducts(req, res) {
   try {
+ 
     const result = await productService.getProducts(req.query);
     if (result instanceof Error) {
       sendErrorResponse({ res, error: result, what: operableEntities.product });
@@ -180,6 +181,7 @@ async function getProducts(req, res) {
       sendFetchResponse({ res, data: result, what: operableEntities.product });
     }
   } catch (error) {
+    
     sendErrorResponse({
       res,
       error,

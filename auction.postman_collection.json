@@ -250,7 +250,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"masumkhan081@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"fullName\": \"John Doe\",\r\n    \"phone\": \"1833347848\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"raw": "{\r\n    \"email\": \"masumkhan081@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"fullName\": \"John Doe\",\r\n    \"phone\": \"1833347848\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -278,7 +278,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"masumkhan.axilsoft@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"fullName\": \"MK \",\r\n    \"phone\": \"+1234567890\",\r\n    \"gender\": \"Male\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
+									"raw": "{\r\n    \"email\": \"masumkhan.axilsoft@gmail.com\",\r\n    \"password\":\"123456\",\r\n    \"fullName\": \"MK \",\r\n    \"phone\": \"+1234567890\",\r\n    \"gender\": \"MALE\",\r\n    \"address\": \"123 Main St, Springfield, USA\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1277,7 +1277,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"phone\": \"+1234567890\",\r\n  \"gender\": \"Male\",\r\n  \"address\": \"123 Main St, Anytown, USA\"\r\n}\r\n",
+							"raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"phone\": \"+1234567890\",\r\n  \"gender\": \"MALE\",\r\n  \"address\": \"123 Main St, Anytown, USA\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

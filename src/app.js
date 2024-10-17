@@ -26,13 +26,13 @@ const logger = winston.createLogger({
 });
 
 // need to organize how message format looks like
-app.use(
-  morgan("combined", {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
-  })
-);
+// app.use(
+//   morgan("combined", {
+//     stream: {
+//       write: (message) => logger.info(message.trim()),
+//     },
+//   })
+// );
 
 const allowedOrigins = ["http://localhost:3001", "http://localhost:5173"];
 app.use(
