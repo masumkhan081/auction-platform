@@ -91,7 +91,7 @@ router.post("/test-auth-token", async (req, res) => {
 
     user = await User.create({
       email,
-      password:hashedPw,
+      password: hashedPw,
       role,
       profile: profile.id,
       isVerified: true,
