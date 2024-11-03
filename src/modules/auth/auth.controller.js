@@ -34,7 +34,9 @@ const registerUser = (role) => async (req, res) => {
     }
   } catch (error) {
     console.log("controller: registerUser: " + error.message);
-    res.status(500).json({ success: false, message: "Error processing request" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error processing request" });
   }
 };
 
@@ -95,21 +97,24 @@ async function login(req, res) {
 async function requestAccountRecovery(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (user) {
-      if (user.isVerified) {
-        sendResetMail({
-          user,
-          res,
-          successMessage: "A password reset link has been sent to your email.",
-        });
-      } else {
-        res.status(400).json({ message: "Your account is not verified yet" });
-      }
-    } else {
-      res
+
+    if (!user) {
+      return res
         .status(400)
-        .json({ message: "No account associated with that email" });
+        .json({ message: "No account associated with that email." });
     }
+
+    if (!user.isVerified) {
+      return res
+        .status(400)
+        .json({ message: "Your account is not verified yet." });
+    }
+
+    sendResetMail({
+      user,
+      res,
+      successMessage: "A password reset link has been sent to your email.",
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Interval server error" });
   }
@@ -126,7 +131,13 @@ async function verifyAccountRecovery(req, res) {
 async function updatePassword(req, res) {
   try {
     const { token, email, password, confirmPassword } = req.body;
-    await authService.updatePassword({ res, token, email, password, confirmPassword });
+    await authService.updatePassword({
+      res,
+      token,
+      email,
+      password,
+      confirmPassword,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Interval server error" });
   }

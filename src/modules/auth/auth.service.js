@@ -12,7 +12,7 @@ const { sendErrorResponse } = require("../../utils/responseHandler");
 const crypto = require("crypto-js");
 const { verifyToken, getHashedPassword } = require("../../utils/tokenisation");
 const Profile = require("../profile/profile.model");
-
+//
 async function register({ res, data }) {
   let user;
   let profile;
