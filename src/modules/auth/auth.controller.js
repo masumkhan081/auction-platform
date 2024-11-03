@@ -65,6 +65,37 @@ async function requestEmailVerfication(req, res) {
   }
 }
 
+async function resendOtp(req, res) {
+  try {
+    const { email } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "No user found with this email",
+      });
+    }
+
+    const { success, token } = await sendOTPMail(email);
+
+    return res.status(success ? 200 : 400).json({
+      success,
+      message: success
+        ? "An OTP has been sent to your email for verification"
+        : "Failed to send otp",
+      token,
+    });
+  } catch (error) {
+    console.log("controller: error: " + error.message);
+    res.status(400).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+}
+
 async function verifyEmail(req, res) {
   try {
     await authService.verifyEmail({
@@ -109,12 +140,19 @@ async function requestAccountRecovery(req, res) {
         .status(400)
         .json({ message: "Your account is not verified yet." });
     }
+    const { success } = await sendResetMail(user.email);
 
-    sendResetMail({
-      user,
-      res,
-      successMessage: "A password reset link has been sent to your email.",
-    });
+    if (success) {
+      return res.status(200).json({
+        success,
+        message: "A password reset link has been sent to your mail",
+      });
+    } else {
+      return res.status(400).json({
+        success,
+        message: "Failed to send reset link. Please try again.",
+      });
+    }
   } catch (error) {
     res.status(500).json({ success: false, message: "Interval server error" });
   }
@@ -152,4 +190,5 @@ module.exports = {
   requestAccountRecovery,
   verifyAccountRecovery,
   updatePassword,
+  resendOtp,
 };

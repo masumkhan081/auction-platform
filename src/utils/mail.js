@@ -3,65 +3,64 @@ const nodemailer = require("nodemailer");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
-
+//
 //  send otp to user email for email verification
-const sendOTPMail = ({ user, res, successMessage }) => {
+const sendOTPMail = async (email) => {
   try {
     const generatedOTP = generateOTP();
     //
     const mailOptions = getMailOptions({
-      to: user.email,
+      to: email,
       subject: () => setSubject("verification"),
       html: () => getVerificationMessage(generatedOTP),
     });
+    console.log("mailOptions: " + JSON.stringify(mailOptions));
     //
     const transporter = getTransporter();
-    transporter
-      .jsonMail(mailOptions)
-      .then((result) => {
-        result.accepted.includes(user.email)
-          ? res.status(200).json({
-            message: successMessage,
-            token: getOtpToken({ otp: generatedOTP, email: user.email }),
-          })
-          : res.status(400).json({ message: "Error sending otp to the mail" });
-      })
-      .catch((err) => {
-        console.log("err: sending mail  " + err.message);
-        res.status(500).json({ message: "Error sending otp to the mail" });
-      });
+    const result = await transporter.sendMail(mailOptions);
+
+    const token = getOtpToken({ otp: generatedOTP, email });
+
+    if (result.accepted.includes(email)) {
+      return {
+        success: true,
+        token,
+      };
+    }
+    return {
+      success: false,
+    };
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.log("err-msg: " + error.message);
+    return { success: false, message: error.message };
   }
 };
 
 //  send password reset link to user email
-async function sendResetMail({ user, res, successMessage }) {
+async function sendResetMail(email) {
   //
   try {
     const mailOptions = getMailOptions({
-      to: user.email,
+      to: email,
       subject: () => setSubject("recovery"),
-      html: () => getResetLink(user),
+      html: () => getResetLink(email),
     });
     //
     const transporter = getTransporter();
+    const data = await transporter.sendMail(mailOptions);
     //
-    transporter
-      .jsonMail(mailOptions)
-      .then((result) => {
-        result
-          ? res.status(200).json({ message: successMessage })
-          : res
-            .status(400)
-            .json({ message: "Error sending password reset mail" });
-      })
-      .catch((err) => {
-        console.log("err: sending mail  " + err.message);
-        res.status(500).json({ message: "Error sending password reset mail" });
-      });
+    if (result.accepted.includes(email)) {
+      return {
+        success: true,
+      };
+    }
+    return {
+      success: false,
+    };
+    //
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.log("err: sendResetMail: " + error.message);
+    return { success: false, message: error.message };
   }
 }
 
@@ -77,16 +76,16 @@ const generateOTP = () => {
 const getVerificationMessage = (otp) =>
   `<h4 style="color:blue;text-align:center;">Please copy or type the OTP provided below: <br><br>${otp}`;
 
-function getResetLink(user) {
-  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${config.baseUrl
-    }/auth/recovery/${jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        expireAt: new Date().getTime() + 5 * 60000,
-      },
-      config.tokenSecret
-    )}`;
+function getResetLink(email) {
+  return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${
+    config.baseUrl
+  }/auth/recovery/${jwt.sign(
+    {
+      email: email,
+      expireAt: new Date().getTime() + 5 * 60000,
+    },
+    config.tokenSecret
+  )}`;
 }
 
 // return a relatable email sibject based on purpose of the mail
@@ -94,12 +93,12 @@ const setSubject = (action) =>
   action === "recovery"
     ? "Auction-platform: Recover Your Password"
     : action === "verification"
-      ? "Auction-platform: Verify Your Email"
-      : "";
-
+    ? "Auction-platform: Verify Your Email"
+    : "";
+//
 const getMailOptions = ({ to, subject, html }) => {
   return {
-    from: process.env.jsonER,
+    from: config.senderEmail,
     to,
     subject: subject(),
     html: html(),
@@ -109,29 +108,40 @@ const getMailOptions = ({ to, subject, html }) => {
 const getTransporter = () =>
   nodemailer.createTransport({
     host: config.mailHost,
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: {
-      user: config.hostEmail,
-      pass: config.hostEmailPassword,
+      user: config.senderEmail,
+      pass: config.senderEmailPassword,
     },
     tls: {
-      rejectUnAuthorized: true,
+      rejectUnauthorized: false,
     },
   });
 
 //  create and return a encrypted token holding data: otp and expiration time for it
-const getOtpToken = ({ otp, email }) =>
-  CryptoJS.AES.encrypt(
-    JSON.stringify({
-      email,
-      otp,
-      expireAt: new Date().getTime() + 5 * 60000,
-    }),
+function getOtpToken({ otp, email, phone }) {
+  let data = {
+    otp,
+    expireAt: new Date().getTime() + 5 * 60000,
+  };
+
+  if (email) {
+    data.email = email;
+  }
+  if (phone) {
+    data.phone = phone;
+  }
+
+  return CryptoJS.AES.encrypt(
+    JSON.stringify(data),
     config.tokenSecret
   ).toString();
+}
 
 module.exports = {
   sendResetMail,
   sendOTPMail,
+  generateOTP,
+  getOtpToken,
 };

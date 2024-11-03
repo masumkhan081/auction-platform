@@ -46,7 +46,7 @@ router.post(
 //
 router.post("/login", validateRequest(loginSchema), authController.login);
 
-// router.get("/logout", authController.logout);
+router.post("/resend-otp", authController.resendOtp);
 
 router.post(
   "/recovery",

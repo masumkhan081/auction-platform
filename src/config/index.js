@@ -12,8 +12,8 @@ const config = {
   refreshTokenSecret:
     process.env.JWT_REFRESH_TOKEN_SECRET || "i-act-as-refresh-token-secret",
   tokenHeaderKey: process.env.tokenHeaderKey || "authorization",
-  hostEmail: process.env.HOST_EMAIL || "masumkhan081.3s@gmail.com",
-  hostEmailPassword: process.env.HOST_EMAIL_PASSWORD || "uigctmtbjzdyfxoa",
+  senderEmail: process.env.SENDER_EMAIL || "masumkhan081.3s@gmail.com",
+  senderEmailPassword: process.env.SENDER_EMAIL_PW || "tjfmkpctfemppkwh",
   mailHost: process.env.MAIL_HOST || "smtp.gmail.com",
   saltRounds: 12,
   jwtOptions: {

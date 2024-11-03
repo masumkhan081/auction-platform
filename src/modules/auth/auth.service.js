@@ -27,11 +27,22 @@ async function register({ res, data }) {
       profile: profile.id,
     }).save();
 
-    sendOTPMail({
-      user,
-      res,
-      successMessage: "An OTP has been sent to your email for verification.",
-    });
+    const { success, token } = await sendOTPMail(user.email);
+
+    if (success) {
+      res.status(200).json({
+        success,
+        message: "An OTP has been sent to your email for verification",
+        token,
+      });
+    } else {
+      if (profile) {
+        await Profile.findByIdAndDelete(profile.id);
+      }
+      if (user) {
+        await User.findByIdAndDelete(user.id);
+      }
+    }
   } catch (error) {
     if (profile) {
       await Profile.findByIdAndDelete(profile.id);
@@ -39,7 +50,7 @@ async function register({ res, data }) {
     if (user) {
       await User.findByIdAndDelete(user.id);
     }
-    console.log("err:: " + error.message);
+    console.log("err: register: " + error.message);
     res.status(500).json({ message: "Error creating bidder profile" });
   }
 }
@@ -120,11 +131,13 @@ async function login({ res, email, password }) {
         }
         // email and associated password matched but email not-verified yet
         else {
-          sendOTPMail({
-            user,
-            res,
-            successMessage:
-              "Email not verified yet. We sent an OTP to your email for verification.",
+          const { success, token } = await sendOTPMail(user.email);
+          return res.status(success ? 200 : 400).json({
+            success,
+            message: success
+              ? "Your account is not yet verified. We sent an otp to your mail."
+              : "Your account is not veried yet",
+            token,
           });
         }
       } else {
