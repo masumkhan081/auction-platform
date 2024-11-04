@@ -159,110 +159,17 @@ async function login({ res, email, password }) {
 //   res.status(200).json("Pulled Out Succesfully");
 // }
 //
-async function verifyAccountRecovery({ res, token }) {
+
+async function updatePassword({ email, password }) {
   try {
-    const { success, data } = verifyToken({
-      token,
-      secret: config.tokenSecret,
-    });
-
-    if (!success) {
-      return res.status(401).json({
-        success: false,
-        message: "The provided token is invalid or has changed.",
-      });
-    }
-
-    const { expireAt, email } = data;
-
-    // Check if the token has expired
-    if (new Date().getTime() >= expireAt) {
-      return res.status(400).json({
-        success: false,
-        message: "Password reset link expired.",
-      });
-    }
-
-    // Check if the user exists
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    }
-
-    // If everything is valid, allow password update, would expect the token at update password post req
-    return res.status(200).json({
-      success: true,
-      message: "You can update your password now.",
-      token,
-    });
-  } catch (error) {
-    console.error("Error in verifyAccountRecovery:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error: " + error.message,
-    });
-  }
-}
-
-async function updatePassword({
-  token,
-  email: userEmail,
-  password,
-  confirmPassword,
-  res,
-}) {
-  try {
-    const { expireAt, email } = verifyToken({
-      token,
-      secret: config.tokenSecret,
-    });
-    if (userEmail !== email) {
-      return res.status(400).json({
-        success: false,
-        message: "Token does not match the email provided",
-      });
-    }
-    if (password !== confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Password and confirm password do not match.",
-      });
-    }
-    if (new Date().getTime() < expireAt) {
-      return res.status(400).json({
-        success: false,
-        message: "Timeout. Request for new password reset link",
-      });
-    }
-
-    const hashedPassword = await getHashedPassword(password);
-
-    const updatedUser = await User.findOneAndUpdate(
-      { email: userEmail },
-      { password: hashedPassword },
+    const result = await User.findOneAndUpdate(
+      { email },
+      { password },
       { new: true } // Return the updated document
     );
-
-    // Check if the user was found and updated
-    if (!updatedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "No user found with that email.",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Password updated successfully. You may log in.",
-    });
+    return result;
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return error;
   }
 }
 
@@ -270,6 +177,5 @@ module.exports = {
   register,
   login,
   verifyEmail,
-  verifyAccountRecovery,
   updatePassword,
 };

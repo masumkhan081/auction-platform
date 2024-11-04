@@ -11,7 +11,7 @@ const {
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const { allowedRoles } = require("../../config/constants");
-const { getHashedPassword } = require("../../utils/tokenisation");
+const { getHashedPassword, verifyToken } = require("../../utils/tokenisation");
 const { sendOTPMail, sendResetMail } = require("../../utils/mail");
 const User = require("./auth.model");
 //
@@ -40,44 +40,20 @@ const registerUser = (role) => async (req, res) => {
   }
 };
 
+//   resend - otp
 async function requestEmailVerfication(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (user) {
-      if (user.isVerified) {
-        res.status(200).json({ message: "Account already verified" });
-      } else {
-        sendOTPMail({
-          user,
-          res,
-          successMessage:
-            "An OTP has been sent to your email for verification.",
-        });
-      }
-    } else {
+
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "No user associated with that email",
       });
     }
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Interval server error" });
-  }
-}
-
-async function resendOtp(req, res) {
-  try {
-    const { email } = req.body;
-
-    const existingUser = await User.findOne({ email });
-
-    if (!existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "No user found with this email",
-      });
+    if (user.isVerified) {
+      return res.status(200).json({ message: "Account already verified" });
     }
-
     const { success, token } = await sendOTPMail(email);
 
     return res.status(success ? 200 : 400).json({
@@ -88,11 +64,7 @@ async function resendOtp(req, res) {
       token,
     });
   } catch (error) {
-    console.log("controller: error: " + error.message);
-    res.status(400).json({
-      success: false,
-      message: "Server error.",
-    });
+    res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
 
@@ -147,12 +119,11 @@ async function requestAccountRecovery(req, res) {
         success,
         message: "A password reset link has been sent to your mail",
       });
-    } else {
-      return res.status(400).json({
-        success,
-        message: "Failed to send reset link. Please try again.",
-      });
     }
+    return res.status(400).json({
+      success,
+      message: "Failed to send reset link. Please try again.",
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Interval server error" });
   }
@@ -160,8 +131,44 @@ async function requestAccountRecovery(req, res) {
 
 async function verifyAccountRecovery(req, res) {
   try {
-    await authService.verifyAccountRecovery({ token: req.params.token, res });
+    const { token } = req.params;
+    const { success, payload } = verifyToken(token);
+
+    if (!success) {
+      return res.status(401).json({
+        success: false,
+        message: "The provided token is invalid or has changed.",
+      });
+    }
+
+    const { expireAt, email } = payload;
+
+    // Check if the token has expired
+    if (new Date().getTime() >= expireAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Password reset link expired.",
+      });
+    }
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    console.log("payload:  " + JSON.stringify(user));
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // If everything is valid, allow password update, would expect the token at update password post req
+    return res.status(200).json({
+      success: true,
+      message: "You can update your password now.",
+      token,
+    });
   } catch (error) {
+    console.log("err: verifyRecoveryToken: " + error.message);
     res.status(500).json({ success: false, message: "Interval server error" });
   }
 }
@@ -169,12 +176,55 @@ async function verifyAccountRecovery(req, res) {
 async function updatePassword(req, res) {
   try {
     const { token, email, password, confirmPassword } = req.body;
-    await authService.updatePassword({
-      res,
-      token,
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No user associated with that email",
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "password &  confirm password doesn't match",
+      });
+    }
+
+    const { success, payload } = verifyToken(token);
+    const { expireAt, email: emailFromToken } = payload;
+
+    if (!success || email !== emailFromToken) {
+      return res.status(401).json({
+        success: false,
+        message: "The provided token is invalid or has changed.",
+      });
+    }
+
+    // Check if the token has expired
+    if (new Date().getTime() >= expireAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Password reset link expired.",
+      });
+    }
+
+    const hashedPassword = await getHashedPassword(password);
+
+    const result = await authService.updatePassword({
       email,
-      password,
-      confirmPassword,
+      password: hashedPassword,
+    });
+    if (result instanceof Error) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to update password",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully. You may log in.",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Interval server error" });
@@ -190,5 +240,4 @@ module.exports = {
   requestAccountRecovery,
   verifyAccountRecovery,
   updatePassword,
-  resendOtp,
 };

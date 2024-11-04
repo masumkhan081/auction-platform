@@ -15,7 +15,7 @@ const createToken = ({ payload, expireTime }) => {
 
 const verifyToken = (token) => {
   try {
-    const payload = jwt.verify(token, config.tokenSecret);
+    const payload = jwt.verify(token, config.tokenSecret); 
     return { success: true, payload };
   } catch (error) {
     console.error("Error verifying token:", error.message);

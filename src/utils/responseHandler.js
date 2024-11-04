@@ -34,13 +34,14 @@ function sendCreateResponse({ res, data, what }) {
 }
 
 function sendUpdateResponse({ res, data, what }) {
-  let statusCode = data ? responseMap.update.code : responseMap.notFound.code;
+  const { update, notFound, idNotFound } = responseMap;
+  const isSuccess = Boolean(data);
+  const statusCode = isSuccess ? update.code : notFound.code;
+
   res.status(statusCode).json({
     statusCode,
-    success: data ? true : false,
-    message: data
-      ? responseMap.update.message(what)
-      : responseMap.idNotFound.message(what),
+    success: isSuccess,
+    message: isSuccess ? update.message(what) : idNotFound.message(what),
     data,
   });
 }
@@ -58,39 +59,42 @@ function sendDeletionResponse({ res, data, what }) {
 }
 
 function sendErrorResponse({ res, error, what }) {
-  let statusCode;
-  let message;
+  let statusCode = 500; // Default to server error
+  let message = "An unexpected error occurred";
   let messages = {};
-  let type;
-  //
-  console.log("error:  " + JSON.stringify(error));
-  //  in case of errors based on mongoose schema fields
-  if (error?.name == "ValidationError") {
-    let errors = error.errors;
-    let keys = Object.keys(errors);
+  let type = "unknown-error";
+
+  console.log("Error: ", error);
+
+  // Handle Mongoose validation errors
+  if (error?.name === "ValidationError") {
     message = "Invalid data";
-    for (let i = 0; i < keys.length; i++) {
-      messages[keys[i]] = errors[keys[i]].message;
-    }
-    statusCode = 400;
     type = "mongoose-error";
+    statusCode = 400;
+    for (let [field, errorDetail] of Object.entries(error.errors)) {
+      messages[field] = errorDetail.message;
+    }
   }
-  // Duplicate key error code from db/schema
+  // Handle duplicate key errors
   else if (error?.code === 11000) {
-    statusCode = responseMap.alreadyExist.code;
-    message = responseMap.alreadyExist.message(what); // already exist message relating with the entity
+    statusCode = responseMap.alreadyExist.code || 409;
+    message = responseMap.alreadyExist.message(what);
+    type = "duplicate-key-error";
   }
-  //  Handles the case of - id not found (404), already exist(409), already used(409)
+  // Handle specific error codes (e.g., 404, 409)
   else if (error?.code === 404 || error?.code === 409) {
     statusCode = error.code;
-    message = error.message(what); // message relating with the entity(what)
-    console.log("msg: " + message);
+    message = error.message(what);
+    type = "custom-error";
   }
-  // all the other cases
+  // Handle generic server errors
   else {
-    statusCode = responseMap.serverError.code;
-    message = responseMap.serverError.message;
+    statusCode = responseMap.serverError?.code || 500;
+    message = responseMap.serverError?.message || "Server Error";
+    type = "server-error";
   }
+
+  // Send the error response
   res.status(statusCode).json({
     statusCode,
     success: false,

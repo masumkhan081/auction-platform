@@ -47,7 +47,7 @@ async function sendResetMail(email) {
     });
     //
     const transporter = getTransporter();
-    const data = await transporter.sendMail(mailOptions);
+    const result = await transporter.sendMail(mailOptions);
     //
     if (result.accepted.includes(email)) {
       return {
@@ -79,7 +79,7 @@ const getVerificationMessage = (otp) =>
 function getResetLink(email) {
   return `<h4 style="color:blue;text-align:center;">Please click the link to reset your password: </h4><br><br>${
     config.baseUrl
-  }/auth/recovery/${jwt.sign(
+  }/api/auth/recovery/${jwt.sign(
     {
       email: email,
       expireAt: new Date().getTime() + 5 * 60000,

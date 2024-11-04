@@ -10,10 +10,7 @@ const {
   resetPassSchema,
 } = require("./auth.validate.js");
 const config = require("../../config/index.js");
-const {
-  verifyToken,
-  getHashedPassword,
-} = require("../../utils/tokenisation.js");
+const { getHashedPassword } = require("../../utils/tokenisation.js");
 const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
 const { allowedRoles, operableEntities } = require("../../config/constants.js");
@@ -46,8 +43,6 @@ router.post(
 //
 router.post("/login", validateRequest(loginSchema), authController.login);
 
-router.post("/resend-otp", authController.resendOtp);
-
 router.post(
   "/recovery",
   validateRequest(emailSchema),
@@ -66,36 +61,60 @@ router.post(
 //
 router.post("/test-auth-token", async (req, res) => {
   // no validation added regarding these field values as it's just for generating test token with different roles
-  const { email, role, password, fullName, gender, phone, address } = req.body;
+  const {
+    email,
+    role,
+    password,
+    confirmPassword,
+    fullName,
+    gender,
+    phone,
+    address,
+  } = req.body;
   let user;
   let profile;
   try {
-    profile = await Profile.findOne({ phone });
-    user = await User.findOne({ email, role, password });
-    if (profile || user) {
+    if (!["ADMIN", "SELLER", "BIDDER"].includes(role)) {
       return res.status(400).json({
         success: false,
-        message:
-          "data alrady used. note: this api just to generate token with 3 roles to avoid full auth process if intended",
+        message: "Invalid role. Only 'ADMIN', 'SELLER', 'BIDDER' allowed",
+      });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "password &  confirm password doesn't match",
+      });
+    }
+    if (!email || !phone || !fullName) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, phone, and full name are required",
+      });
+    }
+
+    profile = await Profile.findOne({ phone });
+    user = await User.findOne({ email });
+
+    if (!profile) {
+      profile = await Profile.create({
+        fullName,
+        gender,
+        phone,
+        address,
       });
     }
 
     const hashedPw = await getHashedPassword(password);
-
-    profile = await Profile.create({
-      fullName,
-      gender,
-      phone,
-      address,
-    });
-
-    user = await User.create({
-      email,
-      password: hashedPw,
-      role,
-      profile: profile.id,
-      isVerified: true,
-    });
+    if (!user) {
+      user = await User.create({
+        email,
+        password: hashedPw,
+        role,
+        profile: profile.id,
+        isVerified: true, // test purpose
+      });
+    }
 
     res.status(200).json({
       success: true,

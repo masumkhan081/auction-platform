@@ -6,25 +6,28 @@ const {
   sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
-  sendUpdateResponse, 
+  sendUpdateResponse,
   responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
 const { operableEntities } = require("../../config/constants");
 const productModel = require("../product/product.model");
-// 
+//
 async function getSingleCategory(req, res) {
   try {
     const result = await categoryService.getSingleCategory(req.params.id);
     if (result instanceof Error) {
-      sendErrorResponse({
+      return sendErrorResponse({
         res,
         error: result,
         what: operableEntities.category,
       });
-    } else {
-      sendSingleFetchResponse({ res, data: result, what: operableEntities.category });
     }
+    sendSingleFetchResponse({
+      res,
+      data: result,
+      what: operableEntities.category,
+    });
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.category });
   }
@@ -32,18 +35,14 @@ async function getSingleCategory(req, res) {
 
 async function createProductCategory(req, res) {
   try {
-    const { name, description } = req.body;
-    const addResult = await Category.create({
-      name,
-      description,
-    });
+    const addResult = await categoryService.createCategory(req.body);
+
     sendCreateResponse({
       res,
       what: operableEntities.category,
       data: addResult,
     });
   } catch (error) {
-    
     sendErrorResponse({ res, error, what: operableEntities.category });
   }
 }
@@ -54,19 +53,12 @@ async function updateCategory(req, res) {
       id: req.params.id,
       data: req.body,
     });
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.category,
-      });
-    } else {
-      sendUpdateResponse({
-        res,
-        data: result,
-        what: operableEntities.category,
-      });
-    }
+
+    return sendUpdateResponse({
+      res,
+      data: result,
+      what: operableEntities.category,
+    });
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.category });
   }
@@ -75,15 +67,7 @@ async function updateCategory(req, res) {
 async function getCategories(req, res) {
   try {
     const result = await categoryService.getCategories(req.query);
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.category,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.category });
-    }
+    sendFetchResponse({ res, data: result, what: operableEntities.category });
   } catch (error) {
     sendErrorResponse({
       res,
@@ -92,35 +76,28 @@ async function getCategories(req, res) {
     });
   }
 }
+
 //
 async function deleteCategory(req, res) {
   try {
     const isUsed = await productModel.countDocuments({
       category: req.params.id,
     });
-    
-    if (isUsed === 0) {
-      const result = await categoryService.deleteCategory(req.params.id);
-      if (result instanceof Error) {
-        sendErrorResponse({
-          res,
-          error: result,
-          what: operableEntities.category,
-        });
-      } else {
-        sendDeletionResponse({
-          res,
-          data: result,
-          what: operableEntities.category,
-        });
-      }
-    } else {
-      sendErrorResponse({
+
+    if (isUsed > 0) {
+      return sendErrorResponse({
         res,
         error: responseMap.alreadyUsed,
         what: operableEntities.category,
       });
     }
+
+    const result = await categoryService.deleteCategory(req.params.id);
+    return sendDeletionResponse({
+      res,
+      data: result,
+      what: operableEntities.category,
+    });
   } catch (error) {
     sendErrorResponse({
       res,
@@ -129,6 +106,7 @@ async function deleteCategory(req, res) {
     });
   }
 }
+
 //
 module.exports = {
   createProductCategory,

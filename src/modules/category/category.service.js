@@ -4,13 +4,13 @@ const Category = require("./category.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
 //
 
+async function createCategory(data) {
+  const addResult = await Category.create(data);
+  return addResult;
+}
+
 async function getSingleCategory(updatableId) {
-  try {
-    const getResult = await Category.findById(updatableId);
-    return getResult;
-  } catch (error) {
-    return error;
-  }
+  return Category.findById(updatableId);
 }
 
 async function getCategories(query) {
@@ -48,32 +48,24 @@ async function getCategories(query) {
 }
 //
 async function updateCategory({ id, data }) {
-  try {
-    const { name, description } = data;
-    const updateResult = await Category.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-      },
-      { new: true }
-    );
-    return updateResult;
-  } catch (error) {
-    return error;
-  }
+  const { name, description } = data;
+  const updateResult = await Category.findByIdAndUpdate(
+    id,
+    {
+      name,
+      description,
+    },
+    { new: true }
+  );
+  return updateResult;
 }
 //
 async function deleteCategory(id) {
-  try {
-    const deleteResult = await Category.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
-    return error;
-  }
+  return await Category.findByIdAndDelete(id);
 }
 
 module.exports = {
+  createCategory,
   deleteCategory,
   getCategories,
   getSingleCategory,
