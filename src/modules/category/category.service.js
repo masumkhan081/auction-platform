@@ -60,9 +60,7 @@ async function updateCategory({ id, data }) {
   return updateResult;
 }
 //
-async function deleteCategory(id) {
-  return await Category.findByIdAndDelete(id);
-}
+const deleteCategory = async (id) => await Category.findByIdAndDelete(id);
 
 module.exports = {
   createCategory,

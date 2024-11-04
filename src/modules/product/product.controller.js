@@ -4,6 +4,7 @@ const {
   sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
+  sendSingleFetchResponse,
   sendUpdateResponse,
   responseMap,
 } = require("../../utils/responseHandler");
@@ -17,15 +18,16 @@ const {
 } = require("../../utils/fileHandle");
 const Category = require("../category/category.model");
 //
+// 
 async function createProduct(req, res) {
   try {
     const { productName, category, productDetail } = req.body;
+    const { name: fieldName, maxCount } =
+      fieldsMap[operableEntities.product][0];
 
-    let fileUrls = [];
-    const fieldName = fieldsMap[operableEntities.product][0].name;
-    const maxCount = fieldsMap[operableEntities.product][0].maxCount;
     const filesInBody = req?.files?.[fieldName]?.length || 0;
 
+    // Check if the category exists
     const categoryExist = await Category.findById(category);
     if (!categoryExist) {
       return res
@@ -42,24 +44,20 @@ async function createProduct(req, res) {
     }
 
     // Handle file uploads
+    let fileUrls = [];
     if (req?.files?.[fieldName]) {
-      for (const file of req.files[fieldName]) {
-        try {
-          const fileUrl = await uploadHandler({ what: fieldName, file });
-          fileUrls.push(fileUrl);
-        } catch (error) {
-          console.error("File upload error:", error.message);
-          // Remove previously uploaded files
-          await Promise.all(
-            fileUrls.map((url) => removeFile({ fileUrl: url }))
-          );
-          return res.status(500).json({
-            success: false,
-            message: "Error uploading files. Please try again.",
-          });
-        }
+      fileUrls = await uploadHandler({
+        files: req.files[fieldName],
+        fieldName,
+      });
+
+      // If fileUrls is null, it indicates an error in file upload
+      if (fileUrls === null) {
+        return res.status(500).json({
+          success: false,
+          message: "Error uploading files. Please try again.",
+        });
       }
-      console.log(JSON.stringify(fileUrls));
     }
 
     // Create product
@@ -174,11 +172,7 @@ async function updateProduct(req, res) {
 async function getProducts(req, res) {
   try {
     const result = await productService.getProducts(req.query);
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.product });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.product });
-    }
+    sendS({ res, data: result, what: operableEntities.product });
   } catch (error) {
     sendErrorResponse({
       res,
@@ -191,54 +185,42 @@ async function getProducts(req, res) {
 async function getSingleProduct(req, res) {
   try {
     const result = await productService.getSingleProduct(req.params.id);
-
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.product });
-    } else if (!result) {
-      console.log("going this way --");
-      sendErrorResponse({
-        res,
-        error: responseMap.idNotFound,
-        what: operableEntities.product,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.product });
-    }
+    sendSingleFetchResponse({
+      res,
+      data: result,
+      what: operableEntities.product,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error fetching the product" });
+    console.log("err: getSingleProduct: " + error.message);
+    sendErrorResponse({ res, error: result, what: operableEntities.product });
   }
 }
 //
 async function deleteProduct(req, res) {
   try {
-    const isUsed = await Auction.countDocuments({
-      product: req.params.id,
-    });
+    const isUsed = await Auction.countDocuments({ product: req.params.id });
 
-    if (isUsed === 0) {
-      const result = await productService.deleteProduct(req.params.id);
-      if (result instanceof Error) {
-        sendErrorResponse({
-          res,
-          error: result,
-          what: operableEntities.product,
-        });
-      } else {
-        sendDeletionResponse({
-          res,
-          data: result,
-          what: operableEntities.product,
-        });
-      }
-    } else {
-      sendErrorResponse({
+    if (isUsed > 0) {
+      return sendErrorResponse({
         res,
         error: responseMap.alreadyUsed,
         what: operableEntities.product,
       });
     }
+
+    const result = await productService.deleteProduct(req.params.id);
+    sendDeletionResponse({
+      res,
+      data: result,
+      what: operableEntities.product,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error deleting product" });
+    console.error("Controller: deleteProduct:", error.message); // Log the error
+    sendErrorResponse({
+      res,
+      error,
+      what: operableEntities.product,
+    });
   }
 }
 //

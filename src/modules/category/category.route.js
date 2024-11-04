@@ -11,15 +11,15 @@ const { allowedRoles } = require("../../config/constants");
 //
 router.post(
   "/",
-  validateRequest(categoryPostSchema),
   accessControl([allowedRoles.admin]),
+  validateRequest(categoryPostSchema),
   categoryController.createProductCategory
 );
 //
 router.patch(
   "/:id",
-  validateRequest(categoryPatchSchema),
   accessControl([allowedRoles.admin]),
+  validateRequest(categoryPatchSchema),
   categoryController.updateCategory
 );
 //

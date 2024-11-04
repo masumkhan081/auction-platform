@@ -8,12 +8,8 @@ const {
 } = require("../../utils/responseHandler");
 
 async function createProduct(data) {
-  try {
-    const addResult = await Product.create(data);
-    return addResult;
-  } catch (error) {
-    return error;
-  }
+  const addResult = await Product.create(data);
+  return addResult;
 }
 //
 
@@ -38,7 +34,6 @@ async function getProducts(query) {
       filterConditions,
       sortConditions,
     } = getSearchAndPagination({ query, what: operableEntities.product });
- 
 
     const fetchResult = await Product.find(filterConditions)
       .sort(sortConditions)
@@ -60,7 +55,7 @@ async function getProducts(query) {
       data: fetchResult,
     };
   } catch (error) {
-    console.log("service: getProducts: "+error.message)
+    console.log("service: getProducts: " + error.message);
     return error;
   }
 }
@@ -76,14 +71,7 @@ async function updateProduct({ id, data }) {
   }
 }
 //
-async function deleteProduct(id) {
-  try {
-    const deleteResult = await Product.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
-    return error;
-  }
-}
+const deleteProduct = async (id) => await Product.findByIdAndDelete(id);
 
 async function updateApprovalByAdmin({ id, data }) {
   try {

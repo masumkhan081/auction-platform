@@ -13,7 +13,6 @@ const {
 //
 router.get("/", productController.getProducts);
 router.get("/:id", productController.getSingleProduct);
-//
 router.post(
   "/",
   accessControl([allowedRoles.seller]),
@@ -21,7 +20,6 @@ router.post(
   validateRequest(createProductSchema),
   productController.createProduct
 );
-//
 router.patch(
   "/:id",
   accessControl([allowedRoles.seller]),
@@ -29,13 +27,11 @@ router.patch(
   validateRequest(updateProductSchema),
   productController.updateProduct
 );
-//
 router.delete(
   "/:id",
   accessControl([allowedRoles.admin, allowedRoles.seller]),
   productController.deleteProduct // after certain condition apply
 );
-//
 router.patch(
   "/admin-approval/:id",
   accessControl([allowedRoles.admin]),

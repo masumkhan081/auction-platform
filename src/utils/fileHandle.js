@@ -10,7 +10,7 @@ const storageMap = {
   productImages: {
     destination: "../../public/product-images",
     maxUploadSize: 1024 * 1024 * 3,
-    acceptedFileTypes: /jpeg|jpg|png|gif|webp|svg/,
+    fileTypes: /jpeg|jpg|png|gif|webp|svg/,
     saveDirectory: "public/product-images/",
     unlinkDirectory: "../../public/product-images",
   },
@@ -24,41 +24,61 @@ const fieldsMap = {
 //
 const uploadProductImages = upload.fields(fieldsMap[operableEntities.product]);
 //
-async function uploadHandler({ type, what, file }) {
-  try {
-    const uploadDir = path.join(__dirname, storageMap[what].destination);
-    try {
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir);
-      }
-    } catch (err) {
-      console.log("inner catch");
-      console.error(err);
-    }
-    const readData = fs.readFileSync(file.path);
-    // unique name generation
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const basename = path.basename(file.originalname, ext);
-    const newFilePath = `${storageMap[what].saveDirectory}${basename}-${timestamp}${ext}`;
-    //
-    const writeData = fs.writeFileSync(newFilePath, readData);
-    return newFilePath;
-  } catch (error) {
-    console.log("uploadHandler: error processing file: " + error.message);
-    throw new Error("File upload failed");
+async function uploadHandler({ files, fieldName }) {
+  if (!files || files.length === 0) return []; // Return empty array if no files to upload
+
+  const fileUrls = [];
+  const { destination, fileTypes } = storageMap[fieldName];
+  const uploadDir = path.join(__dirname, destination);
+
+  // Ensure the upload directory exists
+  await fs.promises.mkdir(uploadDir, { recursive: true }); // Create directory if it doesn't exist
+
+  // Validate file types first
+  const invalidFiles = files.filter(
+    (file) => !checkFileType({ file, fileTypes })
+  );
+
+  if (invalidFiles.length > 0) {
+    console.error(
+      "Error: One or more files have an invalid type. Accepted types: jpeg, jpg, png, gif, webp, svg"
+    );
+    throw new Error("Invalid file types detected.");
   }
+
+  // Proceed with reading and writing files since all file types are valid
+  for (const file of files) {
+    try {
+      const readData = await fs.promises.readFile(file.path); // Read file data
+      const timestamp = Date.now();
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      const newFilePath = path.join(
+        storageMap[fieldName].saveDirectory,
+        `${basename}-${timestamp}${ext}`
+      );
+
+      await fs.promises.writeFile(newFilePath, readData); // Write file to the new path
+      fileUrls.push(newFilePath); // Add the file URL to the array
+    } catch (error) {
+      console.error("File upload error:", error.message);
+      await Promise.all(fileUrls.map((url) => removeFile({ fileUrl: url })));
+      throw new Error(
+        "File upload failed. All uploaded files have been removed."
+      );
+    }
+  }
+
+  return fileUrls; // Return successfully uploaded file URLs
 }
-function checkFileType({ file, fileTypes, cb }) {
+
+function checkFileType({ file, fileTypes }) {
   const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = fileTypes.test(file.mimetype);
 
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb("Error: Images only! (jpeg, jpg, png, gif, webp, svg)");
-  }
+  return mimetype && extname; // Return true if both checks pass, false otherwise
 }
+
 async function removeFile({ fileUrl }) {
   try {
     const deleteUrl = path.join(__dirname, `../../${fileUrl}`);
