@@ -30,7 +30,7 @@ router.get(
   accessControl([allowedRoles.admin]),
   profileController.getBidderList
 );
-// 
+//
 router.get(
   "/seller-list",
   accessControl([allowedRoles.admin]),

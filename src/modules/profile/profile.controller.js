@@ -16,21 +16,24 @@ const { default: mongoose } = require("mongoose");
 //
 async function getProfileDetail(req, res) {
   try {
+    // Validate the user ID from the request
     if (!mongoose.Types.ObjectId.isValid(req.userId)) {
-      return serverError(res);
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID." });
     }
+    // Fetch profile details
     const result = await profileService.getProfileDetail(req.userId);
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.profile });
-    } else {
-      sendSingleFetchResponse({
-        res,
-        data: result,
-        what: operableEntities.profile,
-      });
-    }
+
+    // Successfully fetched profile details
+    return sendSingleFetchResponse({
+      res,
+      data: result,
+      what: operableEntities.profile,
+    });
   } catch (error) {
-    serverError(res);
+    console.error("err: getProfileDetail:", error.message);
+    return serverError(res);
   }
 }
 //
@@ -44,11 +47,8 @@ async function updateProfile(req, res) {
       id: req.userId,
       data: req.body,
     });
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.profile });
-    } else {
-      sendUpdateResponse({ res, data: result, what: operableEntities.profile });
-    }
+
+    sendUpdateResponse({ res, data: result, what: operableEntities.profile });
   } catch (error) {
     console.log("controller : updateProfile: " + error.message);
     serverError(res);
@@ -62,11 +62,7 @@ async function deleteProfile(req, res) {
       role: req.role,
     });
 
-    if (result instanceof Error) {
-      sendErrorResponse({ res, error: result, what: operableEntities.profile });
-    } else {
-      sendUpdateResponse({ res, data: result, what: operableEntities.profile });
-    }
+    sendUpdateResponse({ res, data: result, what: operableEntities.profile });
   } catch (error) {
     console.log("controller : deleteProfile: " + error.message);
     serverError(res);
@@ -80,14 +76,13 @@ async function getBidderList(req, res) {
       role: allowedRoles.bidder,
     });
     if (result instanceof Error) {
-      sendErrorResponse({
+      return sendErrorResponse({
         res,
         error: result,
         what: operableEntities.bidder,
       });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.bidder });
     }
+    sendFetchResponse({ res, data: result, what: operableEntities.bidder });
   } catch (error) {
     sendErrorResponse({
       res,
@@ -104,14 +99,13 @@ async function getSellerList(req, res) {
       role: allowedRoles.seller,
     });
     if (result instanceof Error) {
-      sendErrorResponse({
+      return sendErrorResponse({
         res,
         error: result,
         what: operableEntities.seller,
       });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.seller });
     }
+    sendFetchResponse({ res, data: result, what: operableEntities.seller });
   } catch (error) {
     sendErrorResponse({
       res,

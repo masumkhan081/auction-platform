@@ -13,15 +13,7 @@ async function createProduct(data) {
 }
 //
 
-async function getSingleProduct(id) {
-  try {
-    const fetchResult = await Product.findById(id).populate("category");
-    console.log(JSON.stringify(fetchResult));
-    return fetchResult;
-  } catch (error) {
-    return error;
-  }
-}
+const getSingleProduct = (id) => Product.findById(id).populate("category");
 
 async function getProducts(query) {
   try {
@@ -60,32 +52,13 @@ async function getProducts(query) {
   }
 }
 //
-async function updateProduct({ id, data }) {
-  try {
-    const editResult = await Product.findByIdAndUpdate(id, data, {
-      new: true,
-    });
-    return editResult;
-  } catch (error) {
-    return error;
-  }
-}
+const updateProduct = ({ id, data }) =>
+  Product.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+
 //
 const deleteProduct = async (id) => await Product.findByIdAndDelete(id);
-
-async function updateApprovalByAdmin({ id, data }) {
-  try {
-    const { adminApproval, reviewNote } = data;
-    const editResult = await Product.findByIdAndUpdate(
-      id,
-      { adminApproval, reviewNote },
-      { new: true }
-    );
-    return editResult;
-  } catch (error) {
-    return error;
-  }
-}
 
 module.exports = {
   createProduct,
@@ -93,5 +66,4 @@ module.exports = {
   deleteProduct,
   getProducts,
   getSingleProduct,
-  updateApprovalByAdmin,
 };

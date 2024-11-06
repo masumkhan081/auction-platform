@@ -22,7 +22,7 @@ router.post(
 );
 router.patch(
   "/:id",
-  accessControl([allowedRoles.seller]),
+  accessControl([allowedRoles.seller,allowedRoles.admin]),
   uploadProductImages,
   validateRequest(updateProductSchema),
   productController.updateProduct
@@ -31,12 +31,6 @@ router.delete(
   "/:id",
   accessControl([allowedRoles.admin, allowedRoles.seller]),
   productController.deleteProduct // after certain condition apply
-);
-router.patch(
-  "/admin-approval/:id",
-  accessControl([allowedRoles.admin]),
-  validateRequest(adminApprovalSchema),
-  productController.updateApprovalByAdmin
 );
 //
 module.exports = router;

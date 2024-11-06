@@ -8,7 +8,7 @@ const {
   sendUpdateResponse,
   responseMap,
 } = require("../../utils/responseHandler");
-const { operableEntities } = require("../../config/constants");
+const { operableEntities, allowedRoles } = require("../../config/constants");
 const Product = require("./product.model");
 const Auction = require("../auction/auction.model");
 const {
@@ -17,8 +17,13 @@ const {
   removeFile,
 } = require("../../utils/fileHandle");
 const Category = require("../category/category.model");
+const validateData = require("../../middlewares/validateData");
+const {
+  adminApprovalSchema,
+  updateProductSchema,
+} = require("./product.validate");
 //
-// 
+//
 async function createProduct(req, res) {
   try {
     const { productName, category, productDetail } = req.body;
@@ -26,6 +31,18 @@ async function createProduct(req, res) {
       fieldsMap[operableEntities.product][0];
 
     const filesInBody = req?.files?.[fieldName]?.length || 0;
+
+    // Check if product name is unique per seller
+    const existingProduct = await Product.findOne({
+      productName,
+      seller: req.userId,
+    });
+    if (existingProduct) {
+      return res.status(400).json({
+        success: false,
+        message: "You already have a product with this name.",
+      });
+    }
 
     // Check if the category exists
     const categoryExist = await Category.findById(category);
@@ -83,80 +100,103 @@ async function createProduct(req, res) {
 //
 async function updateProduct(req, res) {
   try {
-    const fieldName = fieldsMap[operableEntities.product][0].name; // Assuming single field for now
-    const updatable = await Product.findById(req.params.id);
-
-    if (!updatable) {
-      return sendErrorResponse({
-        res,
-        error: responseMap.idNotFound,
-        what: operableEntities.product,
-      });
-    }
-
-    const maxCount = fieldsMap[operableEntities.product][0].maxCount;
-    const filesInBody = req?.files?.[fieldName]?.length || 0;
-
-    // Check for file upload limit
-    if (filesInBody > maxCount) {
+    const targetProduct = await Product.findById(req.params.id);
+    let update = {};
+    //
+    if (!targetProduct) {
       return res.status(400).json({
         success: false,
-        message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
+        message: "Target product not found.",
       });
     }
+    //
+    const { role } = req;
+    const { productName, category, productDetail, adminApproval, reviewNote } =
+      req.body;
 
-    let fileUrls = [];
+    if (role === allowedRoles.admin) {
+      const { success, message, messages } = validateData({
+        schema: adminApprovalSchema,
+        data: { adminApproval, reviewNote },
+      });
+      if (!success) {
+        return res.status(400).json({
+          success: false,
+          message,
+          messages,
+        });
+      }
 
-    // Handle file uploads
-    if (req?.files?.[fieldName]) {
-      for (const file of req.files[fieldName]) {
-        try {
-          const fileUrl = await uploadHandler({ what: fieldName, file });
-          fileUrls.push(fileUrl);
-        } catch (error) {
-          console.error("File upload error:", error.message);
-          // Remove previously uploaded files if any
-          await Promise.all(
-            fileUrls.map((url) => removeFile({ fileUrl: url }))
-          );
+      update.adminApproval = adminApproval || targetProduct.adminApproval;
+      update.reviewNote = reviewNote || targetProduct.reviewNote;
+    }
+    //
+    if (role === allowedRoles.seller) {
+      const { success, message, messages } = validateData({
+        schema: updateProductSchema,
+        data: { productName, category, productDetail },
+      });
+      //
+      if (!success) {
+        return res.status(400).json({
+          success: false,
+          message,
+          messages,
+        });
+      }
+
+      const { name: fieldName, maxCount } =
+        fieldsMap[operableEntities.product][0];
+
+      const filesInBody = req?.files?.[fieldName]?.length || 0;
+
+      // Check for file upload limit
+      if (filesInBody > maxCount) {
+        return res.status(400).json({
+          success: false,
+          message: `Exceeded maximum file upload limit. Allowed: ${maxCount}, Received: ${filesInBody}.`,
+        });
+      }
+
+      // Handle file uploads
+      let fileUrls = [];
+      if (req?.files?.[fieldName]) {
+        fileUrls = await uploadHandler({
+          files: req.files[fieldName],
+          fieldName,
+        });
+
+        // If fileUrls is null, it indicates an error in file upload
+        if (fileUrls === null) {
           return res.status(500).json({
             success: false,
             message: "Error uploading files. Please try again.",
           });
         }
+
+        await Promise.all(
+          targetProduct.productImages.map((url) => removeFile({ fileUrl: url }))
+        );
       }
-    }
 
-    const { productName, category, productDetail } = req.body;
+      // Prepare fields to update
 
-    // Prepare fields to update
-    const updatedFields = {
-      productName: productName || updatable.productName,
-      category: category || updatable.category,
-      productDetail: productDetail || updatable.productDetail,
-      productImages:
+      update.productName = productName || targetProduct.productName;
+      update.category = category || targetProduct.category;
+      update.productDetail = productDetail || targetProduct.productDetail;
+      update.productImages =
         filesInBody > 0
           ? fileUrls
           : req.body[fieldName] === undefined
-          ? updatable.productImages
-          : [],
-    };
-    console.log("req.body[fieldName]" + req.body[fieldName]);
-
-    // images are expected to be uploaded whether newly added or old - everytime there's a patch
-    // so field is present , no file present means - all images to be deleted
-    if (req.body[fieldName] !== undefined) {
-      await Promise.all(
-        updatable.productImages.map((url) => removeFile({ fileUrl: url }))
-      );
+          ? targetProduct.productImages
+          : [];
     }
 
     // Update product
-    const editResult = await Product.findByIdAndUpdate(
-      req.params.id,
-      updatedFields,
-      { new: true }
-    );
+    const editResult = await productService.updateProduct({
+      id: req.params.id,
+      data: update,
+    });
 
     sendUpdateResponse({
       res,
@@ -172,7 +212,7 @@ async function updateProduct(req, res) {
 async function getProducts(req, res) {
   try {
     const result = await productService.getProducts(req.query);
-    sendS({ res, data: result, what: operableEntities.product });
+    sendFetchResponse({ res, data: result, what: operableEntities.product });
   } catch (error) {
     sendErrorResponse({
       res,
@@ -201,10 +241,9 @@ async function deleteProduct(req, res) {
     const isUsed = await Auction.countDocuments({ product: req.params.id });
 
     if (isUsed > 0) {
-      return sendErrorResponse({
-        res,
-        error: responseMap.alreadyUsed,
-        what: operableEntities.product,
+      return res.status(400).json({
+        success: false,
+        message: "Can't delete product that used in auction.",
       });
     }
 
@@ -224,31 +263,6 @@ async function deleteProduct(req, res) {
   }
 }
 //
-async function updateApprovalByAdmin(req, res) {
-  try {
-    // console.log("role from updateStatusBySeller : " + req.role);
-    const updateResult = await productService.updateApprovalByAdmin({
-      id: req.params.id,
-      data: req.body,
-    });
-
-    if (updateResult instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: updateResult,
-        what: operableEntities.product,
-      });
-    } else {
-      sendUpdateResponse({
-        res,
-        data: updateResult,
-        what: operableEntities.product,
-      });
-    }
-  } catch (error) {
-    res.status(400).json({ message: "Error updating status" });
-  }
-}
 
 //
 module.exports = {
@@ -256,6 +270,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProducts,
-  updateApprovalByAdmin,
   getSingleProduct,
 };

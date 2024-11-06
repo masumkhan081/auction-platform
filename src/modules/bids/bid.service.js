@@ -23,15 +23,7 @@ async function createBid(data) {
   }
 }
 //
-async function getSingleBid(updatableId) {
-  try {
-    const getResult = await Bid.findById(updatableId);
-    return getResult;
-  } catch (error) {
-    console.log(" Service: getSingleBid " + error.message);
-    return error;
-  }
-}
+const getSingleBid = async (updatableId) => Bid.findById(updatableId);
 
 async function getBids(query) {
   try {
@@ -79,25 +71,11 @@ async function getBids(query) {
   }
 }
 //
-async function updateBid({ id, data }) {
-  try {
-    const updateResult = await Bid.findByIdAndUpdate(id, data, { new: true });
-    return updateResult;
-  } catch (error) {
-    console.log(" Service: updateBid " + error.message);
-    return error;
-  }
-}
+const updateBid = async ({ id, data }) =>
+  Bid.findByIdAndUpdate(id, data, { new: true });
+
 //
-async function deleteBid(id) {
-  try {
-    const deleteResult = await Bid.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
-    console.log(" Service: deleteBid " + error.message);
-    return error;
-  }
-}
+const deleteBid = async (id) => Bid.findByIdAndDelete(id);
 
 module.exports = {
   createBid,

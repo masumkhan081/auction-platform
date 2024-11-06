@@ -1,8 +1,7 @@
 const { z } = require("zod");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-
-// 
+//
 const createProductSchema = z.object({
   productName: z
     .string()
@@ -31,7 +30,7 @@ const createProductSchema = z.object({
 
 const adminApprovalSchema = z.object({
   adminApproval: z
-    .enum(["APPROVED", "DISAPPROVED", "CANCELLED", "PENDING"], {
+    .enum(["APPROVED", "DISAPPROVED", "CANCELLED"], {
       invalid_type_error: "Approval status must be one of the specified values",
     })
     .optional(),

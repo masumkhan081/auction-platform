@@ -13,6 +13,7 @@ auction created by seller ( product approved by admin), and find a winner after 
 3. check all zod schema's
 4. check all mongoose schema
 5. check all delete
+6. check search and filters
 
 # Description (Role Wise)
 

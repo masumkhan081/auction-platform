@@ -38,43 +38,56 @@ async function createBid(req, res) {
     // Fetch the auction details
     const targetAuction = await Auction.findById(auction);
 
-    // Check if auction exists
+    // Check if the auction exists
     if (!targetAuction) {
       return res.status(404).json({
         success: false,
         message: "Auction not found.",
       });
     }
-    // Ensure the auction status is 'OPEN'
+
+    // Ensure the auction is open for bidding
     if (targetAuction.status !== "OPEN") {
       return res.status(400).json({
         success: false,
-        message: "The auction is not open for bidding",
-      });
-    }
-    // Check if the bid amount is higher than the current price + minBidIncrement
-    const requiredBidAmount =
-      targetAuction.currentHighest + targetAuction.minBidIncrement;
-    if (bidAmount < requiredBidAmount) {
-      return res.status(400).json({
-        success: false,
-        message: `Minimum available bid at this moment: ${requiredBidAmount}. CHB:(${targetAuction.currentHighest}) + MBI:(${targetAuction.minBidIncrement}) `,
+        message: "The auction is not open for bidding.",
       });
     }
 
-    const result = await bidService.createBid({
+    // Calculate the minimum required bid amount
+    const minimumBidAmount =
+      targetAuction.currentHighest + targetAuction.minBidIncrement;
+    if (bidAmount < minimumBidAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Your bid must be at least ${minimumBidAmount}. Current highest bid: ${targetAuction.currentHighest}, Minimum bid increment: ${targetAuction.minBidIncrement}.`,
+      });
+    }
+
+    // Create the bid
+    const newBid = await bidService.createBid({
       auction,
       bidder: req.userId,
       bidAmount,
       isFlagged: bidAmount < targetAuction.startPrice * 0.5,
     });
-    console.log(JSON.stringify(result));
-    sendCreateResponse({ res, data: result, what: operableEntities.bid });
+
+    console.log("New bid created:", JSON.stringify(newBid));
+    return sendCreateResponse({
+      res,
+      data: newBid,
+      what: operableEntities.bid,
+    });
   } catch (error) {
-    console.log("error: " + error.message);
-    sendErrorResponse({ res, error, what: operableEntities.bid });
+    console.error("Error in createBid:", error.message);
+    return sendErrorResponse({
+      res,
+      error: "An error occurred while creating the bid.",
+      what: operableEntities.bid,
+    });
   }
 }
+
 //  - can't se any use of it
 async function updateBid(req, res) {
   try {
