@@ -14,6 +14,9 @@ auction created by seller ( product approved by admin), and find a winner after 
 4. check all mongoose schema
 5. check all delete
 6. check search and filters
+7. explaining enum
+8. logging
+9. refresh token
 
 # Description (Role Wise)
 

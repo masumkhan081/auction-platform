@@ -22,7 +22,7 @@ router.post(
 );
 router.patch(
   "/:id",
-  accessControl([allowedRoles.seller,allowedRoles.admin]),
+  accessControl([allowedRoles.seller, allowedRoles.admin]),
   uploadProductImages,
   validateRequest(updateProductSchema),
   productController.updateProduct

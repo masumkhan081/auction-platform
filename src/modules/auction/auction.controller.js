@@ -18,7 +18,6 @@ const { default: mongoose } = require("mongoose");
 //
 async function createAuction(req, res) {
   try {
-    //
     const {
       product,
       auctionStart,
@@ -28,94 +27,93 @@ async function createAuction(req, res) {
       startPrice,
       minBidIncrement,
     } = req.body;
-    //
-    const {
-      success,
-      message,
-      auctionStart: convertedStart,
-      auctionEnd: convertedEnd,
-    } = validateAndConvertToUTC({ auctionStart, auctionEnd, timeZone });
-    //
-    const targetProduct = await Product.findById(product);
-    //
-    if (!targetProduct) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found.",
-      });
-    } else if (["SOLD", "ON_AUCTION"].includes(targetProduct.status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Target product is already ${targetProduct.status}.`,
-      });
-    } else if (targetProduct.adminApproval !== "APPROVED") {
-      return res.status(400).json({
-        success: false,
-        message: `The product must be approved to set on auction. Current status: ${targetProduct.adminApproval}.`,
-      });
-    } else if (!success) {
-      return res.status(400).json({
-        success,
-        message,
-      });
-    } else if (threshold > startPrice) {
-      return res.status(400).json({
-        success: false,
-        message: "threshold can't be higher than starting price",
-      });
-    }
-    // this is not realistic but this is the least and mendatory validation
-    else if (minBidIncrement > threshold / 3) {
-      return res.status(400).json({
-        success: false,
-        message: "Minimum bid increment must be 1/3 of threshold value",
-      });
-    } else {
-      req.body.auctionStart = convertedStart;
-      req.body.auctionEnd = convertedEnd;
 
-      const addResult = await auctionService.createAuction({
-        ...req.body,
-        seller: req.userId,
+    // Validate and convert dates
+    const dateValidationResult = validateAndConvertToUTC({
+      auctionStart,
+      auctionEnd,
+      timeZone,
+    });
+
+    if (!dateValidationResult.success) {
+      return res
+        .status(400)
+        .json({ success: false, message: dateValidationResult.message });
+    }
+
+    // Check if product exists and is valid for auction
+    const targetProduct = await Product.findById(product);
+    if (!targetProduct)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found." });
+    if (["SOLD", "ON_AUCTION"].includes(targetProduct.status))
+      return res.status(400).json({
+        success: false,
+        message: `Product is already ${targetProduct.status}.`,
       });
-      sendCreateResponse({
-        res,
-        what: operableEntities.auction,
-        data: addResult,
+    if (targetProduct.adminApproval !== "APPROVED")
+      return res.status(400).json({
+        success: false,
+        message: `Product must be approved. Current status: ${targetProduct.adminApproval}.`,
+      });
+
+    // Validate threshold and bid increment constraints
+    if (threshold > startPrice)
+      return res.status(400).json({
+        success: false,
+        message: "Threshold cannot be higher than the starting price.",
+      });
+
+    const maxBidIncrementPercentage = 33;
+    const maxAllowedBidIncrement =
+      (threshold * maxBidIncrementPercentage) / 100;
+    if (minBidIncrement > maxAllowedBidIncrement) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum bid increment cannot exceed ${maxBidIncrementPercentage}% of threshold (${maxAllowedBidIncrement}).`,
       });
     }
+
+    // All validations passed
+    req.body.auctionStart = dateValidationResult.auctionStart;
+    req.body.auctionEnd = dateValidationResult.auctionEnd;
+    req.body.seller = req.userId;
+
+    // Create auction
+    const addResult = await auctionService.createAuction(req.body);
+    sendCreateResponse({
+      res,
+      what: operableEntities.auction,
+      data: addResult,
+    });
   } catch (error) {
     console.error("Controller: createAuction - Error:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
+
 //
 async function getSingleAuction(req, res) {
-  try {
-    const targetAuctionId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
-      return res.status(400).json({ message: "Invalid resource (auction) id" });
-    }
+  const targetAuctionId = req.params.id;
 
+  if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
+    return res.status(400).json({ message: "Invalid resource (auction) id" });
+  }
+
+  try {
     const result = await auctionService.getSingleAuction(targetAuctionId);
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.auction,
-      });
-    } else {
-      sendSingleFetchResponse({
-        res,
-        data: result,
-        what: operableEntities.auction,
-      });
-    }
+    sendSingleFetchResponse({
+      res,
+      data: result,
+      what: operableEntities.auction,
+    });
   } catch (error) {
-    console.error("Controller: getSingleAuction - Error: ", error.message);
+    console.error("Controller: getSingleAuction - Error:", error.message);
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
+
 //
 async function updateAuction(req, res) {
   try {

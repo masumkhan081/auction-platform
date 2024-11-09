@@ -9,83 +9,83 @@ const moment = require("moment-timezone");
 async function createAuction(data) {
   try {
     const addResult = await Auction.create(data);
+    if (!addResult) throw new Error("Failed to create auction.");
 
-    if (addResult) {
-      const auctionId = addResult.id;
-
-      console.log("Auction created, scheduling cron job...");
-
-      const cronJob = cron.schedule("* * * * *", async () => {
-        try {
-          const now = moment.utc();
-          const targetAuction = await Auction.findById(auctionId);
-
-          if (!targetAuction) {
-            console.error("Auction not found! Stopping cron job.");
-            cronJob.stop();
-            return;
-          }
-
-          console.log("Checking auction status: " + targetAuction.status);
-
-          if (
-            now.isSameOrAfter(moment(targetAuction.auctionStart)) &&
-            targetAuction.status !== "OPEN"
-          ) {
-            await Auction.findByIdAndUpdate(auctionId, { status: "OPEN" });
-          }
-
-          if (
-            now.isSameOrAfter(moment(targetAuction.auctionEnd)) &&
-            targetAuction.status === "OPEN"
-          ) {
-            try {
-              const highestBid = await Bid.findOne({ auction: auctionId })
-                .sort({ bidAmount: -1 })
-                .limit(1)
-                .exec();
-
-              if (highestBid) {
-                if (highestBid.bidAmount >= targetAuction.threshold) {
-                  targetAuction.status = "SOLD";
-                  highestBid.isWinner = true;
-                  await highestBid.save();
-                } else {
-                  targetAuction.isFlagged = true;
-                  targetAuction.status = "UNSOLD";
-                }
-              } else {
-                targetAuction.status = "UNSOLD";
-              }
-
-              await targetAuction.save();
-              console.log("Auction finished, stopping the cron job.");
-              cronJob.stop();
-            } catch (error) {
-              console.log("Error deciding winner: " + error.message);
-            }
-          }
-        } catch (error) {
-          console.log("Error in cron job: " + error.message);
-        }
-      });
-    }
+    console.log("Auction created, scheduling cron job...");
+    scheduleAuctionCronJob(addResult.id); // Helper function for cron job scheduling
 
     return addResult;
   } catch (error) {
-    console.log("createAuction: " + error.message);
-    return error;
+    console.error("Service: createAuction - Error:", error.message);
+    throw error;
   }
 }
 
-async function getSingleAuction(id) {
-  try {
-    const getResult = await Auction.findById(id).populate("product");
-    return getResult;
-  } catch (error) {
-    return error;
+function scheduleAuctionCronJob(auctionId) {
+  const cronJob = cron.schedule("* * * * *", async () => {
+    await handleAuctionStatus(auctionId, cronJob);
+  });
+}
+
+async function handleAuctionStatus(auctionId, cronJob) {
+  const now = moment.utc();
+  const auction = await Auction.findById(auctionId);
+
+  if (!auction) {
+    console.error("Auction not found! Stopping cron job.");
+    return cronJob.stop();
+  }
+
+  if (["CLOSED", "SOLD", "UNSOLD"].includes(auction.status)) {
+    console.log("Auction already closed, stopping cron job.");
+    return cronJob.stop();
+  }
+
+  console.log("Checking auction status: " + auction.status);
+
+  if (
+    now.isSameOrAfter(moment(auction.auctionStart)) &&
+    auction.status === "PENDING"
+  ) {
+    await Auction.findByIdAndUpdate(auctionId, { status: "OPEN" });
+    console.log("Auction opened.");
+  }
+
+  if (
+    now.isSameOrAfter(moment(auction.auctionEnd)) &&
+    auction.status === "OPEN"
+  ) {
+    await handleAuctionEnd(auctionId, auction, cronJob);
   }
 }
+
+async function handleAuctionEnd(auctionId, auction, cronJob) {
+  const highestBid = await Bid.findOne({ auction: auctionId })
+    .sort({ bidAmount: -1 })
+    .limit(1);
+
+  let newStatus;
+  if (highestBid && highestBid.bidAmount >= auction.threshold) {
+    newStatus = "SOLD";
+    highestBid.isWinner = true;
+    await highestBid.save();
+  } else {
+    newStatus = "UNSOLD";
+    auction.isFlagged = !highestBid; // Flag auction if no bids
+  }
+
+  await Auction.findByIdAndUpdate(auctionId, {
+    status: newStatus,
+    isFlagged: auction.isFlagged,
+  });
+
+  console.log("Auction finished with status:", newStatus);
+  cronJob.stop();
+}
+
+const getSingleAuction = async (id) => {
+  return await Auction.findById(id).populate("product");
+};
 
 async function getAuctions(query) {
   try {
@@ -123,16 +123,9 @@ async function getAuctions(query) {
   }
 }
 //
-async function updateAuction({ id, data }) {
-  try {
-    const updateResult = await Auction.findByIdAndUpdate(id, data, {
-      new: true,
-    });
-    return updateResult;
-  } catch (error) {
-    return error;
-  }
-}
+const updateAuction = async ({ id, data }) =>
+  Auction.findByIdAndUpdate(id, data, { new: true }).catch((error) => error);
+
 //
 
 module.exports = {

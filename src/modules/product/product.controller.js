@@ -128,7 +128,10 @@ async function updateProduct(req, res) {
       }
 
       update.adminApproval = adminApproval || targetProduct.adminApproval;
-      update.reviewNote = reviewNote || targetProduct.reviewNote;
+      update.reviewNote =
+        adminApproval === "APPROVED"
+          ? ""
+          : reviewNote || targetProduct.reviewNote;
     }
     //
     if (role === allowedRoles.seller) {

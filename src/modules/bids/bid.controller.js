@@ -118,7 +118,7 @@ async function updateBid(req, res) {
       });
     }
 
-    //
+    //  
     const { bidAmount } = req.body;
     // Check if the bid amount is higher than the current price + minBidIncrement
     const requiredBidAmount =
