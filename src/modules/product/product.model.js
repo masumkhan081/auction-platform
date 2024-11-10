@@ -51,8 +51,9 @@ const productSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["SOLD", "UNSOLD", "ON_AUCTION", "INACTIVE"],
-        message: "Status must be either SOLD, UNSOLD, ON_AUCTION, or INACTIVE",
+        values: ["SOLD", "UNSOLD", "ON_AUCTION", "INACTIVE", "PENDING"],
+        message:
+          "Status must be either SOLD, UNSOLD, ON_AUCTION, PENDING or INACTIVE",
       },
       default: "INACTIVE", // Seller did not set this product for auction yet, just added
     },

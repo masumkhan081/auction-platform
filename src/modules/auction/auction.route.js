@@ -2,10 +2,7 @@ const { Router } = require("express");
 const router = Router();
 const auctionController = require("./auction.controller");
 const validateRequest = require("../../middlewares/validateRequest");
-const {
-  auctionCreateSchema,
-  auctionEditSchema,
-} = require("./auction.validate");
+const { auctionCreateSchema } = require("./auction.validate");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 //

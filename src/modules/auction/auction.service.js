@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const { operableEntities } = require("../../config/constants");
 const Auction = require("./auction.model");
+const Product = require("../product/product.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
 const cron = require("node-cron");
 const Bid = require("../bids/bid.model");
@@ -10,6 +11,8 @@ async function createAuction(data) {
   try {
     const addResult = await Auction.create(data);
     if (!addResult) throw new Error("Failed to create auction.");
+
+    await Product.findByIdAndUpdate(addResult.product, { status: "PENDING" });
 
     console.log("Auction created, scheduling cron job...");
     scheduleAuctionCronJob(addResult.id); // Helper function for cron job scheduling
@@ -83,9 +86,7 @@ async function handleAuctionEnd(auctionId, auction, cronJob) {
   cronJob.stop();
 }
 
-const getSingleAuction = async (id) => {
-  return await Auction.findById(id).populate("product");
-};
+const getSingleAuction = async (id) => Auction.findById(id).populate("product");
 
 async function getAuctions(query) {
   try {

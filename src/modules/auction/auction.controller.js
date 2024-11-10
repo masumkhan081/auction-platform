@@ -47,10 +47,10 @@ async function createAuction(req, res) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found." });
-    if (["SOLD", "ON_AUCTION"].includes(targetProduct.status))
+    if (["SOLD", "ON_AUCTION", "PENDING"].includes(targetProduct.status))
       return res.status(400).json({
         success: false,
-        message: `Product is already ${targetProduct.status}.`,
+        message: `Product is already ${targetProduct.status} against an auction.`,
       });
     if (targetProduct.adminApproval !== "APPROVED")
       return res.status(400).json({
@@ -65,13 +65,10 @@ async function createAuction(req, res) {
         message: "Threshold cannot be higher than the starting price.",
       });
 
-    const maxBidIncrementPercentage = 33;
-    const maxAllowedBidIncrement =
-      (threshold * maxBidIncrementPercentage) / 100;
-    if (minBidIncrement > maxAllowedBidIncrement) {
+    if (minBidIncrement > threshold / 3) {
       return res.status(400).json({
         success: false,
-        message: `Minimum bid increment cannot exceed ${maxBidIncrementPercentage}% of threshold (${maxAllowedBidIncrement}).`,
+        message: "Minimum bid increment must not exceed 1/3 of threshold value",
       });
     }
 
@@ -95,13 +92,12 @@ async function createAuction(req, res) {
 
 //
 async function getSingleAuction(req, res) {
-  const targetAuctionId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
-    return res.status(400).json({ message: "Invalid resource (auction) id" });
-  }
-
   try {
+    const targetAuctionId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(targetAuctionId)) {
+      return res.status(400).json({ message: "Invalid resource (auction) id" });
+    }
     const result = await auctionService.getSingleAuction(targetAuctionId);
     sendSingleFetchResponse({
       res,
@@ -113,7 +109,6 @@ async function getSingleAuction(req, res) {
     sendErrorResponse({ res, error, what: operableEntities.auction });
   }
 }
-
 //
 async function updateAuction(req, res) {
   try {
@@ -128,7 +123,7 @@ async function updateAuction(req, res) {
     if (!targetAuction) {
       return res.status(404).json({
         success: false,
-        message: "Auction not found.",
+        message: "Target auction no more exist.",
       });
     }
     //
@@ -137,7 +132,7 @@ async function updateAuction(req, res) {
     if (invalidStatusChangeFromAndTo.includes(targetAuction.status)) {
       return res.status(404).json({
         success: false,
-        message: `Can't bring change to ${targetAuction.status} Auction.`,
+        message: `Can't bring change to ${targetAuction.status} auction.`,
       });
     }
     const statusChangeTo = req.body.status || targetAuction.status;
@@ -163,7 +158,7 @@ async function updateAuction(req, res) {
     };
 
     //
-    if (data.status === "PENDING") {
+    if (statusChangeTo === "PENDING") {
       const {
         success,
         message,
@@ -191,10 +186,14 @@ async function updateAuction(req, res) {
         .json({ success: false, message: "Product not found." });
     }
 
-    if (["SOLD", "ON_AUCTION"].includes(targetProduct.status)) {
+    if (
+      ["SOLD", "ON_AUCTION"].includes(targetProduct.status) ||
+      (targetProduct.status === "PENDING" &&
+        targetAuction.product !== data.product)
+    ) {
       return res.status(400).json({
         success: false,
-        message: `Target product is already ${targetProduct.status}.`,
+        message: `Target product is already ${targetProduct.status} against another auction.`,
       });
     }
 
@@ -278,44 +277,53 @@ async function deleteAuction(req, res) {
     if (!targetAuction) {
       return res.status(404).json({
         success: false,
-        message: "Auction doesn't exist.",
+        message: "Target auction doesn't exist.",
       });
     }
-    // ["OPEN", "UNSOLD", "PENDING", "SOLD", "CANCELLED"]
-    const totalDeleteMap = {
-      [allowedRoles.admin]: ["OPEN", "PENDING", "CANCELLED"],
-      [allowedRoles.seller]: ["PENDING", "CANCELLED"],
+    const roleStatusMaps = {
+      [allowedRoles.admin]: {
+        totalDelete: ["OPEN", "PENDING", "CANCELLED"],
+        deleteButKeep: ["UNSOLD", "SOLD"], // business logic dependent
+      },
+      [allowedRoles.seller]: {
+        totalDelete: ["PENDING", "CANCELLED"],
+        deleteButKeep: [],
+      },
     };
-    const deleteButKeepRecordMap = {
-      [allowedRoles.admin]: ["UNSOLD", "SOLD"], // depend on business logic .. not sure  15.10.24
-      [allowedRoles.seller]: [],
-    };
-    //
-    let resultDeletion;
+
+    const auctionStatus = targetAuction.status;
+
+    const isAdmin = req.role === allowedRoles.admin;
+    const isSeller = req.role === allowedRoles.seller;
+
+    // Check if the auction should be permanently deleted
     if (
-      (req.role === allowedRoles.admin &&
-        totalDeleteMap[allowedRoles.admin].includes(targetAuction.status)) ||
-      (req.role === allowedRoles.seller &&
-        totalDeleteMap[allowedRoles.seller].includes(targetAuction.status))
+      (isAdmin &&
+        roleStatusMaps[allowedRoles.admin].totalDelete.includes(
+          auctionStatus
+        )) ||
+      (isSeller &&
+        roleStatusMaps[allowedRoles.seller].totalDelete.includes(auctionStatus))
     ) {
-      resultDeletion = await Auction.findByIdAndDelete(targetAuctionId);
+      await Auction.findByIdAndDelete(targetAuctionId);
       return res.status(200).json({
         success: true,
         message: "Auction deleted permanently.",
       });
     }
 
+    // Check if the auction should be marked as deleted but record kept
     if (
-      (req.role === allowedRoles.admin &&
-        deleteButKeepRecordMap[allowedRoles.admin].includes(
-          targetAuction.status
+      (isAdmin &&
+        roleStatusMaps[allowedRoles.admin].deleteButKeep.includes(
+          auctionStatus
         )) ||
-      (req.role === allowedRoles.seller &&
-        deleteButKeepRecordMap[allowedRoles.seller].includes(
-          targetAuction.status
+      (isSeller &&
+        roleStatusMaps[allowedRoles.seller].deleteButKeep.includes(
+          auctionStatus
         ))
     ) {
-      resultDeletion = await Auction.findByIdAndUpdate(
+      await Auction.findByIdAndUpdate(
         targetAuctionId,
         { isDeleted: true },
         { new: true }
@@ -325,6 +333,7 @@ async function deleteAuction(req, res) {
         message: "Auction deleted successfully.",
       });
     }
+    //
   } catch (error) {
     console.error("Controller: deleteAuction - Error:", error.message);
     sendErrorResponse({
