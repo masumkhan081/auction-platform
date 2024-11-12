@@ -6,6 +6,8 @@ const { auctionCreateSchema } = require("./auction.validate");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 //
+router.get("/test-auction-times", auctionController.getTestAuctionTime);
+// 
 router.post(
   "/",
   accessControl([allowedRoles.seller]),
@@ -25,5 +27,6 @@ router.delete(
   accessControl([allowedRoles.seller, allowedRoles.admin]),
   auctionController.deleteAuction
 );
+//
 
 module.exports = router;

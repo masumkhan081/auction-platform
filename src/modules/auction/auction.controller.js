@@ -1,19 +1,30 @@
 const auctionService = require("./auction.service");
-const httpStatus = require("http-status");
 const Auction = require("./auction.model");
 const {
   sendCreateResponse,
-  sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
   sendUpdateResponse,
-  responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
 const { operableEntities, allowedRoles } = require("../../config/constants");
 const { validateAndConvertToUTC } = require("./auction.validate");
 const Product = require("../product/product.model");
 const { default: mongoose } = require("mongoose");
+const moment = require("moment-timezone");
+//
+async function getTestAuctionTime(req, res, next) {
+  const auctionStart = moment()
+    .tz("Asia/Dhaka")
+    .add(30, "seconds")
+    .toISOString();
+  const auctionEnd = moment().tz("Asia/Dhaka").add(60, "seconds").toISOString();
+  res.json({
+    timeZone: "Asia/Dhaka",
+    auctionStart,
+    auctionEnd,
+  });
+}
 
 //
 async function createAuction(req, res) {
@@ -350,4 +361,5 @@ module.exports = {
   deleteAuction,
   getAuctions,
   getSingleAuction,
+  getTestAuctionTime,
 };

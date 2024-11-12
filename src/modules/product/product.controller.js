@@ -22,6 +22,7 @@ const {
   adminApprovalSchema,
   updateProductSchema,
 } = require("./product.validate");
+const categoryModel = require("../category/category.model");
 //
 //
 async function createProduct(req, res) {
@@ -126,6 +127,15 @@ async function updateProduct(req, res) {
           messages,
         });
       }
+      if (
+        adminApproval &&
+        ["SOLD", "ON_AUCTION"].includes(targetProduct.status)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: `Change of admin approval when product is ${targetProduct.status} is not possible`,
+        });
+      }
 
       update.adminApproval = adminApproval || targetProduct.adminApproval;
       update.reviewNote =
@@ -145,6 +155,15 @@ async function updateProduct(req, res) {
           success: false,
           message,
           messages,
+        });
+      }
+
+      const targetCategory = await categoryModel.findById(category);
+
+      if (!targetCategory) {
+        return res.status(400).json({
+          success: false,
+          message: "Target category doesn't exist.",
         });
       }
 
@@ -181,7 +200,6 @@ async function updateProduct(req, res) {
           targetProduct.productImages.map((url) => removeFile({ fileUrl: url }))
         );
       }
-
       // Prepare fields to update
 
       update.productName = productName || targetProduct.productName;

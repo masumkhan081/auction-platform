@@ -7,8 +7,7 @@ const { allowedRoles } = require("../../config/constants");
 const validateRequest = require("../../middlewares/validateRequest");
 const {
   createProductSchema,
-  updateProductSchema,
-  adminApprovalSchema,
+  updateProductSchema, 
 } = require("./product.validate");
 //
 router.get("/", productController.getProducts);
