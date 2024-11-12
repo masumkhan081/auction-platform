@@ -1,11 +1,7 @@
-/* eslint-disable no-unused-vars */
 const { operableEntities } = require("../../config/constants");
 const Product = require("./product.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
-const {
-  sendErrorResponse,
-  responseMap,
-} = require("../../utils/responseHandler");
+const {} = require("../../utils/responseHandler");
 
 async function createProduct(data) {
   const addResult = await Product.create(data);
@@ -52,7 +48,7 @@ async function getProducts(query) {
   }
 }
 //
-const updateProduct = ({ id, data }) =>
+const updateProduct = async ({ id, data }) =>
   Product.findByIdAndUpdate(id, data, {
     new: true,
   });

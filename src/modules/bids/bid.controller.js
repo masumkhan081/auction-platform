@@ -7,25 +7,79 @@ const {
   sendFetchResponse,
   sendUpdateResponse,
   responseMap,
+  sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { operableEntities } = require("../../config/constants");
+const { operableEntities, allowedRoles } = require("../../config/constants");
 const Auction = require("../auction/auction.model");
 const Bid = require("./bid.model");
 const { default: mongoose } = require("mongoose");
 //
 
+async function getBidsByRole(req, res) {
+  try {
+    const { auction } = req.query;
+    const { userId, role } = req;
+    //
+    if (auction) {
+      appliedQuery.auction = auction;
+    }
+    switch (role) {
+      case allowedRoles.seller:
+        appliedQuery.auction.seller = userId;
+        break;
+      case allowedRoles.bidder:
+        appliedQuery.bidder = userId;
+        break;
+    }
+    //
+    const result = await bidService.getBids(appliedQuery);
+    sendFetchResponse({ res, data: result, what: operableEntities.bid });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: operableEntities.bid,
+    });
+  }
+}
+
+//
+async function getBids(req, res) {
+  try {
+    const { userId, role } = req;
+    //
+    const { auction } = req.query;
+    //
+    const appliedQuery = { auction };
+
+    switch (role) {
+      case allowedRoles.seller:
+        // Handle seller logic here
+        break;
+      case allowedRoles.bidder:
+        appliedQuery.bidder = userId;
+        break;
+      default:
+        // Handle case where role doesn't match any allowed roles
+        break;
+    }
+
+    const result = await bidService.getBids(req.query);
+
+    sendFetchResponse({ res, data: result, what: operableEntities.bid });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: operableEntities.bid,
+    });
+  }
+}
+
 async function getSingleBid(req, res) {
   try {
     const result = await bidService.getSingleBid(req.params.id);
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.bid,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.bid });
-    }
+    sendSingleFetchResponse({ res, data: result, what: operableEntities.bid });
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.bid });
   }
@@ -118,7 +172,7 @@ async function updateBid(req, res) {
       });
     }
 
-    //  
+    //
     const { bidAmount } = req.body;
     // Check if the bid amount is higher than the current price + minBidIncrement
     const requiredBidAmount =
@@ -152,30 +206,6 @@ async function updateBid(req, res) {
     }
   } catch (error) {
     sendErrorResponse({ res, error, what: operableEntities.bid });
-  }
-}
-//
-async function getBids(req, res) {
-  try {
-    console.log("got hit !");
-    const result = await bidService.getBids(req.query);
-    console.log("got hit 2!");
-
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.bid,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.bid });
-    }
-  } catch (error) {
-    sendErrorResponse({
-      res,
-      error,
-      what: operableEntities.bid,
-    });
   }
 }
 //
@@ -234,5 +264,6 @@ module.exports = {
   updateBid,
   deleteBid,
   getBids,
+  getBidsByRole,
   getSingleBid,
 };

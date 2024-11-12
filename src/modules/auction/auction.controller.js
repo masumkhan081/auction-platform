@@ -14,15 +14,19 @@ const { default: mongoose } = require("mongoose");
 const moment = require("moment-timezone");
 //
 async function getTestAuctionTime(req, res, next) {
-  const auctionStart = moment()
-    .tz("Asia/Dhaka")
-    .add(30, "seconds")
-    .toISOString();
-  const auctionEnd = moment().tz("Asia/Dhaka").add(60, "seconds").toISOString();
+  //
+  const auctionStart = moment().tz("Asia/Dhaka").add(30, "seconds");
+  const auctionEnd = moment().tz("Asia/Dhaka").add(60, "seconds");
+  //
   res.json({
     timeZone: "Asia/Dhaka",
-    auctionStart,
-    auctionEnd,
+    auctionStart: auctionStart.toISOString(),
+    auctionEnd: auctionEnd.toISOString(),
+    startHour: auctionStart.hour(),
+    startMinute: auctionStart.minute(),
+    startSecond: auctionStart.second(),
+    endMinute: auctionEnd.minute(),
+    endSecond: auctionEnd.second(),
   });
 }
 

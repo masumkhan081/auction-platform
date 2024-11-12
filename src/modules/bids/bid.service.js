@@ -50,8 +50,7 @@ async function getBids(query) {
     const fetchResult = await Bid.find(filterConditions)
       .sort(sortConditions)
       .skip(viewSkip)
-      .limit(viewLimit)
-      .populate("auction");
+      .limit(viewLimit);
 
     const total = await Bid.countDocuments(filterConditions);
     return {
@@ -65,8 +64,7 @@ async function getBids(query) {
       },
       data: fetchResult,
     };
-  } catch (error) {
-    console.log(" Service: getBids " + error.message);
+  } catch (error) { 
     return error;
   }
 }
