@@ -4,7 +4,7 @@ const allowedRoles = {
   bidder: "BIDDER",
 };
 
-const operableEntities = {
+const entities = {
   category: "Category",
   product: "Product",
   auction: "Auction",
@@ -21,34 +21,34 @@ const defaultSortOrder = "desc";
 
 // may be changed based on the outcome expected
 const mapDefaultSortBy = {
-  [operableEntities.category]: "",
-  [operableEntities.product]: "",
-  [operableEntities.auction]: "",
-  [operableEntities.bid]: "",
-  [operableEntities.feedback]: "",
-  [operableEntities.bidder]: "",
-  [operableEntities.seller]: "",
+  [entities.category]: "",
+  [entities.product]: "",
+  [entities.auction]: "",
+  [entities.bid]: "",
+  [entities.feedback]: "",
+  [entities.bidder]: "",
+  [entities.seller]: "",
 };
 
 const mapSearchable = {
-  [operableEntities.category]: ["name"],
-  [operableEntities.product]: ["productName", "productDetail"],
-  [operableEntities.auction]: [],
-  [operableEntities.bid]: [],
-  [operableEntities.feedback]: [],
-  [operableEntities.bidder]: [],
-  [operableEntities.seller]: [],
+  [entities.category]: ["name"],
+  [entities.product]: ["productName", "productDetail"],
+  [entities.auction]: [],
+  [entities.bid]: [],
+  [entities.feedback]: [],
+  [entities.bidder]: [],
+  [entities.seller]: [],
 };
 
 const mapFilterables = {
-  [operableEntities.category]: [],
-  [operableEntities.product]: ["category", "status", "adminApproval","seller"],
-  [operableEntities.auction]: ["status", "isFlagged", "timeZone","seller"],
-  [operableEntities.bid]: ["bidder", "auction", "isWinner", "isFlagged"],
-  [operableEntities.feedback]: ["reviewer", "auction"],
-  [operableEntities.profile]: ["role", "isActive"],
-  [operableEntities.bidder]: [],
-  [operableEntities.seller]: [],
+  [entities.category]: [],
+  [entities.product]: ["category", "status", "adminApproval", "seller"],
+  [entities.auction]: ["status", "isFlagged", "timeZone", "seller"],
+  [entities.bid]: ["bidder", "auction", "isWinner", "isFlagged"],
+  [entities.feedback]: ["auction", "reviewerRole"],
+  [entities.profile]: ["role", "isActive"],
+  [entities.bidder]: [],
+  [entities.seller]: [],
 };
 
 module.exports = {
@@ -58,7 +58,7 @@ module.exports = {
   mapFilterables,
   defaultSortOrder,
   mapDefaultSortBy,
-  operableEntities,
+  entities,
   allowedRoles,
   //
 };

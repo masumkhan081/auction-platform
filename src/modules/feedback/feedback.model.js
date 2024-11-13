@@ -12,6 +12,11 @@ const feedbackSchema = new mongoose.Schema(
       ref: "users",
       required: [true, "Reviewer reference is required"],
     },
+    reviewerRole: {
+      type: String,
+      enum: ["SELLER", "BIDDER"],
+      required: true,
+    },
     reviewText: {
       type: String,
       required: [true, "Review text is required"],

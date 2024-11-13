@@ -9,7 +9,7 @@ const {
   responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { operableEntities, allowedRoles } = require("../../config/constants");
+const { entities, allowedRoles } = require("../../config/constants");
 const Auction = require("../auction/auction.model");
 const Bid = require("./bid.model");
 const { default: mongoose } = require("mongoose");
@@ -19,6 +19,7 @@ async function getBidsByRole(req, res) {
   try {
     const { auction } = req.query;
     const { userId, role } = req;
+    const appliedQuery = {};
     //
     if (auction) {
       appliedQuery.auction = auction;
@@ -33,12 +34,12 @@ async function getBidsByRole(req, res) {
     }
     //
     const result = await bidService.getBids(appliedQuery);
-    sendFetchResponse({ res, data: result, what: operableEntities.bid });
+    sendFetchResponse({ res, data: result, what: entities.bid });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   }
 }
@@ -66,12 +67,12 @@ async function getBids(req, res) {
 
     const result = await bidService.getBids(req.query);
 
-    sendFetchResponse({ res, data: result, what: operableEntities.bid });
+    sendFetchResponse({ res, data: result, what: entities.bid });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   }
 }
@@ -79,9 +80,9 @@ async function getBids(req, res) {
 async function getSingleBid(req, res) {
   try {
     const result = await bidService.getSingleBid(req.params.id);
-    sendSingleFetchResponse({ res, data: result, what: operableEntities.bid });
+    sendSingleFetchResponse({ res, data: result, what: entities.bid });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.bid });
+    sendErrorResponse({ res, error, what: entities.bid });
   }
 }
 
@@ -130,14 +131,14 @@ async function createBid(req, res) {
     return sendCreateResponse({
       res,
       data: newBid,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   } catch (error) {
     console.error("Error in createBid:", error.message);
     return sendErrorResponse({
       res,
       error: "An error occurred while creating the bid.",
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   }
 }
@@ -190,22 +191,13 @@ async function updateBid(req, res) {
       data: { bidAmount, isFlagged },
     });
     //
-
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.bid,
-      });
-    } else {
-      sendUpdateResponse({
-        res,
-        data: result,
-        what: operableEntities.bid,
-      });
-    }
+    sendUpdateResponse({
+      res,
+      data: result,
+      what: entities.bid,
+    });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.bid });
+    sendErrorResponse({ res, error, what: entities.bid });
   }
 }
 //
@@ -227,7 +219,7 @@ async function deleteBid(req, res) {
 
     if (targetAuction.status !== "OPEN") {
       return res.status(400).json({
-        message: `Can't delete. The belonging auction is closed or cancelled.`,
+        message: `Can't delete bid of an auction that is closed or cancelled.`,
       });
     }
 
@@ -238,23 +230,18 @@ async function deleteBid(req, res) {
       });
     }
     const result = await bidService.deleteBid(req.params.id);
-    if (result instanceof Error) {
-      return sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.bid,
-      });
-    }
+
     sendDeletionResponse({
       res,
       data: result,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
+    //
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   }
 }

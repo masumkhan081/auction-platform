@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const Profile = require("./profile.model");
 const User = require("../auth/auth.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
@@ -27,7 +27,7 @@ async function getList(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.profile });
+    } = getSearchAndPagination({ query, what: entities.profile });
 
     const fetchResult = await User.find(filterConditions)
       .skip(viewSkip)

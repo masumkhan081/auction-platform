@@ -10,7 +10,7 @@ const {
   responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const productModel = require("../product/product.model");
 //
 async function getSingleCategory(req, res) {
@@ -20,16 +20,16 @@ async function getSingleCategory(req, res) {
       return sendErrorResponse({
         res,
         error: result,
-        what: operableEntities.category,
+        what: entities.category,
       });
     }
     sendSingleFetchResponse({
       res,
       data: result,
-      what: operableEntities.category,
+      what: entities.category,
     });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.category });
+    sendErrorResponse({ res, error, what: entities.category });
   }
 }
 
@@ -39,11 +39,11 @@ async function createProductCategory(req, res) {
 
     sendCreateResponse({
       res,
-      what: operableEntities.category,
+      what: entities.category,
       data: addResult,
     });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.category });
+    sendErrorResponse({ res, error, what: entities.category });
   }
 }
 //
@@ -57,22 +57,22 @@ async function updateCategory(req, res) {
     return sendUpdateResponse({
       res,
       data: result,
-      what: operableEntities.category,
+      what: entities.category,
     });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.category });
+    sendErrorResponse({ res, error, what: entities.category });
   }
 }
 //
 async function getCategories(req, res) {
   try {
     const result = await categoryService.getCategories(req.query);
-    sendFetchResponse({ res, data: result, what: operableEntities.category });
+    sendFetchResponse({ res, data: result, what: entities.category });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.category,
+      what: entities.category,
     });
   }
 }
@@ -88,7 +88,7 @@ async function deleteCategory(req, res) {
       return sendErrorResponse({
         res,
         error: responseMap.alreadyUsed,
-        what: operableEntities.category,
+        what: entities.category,
       });
     }
 
@@ -96,13 +96,13 @@ async function deleteCategory(req, res) {
     return sendDeletionResponse({
       res,
       data: result,
-      what: operableEntities.category,
+      what: entities.category,
     });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.category,
+      what: entities.category,
     });
   }
 }

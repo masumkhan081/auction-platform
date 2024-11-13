@@ -8,7 +8,7 @@ const {
   sendUpdateResponse,
   responseMap,
 } = require("../../utils/responseHandler");
-const { operableEntities, allowedRoles } = require("../../config/constants");
+const { entities, allowedRoles } = require("../../config/constants");
 const Product = require("./product.model");
 const Auction = require("../auction/auction.model");
 const {
@@ -29,7 +29,7 @@ async function createProduct(req, res) {
   try {
     const { productName, category, productDetail } = req.body;
     const { name: fieldName, maxCount } =
-      fieldsMap[operableEntities.product][0];
+      fieldsMap[entities.product][0];
 
     const filesInBody = req?.files?.[fieldName]?.length || 0;
 
@@ -89,12 +89,12 @@ async function createProduct(req, res) {
 
     sendCreateResponse({
       res,
-      what: operableEntities.product,
+      what: entities.product,
       data: addResult,
     });
   } catch (error) {
     console.error("Error creating product:", error.message);
-    sendErrorResponse({ res, error, what: operableEntities.product });
+    sendErrorResponse({ res, error, what: entities.product });
   }
 }
 
@@ -168,7 +168,7 @@ async function updateProduct(req, res) {
       }
 
       const { name: fieldName, maxCount } =
-        fieldsMap[operableEntities.product][0];
+        fieldsMap[entities.product][0];
 
       const filesInBody = req?.files?.[fieldName]?.length || 0;
 
@@ -221,24 +221,24 @@ async function updateProduct(req, res) {
 
     sendUpdateResponse({
       res,
-      what: operableEntities.product,
+      what: entities.product,
       data: editResult,
     });
   } catch (error) {
     console.error("Error updating product:", error.message);
-    sendErrorResponse({ res, error, what: operableEntities.product });
+    sendErrorResponse({ res, error, what: entities.product });
   }
 }
 
 async function getProducts(req, res) {
   try {
     const result = await productService.getProducts(req.query);
-    sendFetchResponse({ res, data: result, what: operableEntities.product });
+    sendFetchResponse({ res, data: result, what: entities.product });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.product,
+      what: entities.product,
     });
   }
 }
@@ -249,11 +249,11 @@ async function getSingleProduct(req, res) {
     sendSingleFetchResponse({
       res,
       data: result,
-      what: operableEntities.product,
+      what: entities.product,
     });
   } catch (error) {
     console.log("err: getSingleProduct: " + error.message);
-    sendErrorResponse({ res, error: result, what: operableEntities.product });
+    sendErrorResponse({ res, error: result, what: entities.product });
   }
 }
 //
@@ -272,14 +272,14 @@ async function deleteProduct(req, res) {
     sendDeletionResponse({
       res,
       data: result,
-      what: operableEntities.product,
+      what: entities.product,
     });
   } catch (error) {
     console.error("Controller: deleteProduct:", error.message); // Log the error
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.product,
+      what: entities.product,
     });
   }
 }

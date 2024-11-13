@@ -11,7 +11,7 @@ const {
   sendUpdateResponse,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { operableEntities, allowedRoles } = require("../../config/constants");
+const { entities, allowedRoles } = require("../../config/constants");
 const { default: mongoose } = require("mongoose");
 //
 async function getProfileDetail(req, res) {
@@ -29,7 +29,7 @@ async function getProfileDetail(req, res) {
     return sendSingleFetchResponse({
       res,
       data: result,
-      what: operableEntities.profile,
+      what: entities.profile,
     });
   } catch (error) {
     console.error("err: getProfileDetail:", error.message);
@@ -48,7 +48,7 @@ async function updateProfile(req, res) {
       data: req.body,
     });
 
-    sendUpdateResponse({ res, data: result, what: operableEntities.profile });
+    sendUpdateResponse({ res, data: result, what: entities.profile });
   } catch (error) {
     console.log("controller : updateProfile: " + error.message);
     serverError(res);
@@ -62,7 +62,7 @@ async function deleteProfile(req, res) {
       role: req.role,
     });
 
-    sendUpdateResponse({ res, data: result, what: operableEntities.profile });
+    sendUpdateResponse({ res, data: result, what: entities.profile });
   } catch (error) {
     console.log("controller : deleteProfile: " + error.message);
     serverError(res);
@@ -79,15 +79,15 @@ async function getBidderList(req, res) {
       return sendErrorResponse({
         res,
         error: result,
-        what: operableEntities.bidder,
+        what: entities.bidder,
       });
     }
-    sendFetchResponse({ res, data: result, what: operableEntities.bidder });
+    sendFetchResponse({ res, data: result, what: entities.bidder });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.bidder,
+      what: entities.bidder,
     });
   }
 }
@@ -102,15 +102,15 @@ async function getSellerList(req, res) {
       return sendErrorResponse({
         res,
         error: result,
-        what: operableEntities.seller,
+        what: entities.seller,
       });
     }
-    sendFetchResponse({ res, data: result, what: operableEntities.seller });
+    sendFetchResponse({ res, data: result, what: entities.seller });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.seller,
+      what: entities.seller,
     });
   }
 }
@@ -122,17 +122,17 @@ async function getBidHistory(req, res) {
       sendErrorResponse({
         res,
         error: result,
-        what: operableEntities.bid,
+        what: entities.bid,
       });
     } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.bid });
+      sendFetchResponse({ res, data: result, what: entities.bid });
     }
   } catch (error) {
     logger.error(`Error: ${error.message}`);
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.bid,
+      what: entities.bid,
     });
   }
 }
@@ -143,9 +143,9 @@ async function getProductList(req, res) {
     seller: req.userId,
   });
   if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.product });
+    sendErrorResponse({ res, error: result, what: entities.product });
   } else {
-    sendFetchResponse({ res, data: result, what: operableEntities.product });
+    sendFetchResponse({ res, data: result, what: entities.product });
   }
 }
 //
@@ -155,9 +155,9 @@ async function getAuctionHistory(req, res) {
     seller: req.userId,
   });
   if (result instanceof Error) {
-    sendErrorResponse({ res, error: result, what: operableEntities.auction });
+    sendErrorResponse({ res, error: result, what: entities.auction });
   } else {
-    sendFetchResponse({ res, data: result, what: operableEntities.auction });
+    sendFetchResponse({ res, data: result, what: entities.auction });
   }
 }
 //

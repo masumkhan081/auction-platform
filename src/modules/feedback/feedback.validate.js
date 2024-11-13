@@ -7,12 +7,6 @@ const feedbackPostSchema = z.object({
     .refine((id) => id.match(/^[0-9a-fA-F]{24}$/), {
       message: "Invalid auction ObjectId format",
     }),
-  reviewer: z
-    .string()
-    .nonempty({ message: "Reviewer reference is required" })
-    .refine((id) => id.match(/^[0-9a-fA-F]{24}$/), {
-      message: "Invalid reviewer ObjectId format",
-    }),
   reviewText: z
     .string()
     .min(10, { message: "Review text must be at least 10 characters long" })

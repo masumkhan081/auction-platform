@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const { getSearchAndPagination } = require("../../utils/pagination");
 const Bid = require("./bid.model");
 const Auction = require("../auction/auction.model");
@@ -35,7 +35,7 @@ async function getBids(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.bid });
+    } = getSearchAndPagination({ query, what: entities.bid });
 
     console.log(
       currentPage,

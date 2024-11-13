@@ -6,7 +6,7 @@ const config = require("../../config");
 const httpStatus = require("http-status");
 /* eslint-disable no-unused-vars */
 const { getSearchAndPagination } = require("../../utils/pagination");
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const jwt = require("jsonwebtoken");
 const { sendErrorResponse } = require("../../utils/responseHandler");
 const crypto = require("crypto-js");

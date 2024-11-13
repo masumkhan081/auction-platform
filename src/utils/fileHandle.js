@@ -1,7 +1,7 @@
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
-const { operableEntities } = require("../config/constants");
+const { entities } = require("../config/constants");
 const { promisify } = require("util");
 const unlinkAsync = promisify(fs.unlink);
 const upload = multer({ dest: "../../public/" });
@@ -17,12 +17,12 @@ const storageMap = {
 };
 //
 const fieldsMap = {
-  [operableEntities.product]: [
+  [entities.product]: [
     { name: "productImages", maxCount: 3, required: true },
   ],
 };
 //
-const uploadProductImages = upload.fields(fieldsMap[operableEntities.product]);
+const uploadProductImages = upload.fields(fieldsMap[entities.product]);
 //
 async function uploadHandler({ files, fieldName }) {
   if (!files || files.length === 0) return []; // Return empty array if no files to upload

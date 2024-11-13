@@ -64,7 +64,7 @@ function sendErrorResponse({ res, error, what }) {
   let messages = {};
   let type = "unknown-error";
 
-  console.log("\nsendErrorResponse: ", error.message+"\n");
+  console.log("\nsendErrorResponse: ", error.message + "\n");
 
   // Handle Mongoose validation errors
   if (error?.name === "ValidationError") {

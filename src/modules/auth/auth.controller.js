@@ -9,7 +9,7 @@ const {
   sendUpdateResponse,
   responseMap,
 } = require("../../utils/responseHandler");
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const { allowedRoles } = require("../../config/constants");
 const { getHashedPassword, verifyToken } = require("../../utils/tokenisation");
 const { sendOTPMail, sendResetMail } = require("../../utils/mail");

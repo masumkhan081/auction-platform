@@ -13,7 +13,7 @@ const config = require("../../config/index.js");
 const { getHashedPassword } = require("../../utils/tokenisation.js");
 const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
-const { allowedRoles, operableEntities } = require("../../config/constants.js");
+const { allowedRoles, entities } = require("../../config/constants.js");
 const Profile = require("../profile/profile.model.js");
 const { sendErrorResponse } = require("../../utils/responseHandler.js");
 //
@@ -132,7 +132,7 @@ router.post("/test-auth-token", async (req, res) => {
     if (user) {
       await User.findByIdAndDelete(user.id);
     }
-    return sendErrorResponse({ res, error, what: operableEntities.user });
+    return sendErrorResponse({ res, error, what: entities.user });
     // res.status(500).json({ success: false, message: "Server error" });
   }
 });

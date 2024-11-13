@@ -1,4 +1,4 @@
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const Product = require("./product.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
 const {} = require("../../utils/responseHandler");
@@ -21,7 +21,7 @@ async function getProducts(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.product });
+    } = getSearchAndPagination({ query, what: entities.product });
 
     const fetchResult = await Product.find(filterConditions)
       .sort(sortConditions)

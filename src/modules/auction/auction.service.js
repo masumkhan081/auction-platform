@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const Auction = require("./auction.model");
 const Product = require("../product/product.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
@@ -98,7 +98,7 @@ async function getAuctions(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.auction });
+    } = getSearchAndPagination({ query, what: entities.auction });
 
     console.log("query:" + JSON.stringify(query));
 

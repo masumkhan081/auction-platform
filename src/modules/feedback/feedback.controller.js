@@ -8,86 +8,106 @@ const {
   responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const feedbackService = require("./feedback.service");
 const Product = require("../auction/auction.model");
 const Feedback = require("./feedback.model");
+const auctionModel = require("../auction/auction.model");
 
 async function getSingleFeedback(req, res) {
   try {
     const result = await feedbackService.getSingleFeedback(req.params.id);
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.feedback,
-      });
-    } else {
-      sendSingleFetchResponse({
-        res,
-        data: result,
-        what: operableEntities.feedback,
-      });
-    }
+
+    sendSingleFetchResponse({
+      res,
+      data: result,
+      what: entities.feedback,
+    });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.feedback });
+    sendErrorResponse({ res, error, what: entities.feedback });
   }
 }
 
 async function createFeedback(req, res) {
   try {
-    const addResult = await Feedback.create(req.body);
+    const { userId: reviewer, role: reviewerRole } = req;
+    const { auction, reviewText, rating } = req.body;
+
+    const targetAuction = await auctionModel.findById(auction);
+    //
+    if (!targetAuction) {
+      return res.status(400).json({
+        message: "Target auction not found",
+      });
+    }
+    //
+    const addResult = await feedbackService.createFeedback({
+      auction,
+      reviewText,
+      rating,
+      reviewer,
+      reviewerRole,
+    });
+
     sendCreateResponse({
       res,
-      what: operableEntities.feedback,
+      what: entities.feedback,
       data: addResult,
     });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.feedback });
+    sendErrorResponse({ res, error, what: entities.feedback });
   }
 }
 //
 async function updateFeedback(req, res) {
   try {
-    const result = await feedbackService.updateFeedback({
-      id: req.params.id,
-      data: req.body,
-    });
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.feedback,
-      });
-    } else {
-      sendUpdateResponse({
-        res,
-        data: result,
-        what: operableEntities.feedback,
+    const { id: feedbackId } = req.params;
+    const { userId } = req;
+
+    const targetFeedback = await Feedback.findById(feedbackId);
+
+    if (!targetFeedback) {
+      return res.status(400).json({
+        message: "Target feedback not found",
       });
     }
+    //
+    if (userId !== targetFeedback.reviewer) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const data = {
+      reviewText: req.body.reviewText || targetFeedback.reviewText,
+      rating: req.body.rating || targetFeedback.rating,
+    };
+
+    const result = await feedbackService.updateFeedback({
+      id: feedbackId,
+      data,
+    });
+
+    sendUpdateResponse({
+      res,
+      data: result,
+      what: entities.feedback,
+    });
   } catch (error) {
-    sendErrorResponse({ res, error, what: operableEntities.feedback });
+    sendErrorResponse({ res, error, what: entities.feedback });
   }
 }
 //
 async function getFeedbacks(req, res) {
   try {
     const result = await feedbackService.getFeedbacks(req.query);
-    if (result instanceof Error) {
-      sendErrorResponse({
-        res,
-        error: result,
-        what: operableEntities.feedback,
-      });
-    } else {
-      sendFetchResponse({ res, data: result, what: operableEntities.feedback });
-    }
+
+    sendFetchResponse({ res, data: result, what: entities.feedback });
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.feedback,
+      what: entities.feedback,
     });
   }
 }
@@ -100,31 +120,24 @@ async function deleteFeedback(req, res) {
 
     if (isUsed === 0) {
       const result = await feedbackService.deleteFeedback(req.params.id);
-      if (result instanceof Error) {
-        sendErrorResponse({
-          res,
-          error: result,
-          what: operableEntities.feedback,
-        });
-      } else {
-        sendDeletionResponse({
-          res,
-          data: result,
-          what: operableEntities.feedback,
-        });
-      }
+
+      sendDeletionResponse({
+        res,
+        data: result,
+        what: entities.feedback,
+      });
     } else {
       sendErrorResponse({
         res,
         error: responseMap.alreadyUsed,
-        what: operableEntities.feedback,
+        what: entities.feedback,
       });
     }
   } catch (error) {
     sendErrorResponse({
       res,
       error,
-      what: operableEntities.feedback,
+      what: entities.feedback,
     });
   }
 }

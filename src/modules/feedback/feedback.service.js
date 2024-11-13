@@ -1,18 +1,13 @@
 /* eslint-disable no-unused-vars */
-const { operableEntities } = require("../../config/constants");
+const { entities } = require("../../config/constants");
 const Feedback = require("./feedback.model");
 const { getSearchAndPagination } = require("../../utils/pagination");
 
 //
+const createFeedback = async (data) => Feedback.create(data);
 
-async function getSingleFeedback(updatableId) {
-  try {
-    const getResult = await Feedback.findById(updatableId);
-    return getResult;
-  } catch (error) {
-    return error;
-  }
-}
+const getSingleFeedback = async (updatableId) =>
+  await Feedback.findById(updatableId);
 
 async function getFeedbacks(query) {
   try {
@@ -24,7 +19,7 @@ async function getFeedbacks(query) {
       sortOrder,
       filterConditions,
       sortConditions,
-    } = getSearchAndPagination({ query, what: operableEntities.feedback });
+    } = getSearchAndPagination({ query, what: entities.feedback });
 
     const fetchResult = await Feedback.find(filterConditions)
       .sort(sortConditions)
@@ -48,33 +43,14 @@ async function getFeedbacks(query) {
   }
 }
 //
-async function updateFeedback({ id, data }) {
-  try {
-    const { name, description } = data;
-    const updateResult = await Feedback.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-      },
-      { new: true }
-    );
-    return updateResult;
-  } catch (error) {
-    return error;
-  }
-}
+const updateFeedback = async ({ id, data }) =>
+  Feedback.findByIdAndUpdate(id, data, { new: true });
+
 //
-async function deleteFeedback(id) {
-  try {
-    const deleteResult = await Feedback.findByIdAndDelete(id);
-    return deleteResult;
-  } catch (error) {
-    return error;
-  }
-}
+const deleteFeedback = (id) => Feedback.findByIdAndDelete(id);
 
 module.exports = {
+  createFeedback,
   deleteFeedback,
   getFeedbacks,
   getSingleFeedback,
