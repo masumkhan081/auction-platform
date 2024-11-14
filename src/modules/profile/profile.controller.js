@@ -2,10 +2,8 @@ const profileService = require("./profile.service");
 const bidService = require("../bids/bid.service");
 const auctionService = require("../auction/auction.service");
 const productService = require("../product/product.service");
-const httpStatus = require("http-status");
 //
 const {
-  sendDeletionResponse,
   sendErrorResponse,
   sendFetchResponse,
   sendUpdateResponse,
@@ -13,7 +11,38 @@ const {
 } = require("../../utils/responseHandler");
 const { entities, allowedRoles } = require("../../config/constants");
 const { default: mongoose } = require("mongoose");
+const bidService = require("../../modules/bids/bid.service");
 //
+
+async function getBidsByRole(req, res) {
+  try {
+    const { auction } = req.query;
+    const { userId, role } = req;
+    const appliedQuery = {};
+    //
+    if (auction) {
+      appliedQuery.auction = auction;
+    }
+    switch (role) {
+      case allowedRoles.seller:
+        appliedQuery.auction.seller = userId;
+        break;
+      case allowedRoles.bidder:
+        appliedQuery.bidder = userId;
+        break;
+    }
+    //
+    const result = await bidService.getBids(appliedQuery);
+    sendFetchResponse({ res, data: result, what: entities.bid });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: entities.bid,
+    });
+  }
+}
+
 async function getProfileDetail(req, res) {
   try {
     // Validate the user ID from the request
@@ -177,4 +206,5 @@ module.exports = {
   getAuctionHistory,
   getProductList,
   getBidHistory,
+  getBidsByRole,
 };

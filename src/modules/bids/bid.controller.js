@@ -14,37 +14,6 @@ const Auction = require("../auction/auction.model");
 const Bid = require("./bid.model");
 const { default: mongoose } = require("mongoose");
 //
-
-async function getBidsByRole(req, res) {
-  try {
-    const { auction } = req.query;
-    const { userId, role } = req;
-    const appliedQuery = {};
-    //
-    if (auction) {
-      appliedQuery.auction = auction;
-    }
-    switch (role) {
-      case allowedRoles.seller:
-        appliedQuery.auction.seller = userId;
-        break;
-      case allowedRoles.bidder:
-        appliedQuery.bidder = userId;
-        break;
-    }
-    //
-    const result = await bidService.getBids(appliedQuery);
-    sendFetchResponse({ res, data: result, what: entities.bid });
-  } catch (error) {
-    sendErrorResponse({
-      res,
-      error,
-      what: entities.bid,
-    });
-  }
-}
-
-//
 async function getBids(req, res) {
   try {
     const { userId, role } = req;
@@ -250,7 +219,6 @@ module.exports = {
   createBid,
   updateBid,
   deleteBid,
-  getBids,
-  getBidsByRole,
+  getBids, 
   getSingleBid,
 };

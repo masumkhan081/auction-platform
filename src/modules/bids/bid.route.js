@@ -25,12 +25,6 @@ router.get("/", bidController.getBids); // filterable with specific auction (req
 /* get bids, if seller - bids on his any auctions, if bidder - only bids that is posted by him
    filterable with auction id  (req.query.auction)
 */
-router.get(
-  "/my-bids",
-  accessControl([allowedRoles.bidder, allowedRoles.seller]),
-  bidController.getBidsByRole
-);
-//
 router.get("/:bidId", bidController.getSingleBid);
 //
 router.delete(

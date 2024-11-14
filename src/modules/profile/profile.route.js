@@ -38,6 +38,11 @@ router.get(
 );
 router.get(
   "/my-bids",
+  accessControl([allowedRoles.bidder, allowedRoles.seller]),
+  profileController.getBidsByRole
+);
+router.get(
+  "/my-bids",
   accessControl([allowedRoles.bidder]),
   profileController.getBidHistory
 );

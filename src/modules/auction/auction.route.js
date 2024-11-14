@@ -7,7 +7,7 @@ const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 //
 router.get("/test-auction-times", auctionController.getTestAuctionTime);
-// 
+//
 router.post(
   "/",
   accessControl([allowedRoles.seller]),
