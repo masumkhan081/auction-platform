@@ -126,12 +126,6 @@ async function deleteFeedback(req, res) {
         data: result,
         what: entities.feedback,
       });
-    } else {
-      sendErrorResponse({
-        res,
-        error: responseMap.alreadyUsed,
-        what: entities.feedback,
-      });
     }
   } catch (error) {
     sendErrorResponse({
