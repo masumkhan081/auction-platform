@@ -1,60 +1,59 @@
 const { Router } = require("express");
 const router = Router();
 const profileController = require("./profile.controller");
+const auctionController = require("../auction/auction.controller");
+const bidController = require("../bids/bid.controller");
+const productController = require("../product/product.controller");
 const accessControl = require("../../middlewares/verifyToken");
 const validateRequest = require("../../middlewares/validateRequest");
-const { allowedRoles } = require("../../config/constants");
-const { profileCreateSchema } = require("./profile.validate");
+const { userRoles } = require("../../config/constants");
+const { profileUpdateSchema } = require("./profile.validate");
 //
 router.get(
   "/my-profile",
-  accessControl([allowedRoles.bidder, allowedRoles.admin, allowedRoles.seller]),
+  accessControl([userRoles.bidder, userRoles.admin, userRoles.seller]),
   profileController.getProfileDetail
 );
 //
 router.patch(
   "/my-profile",
-  accessControl([allowedRoles.bidder, allowedRoles.admin, allowedRoles.seller]),
-  validateRequest(profileCreateSchema),
+  accessControl([userRoles.bidder, userRoles.admin, userRoles.seller]),
+  validateRequest(profileUpdateSchema),
   profileController.updateProfile
 );
 //
 router.delete(
   "/my-profile",
-  accessControl([allowedRoles.bidder, allowedRoles.admin, allowedRoles.seller]),
+  accessControl([userRoles.bidder, userRoles.admin, userRoles.seller]),
   profileController.deleteProfile
 );
 //
 router.get(
   "/bidder-list",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   profileController.getBidderList
 );
 //
 router.get(
   "/seller-list",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   profileController.getSellerList
 );
 router.get(
   "/my-bids",
-  accessControl([allowedRoles.bidder, allowedRoles.seller]),
-  profileController.getBidsByRole
+  accessControl([userRoles.bidder, userRoles.seller]),
+  bidController.getBidHistory
 );
-router.get(
-  "/my-bids",
-  accessControl([allowedRoles.bidder]),
-  profileController.getBidHistory
-);
+
 router.get(
   "/my-products",
-  accessControl([allowedRoles.seller]),
-  profileController.getProductList
+  accessControl([userRoles.seller]),
+  productController.getProductList
 );
 router.get(
   "/my-auctions",
-  accessControl([allowedRoles.seller]),
-  profileController.getAuctionHistory
+  accessControl([userRoles.seller]),
+  auctionController.getAuctionHistory
 );
 //
 

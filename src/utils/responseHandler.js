@@ -14,6 +14,13 @@ function sendSingleFetchResponse({ res, data, what }) {
 }
 //
 function sendFetchResponse({ res, data, what }) {
+  if (data instanceof Error) {
+    return sendErrorResponse({
+      res,
+      error: result,
+      what,
+    });
+  }
   let statusCode = responseMap.fetch.code;
   res.status(statusCode).json({
     statusCode,

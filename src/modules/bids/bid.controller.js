@@ -9,7 +9,7 @@ const {
   responseMap,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { entities, allowedRoles } = require("../../config/constants");
+const { entities, userRoles } = require("../../config/constants");
 const Auction = require("../auction/auction.model");
 const Bid = require("./bid.model");
 const { default: mongoose } = require("mongoose");
@@ -23,10 +23,10 @@ async function getBids(req, res) {
     const appliedQuery = { auction };
 
     switch (role) {
-      case allowedRoles.seller:
+      case userRoles.seller:
         // Handle seller logic here
         break;
-      case allowedRoles.bidder:
+      case userRoles.bidder:
         appliedQuery.bidder = userId;
         break;
       default:
@@ -214,11 +214,43 @@ async function deleteBid(req, res) {
     });
   }
 }
+async function getBidHistory(req, res) {
+  try {
+    const { auction, isWinner } = req.query;
+    const { userId, role } = req;
+    const appliedQuery = {};
+    //
+    if (auction) {
+      appliedQuery.auction = auction;
+    }
+    if (isWinner) {
+      appliedQuery.isWinner = isWinner;
+    }
+    switch (role) {
+      case userRoles.seller:
+        appliedQuery.auction.seller = userId;
+        break;
+      case userRoles.bidder:
+        appliedQuery.bidder = userId;
+        break;
+    }
+    //
+    const result = await bidService.getBids(appliedQuery);
+    sendFetchResponse({ res, data: result, what: entities.bid });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: entities.bid,
+    });
+  }
+}
 //
 module.exports = {
   createBid,
   updateBid,
   deleteBid,
-  getBids, 
+  getBids,
   getSingleBid,
+  getBidHistory
 };

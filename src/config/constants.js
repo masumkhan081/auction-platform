@@ -1,4 +1,4 @@
-const allowedRoles = {
+const userRoles = {
   admin: "ADMIN",
   seller: "SELLER",
   bidder: "BIDDER",
@@ -59,6 +59,6 @@ module.exports = {
   defaultSortOrder,
   mapDefaultSortBy,
   entities,
-  allowedRoles,
+  userRoles,
   //
 };

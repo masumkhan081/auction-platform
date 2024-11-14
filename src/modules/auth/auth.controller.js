@@ -10,7 +10,7 @@ const {
   responseMap,
 } = require("../../utils/responseHandler");
 const { entities } = require("../../config/constants");
-const { allowedRoles } = require("../../config/constants");
+const { userRoles } = require("../../config/constants");
 const { getHashedPassword, verifyToken } = require("../../utils/tokenisation");
 const { sendOTPMail, sendResetMail } = require("../../utils/mail");
 const User = require("./auth.model");

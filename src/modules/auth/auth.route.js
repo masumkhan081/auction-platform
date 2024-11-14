@@ -13,20 +13,20 @@ const config = require("../../config/index.js");
 const { getHashedPassword } = require("../../utils/tokenisation.js");
 const User = require("./auth.model.js");
 const jwt = require("jsonwebtoken");
-const { allowedRoles, entities } = require("../../config/constants.js");
+const { userRoles, entities } = require("../../config/constants.js");
 const Profile = require("../profile/profile.model.js");
 const { sendErrorResponse } = require("../../utils/responseHandler.js");
 //
 router.post(
   "/register-as-bidder",
   validateRequest(registerSchema),
-  authController.registerUser(allowedRoles.bidder)
+  authController.registerUser(userRoles.bidder)
 );
 //
 router.post(
   "/register-as-seller",
   validateRequest(registerSchema),
-  authController.registerUser(allowedRoles.seller)
+  authController.registerUser(userRoles.seller)
 );
 //
 router.post(

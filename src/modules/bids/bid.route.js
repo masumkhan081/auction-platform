@@ -4,19 +4,19 @@ const bidController = require("./bid.controller");
 const validateRequest = require("../../middlewares/validateRequest");
 const { bidCreateSchema, bidUpdateSchema } = require("./bid.validate");
 const accessControl = require("../../middlewares/verifyToken");
-const { allowedRoles } = require("../../config/constants");
+const { userRoles } = require("../../config/constants");
 //
 router.post(
   "/",
   validateRequest(bidCreateSchema),
-  accessControl([allowedRoles.bidder]),
+  accessControl([userRoles.bidder]),
   bidController.createBid
 );
 //
 router.patch(
   "/:id",
   validateRequest(bidUpdateSchema),
-  accessControl([allowedRoles.bidder]),
+  accessControl([userRoles.bidder]),
   bidController.updateBid
 );
 //
@@ -29,7 +29,7 @@ router.get("/:bidId", bidController.getSingleBid);
 //
 router.delete(
   "/:id",
-  accessControl([allowedRoles.bidder]),
+  accessControl([userRoles.bidder]),
   bidController.deleteBid
 );
 

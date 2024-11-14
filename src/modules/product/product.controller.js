@@ -8,7 +8,7 @@ const {
   sendUpdateResponse,
   responseMap,
 } = require("../../utils/responseHandler");
-const { entities, allowedRoles } = require("../../config/constants");
+const { entities, userRoles } = require("../../config/constants");
 const Product = require("./product.model");
 const Auction = require("../auction/auction.model");
 const {
@@ -28,8 +28,7 @@ const categoryModel = require("../category/category.model");
 async function createProduct(req, res) {
   try {
     const { productName, category, productDetail } = req.body;
-    const { name: fieldName, maxCount } =
-      fieldsMap[entities.product][0];
+    const { name: fieldName, maxCount } = fieldsMap[entities.product][0];
 
     const filesInBody = req?.files?.[fieldName]?.length || 0;
 
@@ -115,7 +114,7 @@ async function updateProduct(req, res) {
     const { productName, category, productDetail, adminApproval, reviewNote } =
       req.body;
 
-    if (role === allowedRoles.admin) {
+    if (role === userRoles.admin) {
       const { success, message, messages } = validateData({
         schema: adminApprovalSchema,
         data: { adminApproval, reviewNote },
@@ -144,7 +143,7 @@ async function updateProduct(req, res) {
           : reviewNote || targetProduct.reviewNote;
     }
     //
-    if (role === allowedRoles.seller) {
+    if (role === userRoles.seller) {
       const { success, message, messages } = validateData({
         schema: updateProductSchema,
         data: { productName, category, productDetail },
@@ -167,8 +166,7 @@ async function updateProduct(req, res) {
         });
       }
 
-      const { name: fieldName, maxCount } =
-        fieldsMap[entities.product][0];
+      const { name: fieldName, maxCount } = fieldsMap[entities.product][0];
 
       const filesInBody = req?.files?.[fieldName]?.length || 0;
 
@@ -284,7 +282,22 @@ async function deleteProduct(req, res) {
   }
 }
 //
+async function getProductList(req, res) {
+  try {
+    const result = await productService.getProducts({
+      ...req.query,
+      seller: req.userId,
+    });
 
+    sendFetchResponse({ res, data: result, what: entities.product });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: entities.bid,
+    });
+  }
+}
 //
 module.exports = {
   createProduct,
@@ -292,4 +305,5 @@ module.exports = {
   deleteProduct,
   getProducts,
   getSingleProduct,
+  getProductList,
 };

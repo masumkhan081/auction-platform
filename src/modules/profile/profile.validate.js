@@ -14,22 +14,16 @@ const profileCreateSchema = z.object({
     .regex(/^\+?[1-9]\d{1,14}$/, {
       message: "Phone number must be a valid format.",
     }),
-  /*
-    .refine(
-      async (value) => {
-        const isUnique = await checkIfPhoneIsUnique(value);
-        return isUnique;
-      },
-      { message: "Phone number must be unique." }
-    ),
-  */
+
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   address: z.string().optional(),
 });
+
+const profileUpdateSchema = profileCreateSchema.partial();
 
 async function checkIfPhoneIsUnique(phone) {
   const isExist = await Profile.findOne({ phone });
   return isExist ? false : true;
 }
 
-module.exports = { profileCreateSchema };
+module.exports = { profileCreateSchema, profileUpdateSchema };

@@ -7,18 +7,18 @@ const {
   categoryPatchSchema,
 } = require("./category.validate");
 const accessControl = require("../../middlewares/verifyToken");
-const { allowedRoles } = require("../../config/constants");
+const { userRoles } = require("../../config/constants");
 //
 router.post(
   "/",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   validateRequest(categoryPostSchema),
   categoryController.createProductCategory
 );
 //
 router.patch(
   "/:id",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   validateRequest(categoryPatchSchema),
   categoryController.updateCategory
 );
@@ -29,7 +29,7 @@ router.get("/:id", categoryController.getSingleCategory);
 //
 router.delete(
   "/:id",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   categoryController.deleteCategory
 );
 //

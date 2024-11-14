@@ -7,7 +7,7 @@ const {
   sendUpdateResponse,
   sendSingleFetchResponse,
 } = require("../../utils/responseHandler");
-const { entities, allowedRoles } = require("../../config/constants");
+const { entities, userRoles } = require("../../config/constants");
 const { validateAndConvertToUTC } = require("./auction.validate");
 const Product = require("../product/product.model");
 const { default: mongoose } = require("mongoose");
@@ -296,11 +296,11 @@ async function deleteAuction(req, res) {
       });
     }
     const roleStatusMaps = {
-      [allowedRoles.admin]: {
+      [userRoles.admin]: {
         totalDelete: ["OPEN", "PENDING", "CANCELLED"],
         deleteButKeep: ["UNSOLD", "SOLD"], // business logic dependent
       },
-      [allowedRoles.seller]: {
+      [userRoles.seller]: {
         totalDelete: ["PENDING", "CANCELLED"],
         deleteButKeep: [],
       },
@@ -308,17 +308,15 @@ async function deleteAuction(req, res) {
 
     const auctionStatus = targetAuction.status;
 
-    const isAdmin = req.role === allowedRoles.admin;
-    const isSeller = req.role === allowedRoles.seller;
+    const isAdmin = req.role === userRoles.admin;
+    const isSeller = req.role === userRoles.seller;
 
     // Check if the auction should be permanently deleted
     if (
       (isAdmin &&
-        roleStatusMaps[allowedRoles.admin].totalDelete.includes(
-          auctionStatus
-        )) ||
+        roleStatusMaps[userRoles.admin].totalDelete.includes(auctionStatus)) ||
       (isSeller &&
-        roleStatusMaps[allowedRoles.seller].totalDelete.includes(auctionStatus))
+        roleStatusMaps[userRoles.seller].totalDelete.includes(auctionStatus))
     ) {
       await Auction.findByIdAndDelete(targetAuctionId);
       return res.status(200).json({
@@ -330,13 +328,11 @@ async function deleteAuction(req, res) {
     // Check if the auction should be marked as deleted but record kept
     if (
       (isAdmin &&
-        roleStatusMaps[allowedRoles.admin].deleteButKeep.includes(
+        roleStatusMaps[userRoles.admin].deleteButKeep.includes(
           auctionStatus
         )) ||
       (isSeller &&
-        roleStatusMaps[allowedRoles.seller].deleteButKeep.includes(
-          auctionStatus
-        ))
+        roleStatusMaps[userRoles.seller].deleteButKeep.includes(auctionStatus))
     ) {
       await Auction.findByIdAndUpdate(
         targetAuctionId,
@@ -359,6 +355,22 @@ async function deleteAuction(req, res) {
   }
 }
 //
+async function getAuctionHistory(req, res) {
+  try {
+    const result = await auctionService.getAuctions({
+      ...req.query,
+      seller: req.userId,
+    });
+    sendFetchResponse({ res, data: result, what: entities.auction });
+  } catch (error) {
+    sendErrorResponse({
+      res,
+      error,
+      what: entities.bid,
+    });
+  }
+}
+//
 module.exports = {
   createAuction,
   updateAuction,
@@ -366,4 +378,5 @@ module.exports = {
   getAuctions,
   getSingleAuction,
   getTestAuctionTime,
+  getAuctionHistory,
 };

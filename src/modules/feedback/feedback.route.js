@@ -7,19 +7,19 @@ const {
   feedbackPatchSchema,
 } = require("./feedback.validate");
 const accessControl = require("../../middlewares/verifyToken");
-const { allowedRoles } = require("../../config/constants");
+const { userRoles } = require("../../config/constants");
 //
 router.post(
   "/",
   validateRequest(feedbackPostSchema),
-  accessControl([allowedRoles.admin, allowedRoles.seller]),
+  accessControl([userRoles.admin, userRoles.seller]),
   feedbackController.createFeedback
 );
 //
 router.patch(
   "/:id",
   validateRequest(feedbackPatchSchema),
-  accessControl([allowedRoles.admin, allowedRoles.seller]),
+  accessControl([userRoles.admin, userRoles.seller]),
   feedbackController.updateFeedback
 );
 //
@@ -29,7 +29,7 @@ router.get("/:id", feedbackController.getSingleFeedback);
 //
 router.delete(
   "/:id",
-  accessControl([allowedRoles.admin]),
+  accessControl([userRoles.admin]),
   feedbackController.deleteFeedback
 );
 //
