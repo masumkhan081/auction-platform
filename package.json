@@ -5,10 +5,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/index.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prettier": "prettier --check **/*.js",
-    "prettier:fix": "prettier --write **/*.js"
+    "lint": "eslint . --ext .js,.ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix",
+    "prettier": "prettier --check '**/*.js'",
+    "prettier:fix": "prettier --write '**/*.js'"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix",
+    "*.ts": "eslint --fix",
+    "*.tsx": "eslint --fix"
   },
   "type": "commonjs",
   "keywords": [],
@@ -34,6 +39,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.2",
     "nodemon": "^3.1.7"
   }
 }
