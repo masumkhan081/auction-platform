@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const app = require("./src/app");
-const mongodbConnection = require("./src/config/mongodb");
+const {initDB,mongodbConnection} = require("./src/config/mongodb");
 const config = require("./src/config");
 require("dotenv").config();
 
@@ -27,5 +27,18 @@ async function bootstrap() {
   process.on("uncaughtException", unexpectedErrorHandler);
   process.on("unhandledRejection", unexpectedErrorHandler);
 }
+// bootstrap();
 
-bootstrap();
+
+// initialize the database
+initDB();
+// 
+app.listen(3000, () => {
+  console.log("running ...");
+});
+
+// // close the server
+app.get("/hi", function (req, res) {
+  res.send("hello");
+});
+
