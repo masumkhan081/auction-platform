@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const { initDB,mongodbConnection } = require("./src/config/mongodb");
+const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 // initialize the database
-mongodbConnection();
+// mongodbConnection();
+initDB();
 // middlewares
 // app.use(originControl);
 app.use(express.json());
