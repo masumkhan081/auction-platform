@@ -1,12 +1,12 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const { initDB } = require("./src/config/mongodb");
+const { initDB,mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 // initialize the database
-initDB();
+mongodbConnection();
 // middlewares
-app.use(originControl);
+// app.use(originControl);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // 
