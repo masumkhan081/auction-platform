@@ -5,9 +5,9 @@ const httpStatus = require("http-status");
 const RootRoutes = require("./root.route");
 const fs = require("fs");
 const path = require("path");
-//
 const morgan = require("morgan");
 const winston = require("winston");
+const originControl = require("./middlewares/corsMiddleware")
 //
 
 const app = express();
@@ -34,20 +34,7 @@ const logger = winston.createLogger({
 //   })
 // );
 
-const allowedOrigins = ["http://localhost:3001", "http://localhost:5173"];
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+app.use(originControl);
 //
 
 const publicDir = path.join(__dirname, "public");

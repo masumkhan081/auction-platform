@@ -4,11 +4,11 @@ const {initDB,mongodbConnection} = require("./src/config/mongodb");
 const config = require("./src/config");
 require("dotenv").config();
 
-/*
+
 async function bootstrap() {
   const server = app.listen(config.port, async () => {
     console.log(`Server running on port ${config.port}`);
-    // await mongodbConnection();
+     await mongodbConnection();
   });
 
   const exitHandler = () => {
@@ -28,11 +28,11 @@ async function bootstrap() {
   process.on("uncaughtException", unexpectedErrorHandler);
   process.on("unhandledRejection", unexpectedErrorHandler);
 }
-// bootstrap();
-*/
+ bootstrap();
+
 
 // initialize the database
-initDB();
+// initDB();
 // 
 app.listen(3000, () => {
   console.log("running ...");

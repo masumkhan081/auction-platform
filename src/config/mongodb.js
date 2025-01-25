@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
+const { connect, set } = require("mongoose");
+require("dotenv").config();
 
 const mongodbConnection = async () => {
   try {
     await mongoose.connect(process.env.DB_URL, {
       dbName: "auction-platform",
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
-    console.log("Mongodb connected!");
+    console.log("✅ Mongodb connected!");
   } catch (error) {
-    console.log("Mongodb not connected! " + error.message);
+    console.error("❌ Mongodb connection failed: " + error.message);
+    process.exit(1); // Exit process on failure
   }
 };
-
-const { connect, set } = require("mongoose");
-require("dotenv").config();
 
 function initDB() {
   set("strictQuery", true);
