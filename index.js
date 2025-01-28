@@ -58,8 +58,15 @@ app.get("/Hi", (req, res) => {
     res.send("Hello");
 });
 // 
-app.listen(3000, async () => {
-    console.log("running ...");
-    await mongodbConnection(); 
+// app.listen(3000, async () => {
+//     console.log("running ...");
+//     await mongodbConnection();
+// });
+const startServer = async () => {
+    await mongodbConnection(); // Ensure DB connection before starting the server
+    app.listen(3000, () => {
+        console.log("Server is running on port 3000...");
+    });
+};
 
-});
+startServer(); // Start the server
