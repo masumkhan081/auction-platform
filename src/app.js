@@ -2,7 +2,7 @@
 const cors = require("cors");
 const express = require("express");
 const httpStatus = require("http-status");
-const RootRoutes = require("./root.route");
+// const RootRoutes = require("./root.route");
 const fs = require("fs");
 const path = require("path");
 const morgan = require("morgan");
@@ -57,7 +57,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api", RootRoutes);
+// app.use("/api", RootRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({

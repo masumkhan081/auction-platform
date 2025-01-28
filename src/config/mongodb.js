@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const { connect, set } = require("mongoose");
 
-function mongodbConnection() {
+const mongodbConnection = async () => {
   try {
-    mongoose.connect(process.env.DB_URL, { useNewUrlParser: true })
-      .then((data) => console.log("db connected"))
-      .catch((err) => console.log(err.message));
+    await mongoose.connect(process.env.DB_URL, {
+      dbName: "e-com-shop",
+    });
+    console.log("Mongodb connected!");
   } catch (error) {
-    console.error("❌ Mongodb connection failed: " + error.message);
-    process.exit(1); // Exit process on failure
+    console.log("Mongodb not connected!");
   }
 };
 

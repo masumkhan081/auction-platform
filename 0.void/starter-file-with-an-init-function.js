@@ -30,15 +30,4 @@ async function bootstrap() {
 bootstrap();
 
 
-// initialize the database
-// initDB();
-//
-// app.listen(3000, () => {
-//   console.log("running ...");
-// });
-
-// // close the server
-// app.get("/hi", function (req, res) {
-//   res.send("hello");
-// });
 
