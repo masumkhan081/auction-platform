@@ -7,7 +7,7 @@ const allowedOrigins = [
     "https://pharmacy-mgmt.vercel.app"
 ];
 
-const corsOptions = cors({
+module.exports = cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -18,5 +18,3 @@ const corsOptions = cors({
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
 })
-
-module.exports = cors(corsOptions);
