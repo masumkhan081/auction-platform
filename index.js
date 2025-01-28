@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const RootRoutes = require("./src/root.route");
+// const RootRoutes = require("./src/root.route");
 const fs = require("fs");
 const path = require("path");
-// const morgan = require("morgan");
-// const winston = require("winston");
+const morgan = require("morgan");
+const winston = require("winston");
 const { initDB, mongodbConnection } = require("./src/config/mongodb");
 // const originControl = require("./src/middlewares/corsMiddleware")
 // 
