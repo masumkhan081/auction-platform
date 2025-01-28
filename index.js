@@ -10,8 +10,8 @@ const { initDB, mongodbConnection } = require("./src/config/mongodb");
 // const originControl = require("./src/middlewares/corsMiddleware")
 // 
 // initialize the database
-// mongodbConnection();
-initDB();
+mongodbConnection();
+// initDB();
 // middlewares
 // app.use(originControl);
 app.use(express.json());
