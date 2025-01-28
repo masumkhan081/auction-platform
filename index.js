@@ -1,13 +1,13 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const RootRoutes = require("./src/root.route");
-const fs = require("fs");
+// const RootRoutes = require("./src/root.route");
+// const fs = require("fs");
 const path = require("path");
-const morgan = require("morgan");
-const winston = require("winston");
+// const morgan = require("morgan");
+// const winston = require("winston");
 const { initDB, mongodbConnection } = require("./src/config/mongodb");
-const originControl = require("./src/middlewares/corsMiddleware")
+// const originControl = require("./src/middlewares/corsMiddleware")
 // 
 // initialize the database
 // mongodbConnection();
@@ -16,7 +16,7 @@ initDB();
 // app.use(originControl);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-const publicDir = path.join(__dirname, "public");
+// const publicDir = path.join(__dirname, "public");
 // just to ensure the public folder exists or create it.
 // if (!fs.existsSync(publicDir)) {
 //     fs.mkdirSync(publicDir, { recursive: true });
