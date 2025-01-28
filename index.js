@@ -13,7 +13,7 @@ const originControl = require("./src/middlewares/corsMiddleware")
 // mongodbConnection();
 initDB();
 // middlewares
-app.use(originControl);
+// app.use(originControl);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const publicDir = path.join(__dirname, "public");
@@ -54,10 +54,11 @@ app.get("/", (req, res) => {
     });
 });
 // 
-app.listen(3000, () => {
-    console.log("running ...");
-});
 // server closing endpoint; no need what so ever
 app.get("/Hi", (req, res) => {
     res.send("Hello");
+});
+// 
+app.listen(3000, () => {
+    console.log("running ...");
 });
