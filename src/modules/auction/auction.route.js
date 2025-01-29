@@ -10,6 +10,10 @@ const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 const { convertToUTC } = require("../../utils/timeHandler");
 //
+router.get("/hi", (req, res) => {
+  res.send("Hello");
+});
+// 
 router.post(
   "/",
   accessControl([allowedRoles.seller]),
@@ -19,7 +23,7 @@ router.post(
 //
 router.patch(
   "/:id",
-  accessControl([allowedRoles.seller]), 
+  accessControl([allowedRoles.seller]),
   auctionController.updateAuction
 );
 router.get("/", auctionController.getAuctions);
