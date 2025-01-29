@@ -9,6 +9,8 @@ const {
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
 //
+router.get("/", categoryController.getCategories);
+// 
 router.get("/hi", (req, res) => {
   res.send("Hello-categories");
 });
@@ -27,7 +29,6 @@ router.patch(
   categoryController.updateCategory
 );
 //
-router.get("/", categoryController.getCategories);
 //
 router.get("/:id", categoryController.getSingleCategory);
 //
