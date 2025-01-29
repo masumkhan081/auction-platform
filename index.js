@@ -7,41 +7,38 @@ const morgan = require("morgan");
 const winston = require("winston");
 const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
-// routes
+const { morganMiddleware } = require("./src/config/logger");
+// --------------------------------------------------- Routes
+const authRoutes = require("./src/modules/auth/auth.route");
 const categoryRoutes = require("./src/modules/category/category.route");
-// middlewares
+const productRoutes = require("./src/modules/product/product.route");
+const auctionRoutes = require("./src/modules/auction/auction.route");
+const bidRoutes = require("./src/modules/bids/bid.route");
+const feedbackRoutes = require("./src/modules/feedback/feedback.route");
+const profileRoutes = require("./src/modules/profile/profile.route")
+//  -------------------------------------------------- Middlewares
 app.use(originControl);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// app.use(morganMiddleware);
+
 const publicDir = path.join(__dirname, "public");
-// just to ensure the public folder exists or create it.
 if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
     console.log("Public folder created.");
 }
 app.use("/public", express.static("public"));
-// 
-// Configure Winston logger
-// const logger = winston.createLogger({
-//     level: "info",
-//     format: winston.format.combine(
-//         winston.format.timestamp(),
-//         winston.format.json()
-//     ),
-//     transports: [
-//         new winston.transports.Console(),
-//         new winston.transports.File({ filename: "combined.log" }),
-//     ],
-// });
-// need to organize how message format looks like
-// app.use(
-//   morgan("combined", {
-//     stream: {
-//       write: (message) => logger.info(message.trim()),
-//     },
-//   })
-// );
-//
+
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/auctions", auctionRoutes);
+app.use("/api/bids", bidRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
+app.use("/api/profiles", profileRoutes);
+
+// Deployment Check - Root Route
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
@@ -49,17 +46,21 @@ app.get("/", (req, res) => {
         data: null,
     });
 });
-app.use("/api/categories", categoryRoutes);
-// 
-// app.listen(3000, async () => {
-//     console.log("running ...");
-//     await mongodbConnection();
-// });
+// No Api
+app.use((req, res, next) => {
+    res.status(404).json({
+        success: false,
+        message: `API not found. For: ${req.originalUrl}`,
+        data: null,
+    });
+    next();
+});
+
+// Start Server
 const startServer = async () => {
-    await mongodbConnection(); // Ensure DB connection before starting the server
+    await mongodbConnection();
     app.listen(3000, () => {
         console.log("Server is running on port 3000...");
     });
 };
-
-startServer(); // Start the server
+startServer();

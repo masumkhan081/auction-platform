@@ -9,7 +9,6 @@ const auctionRoutes = require("./modules/auction/auction.route");
 const bidRoutes = require("./modules/bids/bid.route");
 const feedbackRoutes = require("./modules/feedback/feedback.route");
 const profileRoutes = require("./modules/profile/profile.route")
-
 //
 const routes = [
   {
