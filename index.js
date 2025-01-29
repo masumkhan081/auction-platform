@@ -7,8 +7,9 @@ const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 const { morganMiddleware } = require("./src/config/logger");
 // --------------------------------------------------- Routes
+const rootRoute = require("./src/root.route.js");
 // const authRoutes = require("./src/modules/auth/auth.route");
-const categoryRoutes = require("./src/modules/category/category.route");
+// const categoryRoutes = require("./src/modules/category/category.route");
 // const productRoutes = require("./src/modules/product/product.route");
 // const auctionRoutes = require("./src/modules/auction/auction.route");
 // const bidRoutes = require("./src/modules/bids/bid.route");
@@ -28,8 +29,10 @@ if (!fs.existsSync(publicDir)) {
 app.use("/public", express.static("public"));
 
 // API Routes
+
+app.use("/api", rootRoute);
 // app.use("/api/auth", authRoutes);
-app.use("/api/categories", categoryRoutes);
+// app.use("/api/categories", categoryRoutes);
 // app.use("/api/products", productRoutes);
 // app.use("/api/auctions", auctionRoutes);
 // app.use("/api/bids", bidRoutes);
