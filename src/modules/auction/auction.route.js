@@ -21,17 +21,17 @@ router.post(
   auctionController.createAuction
 );
 // //
-// router.patch(
-//   "/:id",
-//   accessControl([allowedRoles.seller]),
-//   auctionController.updateAuction
-// );
-// router.get("/", auctionController.getAuctions);
-// router.get("/:id", auctionController.getSingleAuction);
-// router.delete(
-//   "/:id",
-//   accessControl([allowedRoles.seller, allowedRoles.admin]),
-//   auctionController.deleteAuction
-// );
+router.patch(
+  "/:id",
+  accessControl([allowedRoles.seller]),
+  auctionController.updateAuction
+);
+router.get("/", auctionController.getAuctions);
+router.get("/:id", auctionController.getSingleAuction);
+router.delete(
+  "/:id",
+  accessControl([allowedRoles.seller, allowedRoles.admin]),
+  auctionController.deleteAuction
+);
 
 module.exports = router;
