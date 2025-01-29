@@ -7,7 +7,10 @@ const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 const { morganMiddleware } = require("./src/config/logger");
 // --------------------------------------------------- Routes
-const apiRoutes = require("./src/root.route.js");
+// const apiRoutes = require("./src/root.route.js");
+const categoryRoutes = require("./src/modules/category/category.route");
+const productRoutes = require("./src/modules/product/product.route");
+const auctionRoutes = require("./src/modules/auction/auction.route");
 //  -------------------------------------------------- Middlewares
 app.use(originControl);
 app.use(express.json());
@@ -22,7 +25,9 @@ if (!fs.existsSync(publicDir)) {
 app.use("/public", express.static("public"));
 
 // API Routes
-app.use("/api", apiRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/auctions", auctionRoutes);
 
 // Deployment Check - Root Route
 app.get("/", (req, res) => {

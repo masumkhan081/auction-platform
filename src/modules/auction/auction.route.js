@@ -11,7 +11,7 @@ const { allowedRoles } = require("../../config/constants");
 const { convertToUTC } = require("../../utils/timeHandler");
 //
 router.get("/hi", (req, res) => {
-  res.send("Hello");
+  res.send("Hello-auctions");
 });
 // 
 router.post(
