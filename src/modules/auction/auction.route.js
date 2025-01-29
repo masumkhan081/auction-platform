@@ -14,24 +14,24 @@ router.get("/hi", (req, res) => {
   res.send("Hello-auctions");
 });
 // 
-router.post(
-  "/",
-  accessControl([allowedRoles.seller]),
-  validateRequest(auctionCreateSchema),
-  auctionController.createAuction
-);
-//
-router.patch(
-  "/:id",
-  accessControl([allowedRoles.seller]),
-  auctionController.updateAuction
-);
-router.get("/", auctionController.getAuctions);
-router.get("/:id", auctionController.getSingleAuction);
-router.delete(
-  "/:id",
-  accessControl([allowedRoles.seller, allowedRoles.admin]),
-  auctionController.deleteAuction
-);
+// router.post(
+//   "/",
+//   accessControl([allowedRoles.seller]),
+//   validateRequest(auctionCreateSchema),
+//   auctionController.createAuction
+// );
+// //
+// router.patch(
+//   "/:id",
+//   accessControl([allowedRoles.seller]),
+//   auctionController.updateAuction
+// );
+// router.get("/", auctionController.getAuctions);
+// router.get("/:id", auctionController.getSingleAuction);
+// router.delete(
+//   "/:id",
+//   accessControl([allowedRoles.seller, allowedRoles.admin]),
+//   auctionController.deleteAuction
+// );
 
 module.exports = router;
