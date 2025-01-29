@@ -3,19 +3,17 @@ const app = express();
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const morgan = require("morgan");
-const winston = require("winston");
 const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 const { morganMiddleware } = require("./src/config/logger");
 // --------------------------------------------------- Routes
-const authRoutes = require("./src/modules/auth/auth.route");
+// const authRoutes = require("./src/modules/auth/auth.route");
 const categoryRoutes = require("./src/modules/category/category.route");
-const productRoutes = require("./src/modules/product/product.route");
-const auctionRoutes = require("./src/modules/auction/auction.route");
-const bidRoutes = require("./src/modules/bids/bid.route");
-const feedbackRoutes = require("./src/modules/feedback/feedback.route");
-const profileRoutes = require("./src/modules/profile/profile.route")
+// const productRoutes = require("./src/modules/product/product.route");
+// const auctionRoutes = require("./src/modules/auction/auction.route");
+// const bidRoutes = require("./src/modules/bids/bid.route");
+// const feedbackRoutes = require("./src/modules/feedback/feedback.route");
+// const profileRoutes = require("./src/modules/profile/profile.route")
 //  -------------------------------------------------- Middlewares
 app.use(originControl);
 app.use(express.json());
@@ -30,13 +28,13 @@ if (!fs.existsSync(publicDir)) {
 app.use("/public", express.static("public"));
 
 // API Routes
-app.use("/api/auth", authRoutes);
+// app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/auctions", auctionRoutes);
-app.use("/api/bids", bidRoutes);
-app.use("/api/feedbacks", feedbackRoutes);
-app.use("/api/profiles", profileRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/auctions", auctionRoutes);
+// app.use("/api/bids", bidRoutes);
+// app.use("/api/feedbacks", feedbackRoutes);
+// app.use("/api/profiles", profileRoutes);
 
 // Deployment Check - Root Route
 app.get("/", (req, res) => {
