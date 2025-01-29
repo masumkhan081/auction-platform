@@ -8,10 +8,6 @@ const {
 } = require("./category.validate");
 const accessControl = require("../../middlewares/verifyToken");
 const { allowedRoles } = require("../../config/constants");
-//
-router.get("/hi", (req, res) => {
-  res.send("Hello");
-});
 // 
 router.post(
   "/",

@@ -7,14 +7,7 @@ const { initDB, mongodbConnection } = require("./src/config/mongodb");
 const originControl = require("./src/middlewares/corsMiddleware")
 const { morganMiddleware } = require("./src/config/logger");
 // --------------------------------------------------- Routes
-const rootRoute = require("./src/root.route.js");
-// const authRoutes = require("./src/modules/auth/auth.route");
-// const categoryRoutes = require("./src/modules/category/category.route");
-// const productRoutes = require("./src/modules/product/product.route");
-// const auctionRoutes = require("./src/modules/auction/auction.route");
-// const bidRoutes = require("./src/modules/bids/bid.route");
-// const feedbackRoutes = require("./src/modules/feedback/feedback.route");
-// const profileRoutes = require("./src/modules/profile/profile.route")
+const apiRoutes = require("./src/root.route.js");
 //  -------------------------------------------------- Middlewares
 app.use(originControl);
 app.use(express.json());
@@ -29,15 +22,7 @@ if (!fs.existsSync(publicDir)) {
 app.use("/public", express.static("public"));
 
 // API Routes
-
-app.use("/api", rootRoute);
-// app.use("/api/auth", authRoutes);
-// app.use("/api/categories", categoryRoutes);
-// app.use("/api/products", productRoutes);
-// app.use("/api/auctions", auctionRoutes);
-// app.use("/api/bids", bidRoutes);
-// app.use("/api/feedbacks", feedbackRoutes);
-// app.use("/api/profiles", profileRoutes);
+app.use("/api", apiRoutes);
 
 // Deployment Check - Root Route
 app.get("/", (req, res) => {

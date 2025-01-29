@@ -11,7 +11,12 @@ const {
   adminApprovalSchema,
 } = require("./product.validate");
 //
+router.get("/hi", (req, res) => {
+  res.send("Hello");
+});
+// 
 router.get("/", productController.getProducts);
+// 
 router.get("/:id", productController.getSingleProduct);
 //
 router.post(
