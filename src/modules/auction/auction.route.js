@@ -14,12 +14,12 @@ router.get("/hi", (req, res) => {
   res.send("Hello-auctions");
 });
 // 
-// router.post(
-//   "/",
-//   accessControl([allowedRoles.seller]),
-//   validateRequest(auctionCreateSchema),
-//   auctionController.createAuction
-// );
+router.post(
+  "/",
+  accessControl([allowedRoles.seller]),
+  validateRequest(auctionCreateSchema),
+  auctionController.createAuction
+);
 // //
 // router.patch(
 //   "/:id",
