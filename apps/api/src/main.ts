@@ -38,7 +38,7 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   await app.listen(env.config.PORT);
-  // eslint-disable-next-line no-console
+   
   console.log(`[api] listening on http://localhost:${env.config.PORT}`);
 }
 

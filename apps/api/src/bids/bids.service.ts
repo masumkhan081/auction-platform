@@ -15,9 +15,9 @@ import {
   bids,
   type BidRow,
 } from '../database/schema';
-import { NotificationsService } from '../notifications/notifications.service';
-import { RealtimeEmitter } from '../realtime/realtime.emitter';
-import { BidsRepository } from './bids.repository';
+import { type NotificationsService } from '../notifications/notifications.service';
+import { type RealtimeEmitter } from '../realtime/realtime.emitter';
+import { type BidsRepository } from './bids.repository';
 
 const MAX_RETRIES = 5;
 const PG_SERIALIZATION_FAILURE = '40001';

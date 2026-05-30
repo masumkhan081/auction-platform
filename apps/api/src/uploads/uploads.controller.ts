@@ -7,7 +7,7 @@ import { ZodBody } from '../common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { UploadsService } from './uploads.service';
+import { type UploadsService } from './uploads.service';
 
 @Controller('uploads')
 export class UploadsController {

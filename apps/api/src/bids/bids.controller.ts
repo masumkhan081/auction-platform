@@ -18,7 +18,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { BidsService } from './bids.service';
+import { type BidsService } from './bids.service';
 
 @Controller()
 export class BidsController {

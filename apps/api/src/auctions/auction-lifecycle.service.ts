@@ -9,8 +9,8 @@ import {
   products,
 } from '../database/schema';
 import { transition as productTransition } from '../products/product-state';
-import { NotificationsService } from '../notifications/notifications.service';
-import { RealtimeEmitter } from '../realtime/realtime.emitter';
+import { type NotificationsService } from '../notifications/notifications.service';
+import { type RealtimeEmitter } from '../realtime/realtime.emitter';
 
 export type StartOutcome = 'started' | 'gone' | 'wrong_status' | 'too_early';
 export type CloseOutcome = 'sold' | 'unsold' | 'not_yet' | 'wrong_status' | 'gone';

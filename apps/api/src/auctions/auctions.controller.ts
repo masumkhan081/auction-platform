@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { z } from 'zod';
+import { type z } from 'zod';
 import {
   AuctionStatusSchema,
   CancelAuctionRequestSchema,
@@ -26,8 +26,8 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { AuctionLifecycleService } from './auction-lifecycle.service';
-import { AuctionsService } from './auctions.service';
+import { type AuctionLifecycleService } from './auction-lifecycle.service';
+import { type AuctionsService } from './auctions.service';
 
 const PublicListQuerySchema = PaginationQuerySchema.extend({
   productId: UuidSchema.optional(),

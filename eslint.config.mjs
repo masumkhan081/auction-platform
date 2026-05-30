@@ -1,5 +1,6 @@
 // @ts-check
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 /**
@@ -15,6 +16,7 @@ export default tseslint.config(
       '**/.next/**',
       '**/build/**',
       '**/coverage/**',
+      '**/next-env.d.ts',
       '_legacy/**',
       'frontend/**',
       'backend/**',
@@ -34,6 +36,12 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+    },
+  },
+  {
+    files: ['scripts/**/*.{js,mjs,cjs}', '**/*.config.{js,mjs,cjs}'],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
 );

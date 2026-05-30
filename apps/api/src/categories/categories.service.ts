@@ -8,7 +8,7 @@ import type {
 } from '@auction/shared';
 import { AppException, compact, paginate } from '../common';
 import type { CategoryRow } from '../database/schema';
-import { CategoriesRepository } from './categories.repository';
+import { type CategoriesRepository } from './categories.repository';
 
 @Injectable()
 export class CategoriesService {

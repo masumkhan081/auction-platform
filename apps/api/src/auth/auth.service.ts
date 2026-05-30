@@ -11,18 +11,18 @@ import type {
   VerifyEmailRequest,
 } from '@auction/shared';
 import { AppException } from '../common';
-import { EnvService } from '../config/env.service';
+import { type EnvService } from '../config/env.service';
 import { InjectDb } from '../database/database.module';
 import type { DrizzleClient } from '../database/database.tokens';
 import { profiles, users, type UserRow } from '../database/schema';
-import { MailService } from '../mail/mail.service';
+import { type MailService } from '../mail/mail.service';
 import { renderEmailVerificationOtp, renderPasswordReset } from '../mail/mail.templates';
-import { UsersRepository, type UserWithProfile } from '../users/users.repository';
-import { LockoutService } from './services/lockout.service';
-import { PasswordService } from './services/password.service';
-import { RefreshTokenService } from './services/refresh-token.service';
-import { TokenService } from './services/token.service';
-import { VerificationService } from './services/verification.service';
+import { type UsersRepository, type UserWithProfile } from '../users/users.repository';
+import { type LockoutService } from './services/lockout.service';
+import { type PasswordService } from './services/password.service';
+import { type RefreshTokenService } from './services/refresh-token.service';
+import { type TokenService } from './services/token.service';
+import { type VerificationService } from './services/verification.service';
 
 type AuthIssueResult = {
   session: AuthSession;

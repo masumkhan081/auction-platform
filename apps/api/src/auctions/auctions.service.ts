@@ -22,10 +22,10 @@ import {
   type NewAuctionRow,
 } from '../database/schema';
 import { transition as productTransition } from '../products/product-state';
-import { ProductsRepository } from '../products/products.repository';
-import { AuctionLifecycleQueue } from '../queue/auction-lifecycle.queue';
+import { type ProductsRepository } from '../products/products.repository';
+import { type AuctionLifecycleQueue } from '../queue/auction-lifecycle.queue';
 import { canCancel, canSellerEdit, transition } from './auction-state';
-import { AuctionsRepository } from './auctions.repository';
+import { type AuctionsRepository } from './auctions.repository';
 
 const MIN_LEAD_TIME_SECONDS = 5 * 60;
 const MIN_DURATION_SECONDS = 60 * 60;

@@ -10,8 +10,8 @@ import type {
   UpdateProductRequest,
 } from '@auction/shared';
 import { AppException, compact, paginate } from '../common';
-import { CategoriesRepository } from '../categories/categories.repository';
-import { EnvService } from '../config/env.service';
+import { type CategoriesRepository } from '../categories/categories.repository';
+import { type EnvService } from '../config/env.service';
 import type { ProductRow } from '../database/schema';
 import { assertSellerOwnsImages } from '../uploads/asset-ownership';
 import {
@@ -20,7 +20,7 @@ import {
   isPubliclyVisible,
   transition,
 } from './product-state';
-import { ProductsRepository } from './products.repository';
+import { type ProductsRepository } from './products.repository';
 
 /**
  * All write paths flow through this service. Controllers never touch the

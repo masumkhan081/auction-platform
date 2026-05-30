@@ -3,7 +3,7 @@ import {
   type ExecutionContext,
   Injectable,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { type Reflector } from '@nestjs/core';
 import type { Role } from '@auction/shared';
 import { AppException } from '../../common';
 import { ROLES_KEY } from '../decorators/roles.decorator';

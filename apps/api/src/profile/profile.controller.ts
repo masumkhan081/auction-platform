@@ -6,7 +6,7 @@ import {
 import { ZodBody } from '../common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { ProfileService } from './profile.service';
+import { type ProfileService } from './profile.service';
 
 @Controller('profile')
 export class ProfileController {

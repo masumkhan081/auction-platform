@@ -14,7 +14,7 @@ import {
   type NotificationCreatedEvent,
   type OutbidEvent,
 } from '@auction/shared';
-import { RealtimeGateway } from './realtime.gateway';
+import { type RealtimeGateway } from './realtime.gateway';
 
 /**
  * Single funnel for outbound socket events. Every payload is parsed through

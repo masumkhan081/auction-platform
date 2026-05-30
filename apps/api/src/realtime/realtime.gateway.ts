@@ -14,8 +14,8 @@ import {
   auctionRoom,
   userRoom,
 } from '@auction/shared';
-import { EnvService } from '../config/env.service';
-import { TokenService } from '../auth/services/token.service';
+import { type EnvService } from '../config/env.service';
+import { type TokenService } from '../auth/services/token.service';
 
 type SocketData = { userId: string | null };
 

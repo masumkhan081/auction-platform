@@ -3,7 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { randomUUID } from 'node:crypto';
 import type { SignUploadRequest, SignUploadResponse } from '@auction/shared';
 import { AppException } from '../common';
-import { EnvService } from '../config/env.service';
+import { type EnvService } from '../config/env.service';
 import { sellerImageFolder } from './asset-ownership';
 
 /**

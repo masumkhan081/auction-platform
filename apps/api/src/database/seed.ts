@@ -29,7 +29,7 @@ async function main(): Promise<void> {
   const pool = new Pool({ connectionString: url, max: 1 });
   const db = drizzle(pool, { schema });
 
-  // eslint-disable-next-line no-console
+   
   console.log('[seed] starting');
 
   for (const c of SEED_CATEGORIES) {
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
       .values({ name: c.name, slug: c.slug })
       .onConflictDoNothing({ target: schema.categories.slug });
   }
-  // eslint-disable-next-line no-console
+   
   console.log(`[seed] categories ensured (${SEED_CATEGORIES.length})`);
 
   const existing = await db.query.users.findFirst({ where: eq(schema.users.email, ADMIN_EMAIL) });
@@ -59,20 +59,20 @@ async function main(): Promise<void> {
         fullName: 'Auction Admin',
       });
     }
-    // eslint-disable-next-line no-console
+     
     console.log(`[seed] admin created: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
   } else {
-    // eslint-disable-next-line no-console
+     
     console.log('[seed] admin already exists');
   }
 
   await pool.end();
-  // eslint-disable-next-line no-console
+   
   console.log('[seed] done');
 }
 
 main().catch((err: unknown) => {
-  // eslint-disable-next-line no-console
+   
   console.error('[seed] failed:', err);
   process.exit(1);
 });

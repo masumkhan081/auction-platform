@@ -18,11 +18,11 @@ import {
   type AuthSession,
 } from '@auction/shared';
 import { AppException, ZodBody } from '../common';
-import { EnvService } from '../config/env.service';
-import { AuthService } from './auth.service';
+import { type EnvService } from '../config/env.service';
+import { type AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
-import { TokenService } from './services/token.service';
+import { type TokenService } from './services/token.service';
 import type { RequestUser } from './auth.types';
 
 /**

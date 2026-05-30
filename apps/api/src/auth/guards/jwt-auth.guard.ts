@@ -3,11 +3,11 @@ import {
   type ExecutionContext,
   Injectable,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { type Reflector } from '@nestjs/core';
 import { AppException } from '../../common';
-import { EnvService } from '../../config/env.service';
+import { type EnvService } from '../../config/env.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { TokenService } from '../services/token.service';
+import { type TokenService } from '../services/token.service';
 import type { AuthedRequest, RequestUser } from '../auth.types';
 
 /**

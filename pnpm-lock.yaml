@@ -17,6 +17,9 @@ importers:
       eslint:
         specifier: ^9.12.0
         version: 9.39.4(jiti@1.21.7)
+      globals:
+        specifier: ^17.6.0
+        version: 17.6.0
       husky:
         specifier: ^9.1.6
         version: 9.1.7
@@ -2614,6 +2617,10 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
+    engines: {node: '>=18'}
+
+  globals@17.6.0:
+    resolution: {integrity: sha512-sepffkT8stwnIYbsMBpoCHJuJM5l98FUF2AnE07hfvE0m/qp3R586hw4jF4uadbhvg1ooIdzuu7CsfD2jzCaNA==}
     engines: {node: '>=18'}
 
   gopd@1.2.0:
@@ -6380,6 +6387,8 @@ snapshots:
       path-scurry: 2.0.2
 
   globals@14.0.0: {}
+
+  globals@17.6.0: {}
 
   gopd@1.2.0: {}
 

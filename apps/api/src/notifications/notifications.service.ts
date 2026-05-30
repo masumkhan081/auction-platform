@@ -7,8 +7,8 @@ import type {
 } from '@auction/shared';
 import { AppException, paginate } from '../common';
 import type { NotificationRow } from '../database/schema';
-import { RealtimeEmitter } from '../realtime/realtime.emitter';
-import { NotificationsRepository } from './notifications.repository';
+import { type RealtimeEmitter } from '../realtime/realtime.emitter';
+import { type NotificationsRepository } from './notifications.repository';
 
 /**
  * Persist-first delivery. The DB row is the source of truth; the socket

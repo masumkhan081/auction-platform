@@ -1,6 +1,6 @@
 import { Injectable, Logger, type OnModuleDestroy } from '@nestjs/common';
 import nodemailer, { type Transporter } from 'nodemailer';
-import { EnvService } from '../config/env.service';
+import { type EnvService } from '../config/env.service';
 import type { RenderedEmail } from './mail.templates';
 
 /**

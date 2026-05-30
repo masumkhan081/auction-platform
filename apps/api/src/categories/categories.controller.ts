@@ -19,7 +19,7 @@ import {
 import { ZodBody, ZodQuery } from '../common';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CategoriesService } from './categories.service';
+import { type CategoriesService } from './categories.service';
 
 @Controller('categories')
 export class CategoriesController {

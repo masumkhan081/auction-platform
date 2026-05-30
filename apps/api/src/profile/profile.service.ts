@@ -5,8 +5,8 @@ import { AppException, compact } from '../common';
 import { InjectDb } from '../database/database.module';
 import type { DrizzleClient } from '../database/database.tokens';
 import { users, type ProfileRow, type UserRow } from '../database/schema';
-import { UsersRepository } from '../users/users.repository';
-import { ProfileRepository } from './profile.repository';
+import { type UsersRepository } from '../users/users.repository';
+import { type ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfileService {

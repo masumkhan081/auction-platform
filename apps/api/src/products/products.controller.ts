@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { z } from 'zod';
+import { type z } from 'zod';
 import {
   CreateProductRequestSchema,
   PaginationQuerySchema,
@@ -26,7 +26,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { ProductsService } from './products.service';
+import { type ProductsService } from './products.service';
 
 const PublicListQuerySchema = PaginationQuerySchema.extend({
   categoryId: UuidSchema.optional(),

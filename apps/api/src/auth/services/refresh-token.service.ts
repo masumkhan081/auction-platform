@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { and, eq, isNull } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { AppException } from '../../common';
-import { EnvService } from '../../config/env.service';
+import { type EnvService } from '../../config/env.service';
 import { InjectDb } from '../../database/database.module';
 import type { DrizzleClient } from '../../database/database.tokens';
 import { refreshTokens } from '../../database/schema';
 import { InjectRedis } from '../../redis/redis.module';
 import type { RedisClient } from '../../redis/redis.tokens';
 import { RedisKeys } from '../../redis/redis.keys';
-import { TokenService } from './token.service';
+import { type TokenService } from './token.service';
 
 type IssueArgs = {
   userId: string;

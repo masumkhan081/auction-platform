@@ -4,11 +4,11 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from '@nestjs/common';
-import { Job, Worker } from 'bullmq';
+import { type Job, Worker } from 'bullmq';
 import type Redis from 'ioredis';
-import { AuctionLifecycleService } from '../auctions/auction-lifecycle.service';
-import { AuctionsRepository } from '../auctions/auctions.repository';
-import { AuctionLifecycleQueue } from './auction-lifecycle.queue';
+import { type AuctionLifecycleService } from '../auctions/auction-lifecycle.service';
+import { type AuctionsRepository } from '../auctions/auctions.repository';
+import { type AuctionLifecycleQueue } from './auction-lifecycle.queue';
 import {
   JOBS,
   QUEUES,

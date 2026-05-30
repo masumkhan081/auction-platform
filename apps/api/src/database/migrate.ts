@@ -15,17 +15,17 @@ async function main(): Promise<void> {
   const pool = new Pool({ connectionString: url, max: 1 });
   const db = drizzle(pool);
 
-  // eslint-disable-next-line no-console
+   
   console.log('[migrate] applying migrations…');
   await migrate(db, { migrationsFolder: './src/database/migrations' });
-  // eslint-disable-next-line no-console
+   
   console.log('[migrate] done');
 
   await pool.end();
 }
 
 main().catch((err: unknown) => {
-  // eslint-disable-next-line no-console
+   
   console.error('[migrate] failed:', err);
   process.exit(1);
 });

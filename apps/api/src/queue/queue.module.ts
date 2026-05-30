@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import Redis from 'ioredis';
 import { AuctionsModule } from '../auctions/auctions.module';
-import { EnvService } from '../config/env.service';
+import { type EnvService } from '../config/env.service';
 import { AuctionLifecycleQueue } from './auction-lifecycle.queue';
 import { AuctionLifecycleWorker } from './auction-lifecycle.worker';
 import { BULLMQ_REDIS } from './queue.tokens';
