@@ -10,7 +10,8 @@
   "packageManager": "pnpm@9.12.0",
   "scripts": {
     "bootstrap": "node scripts/bootstrap.mjs",
-    "dev": "pnpm -r --parallel run dev",
+    "dev": "pnpm --filter @auction/shared run build && pnpm --filter @auction/api --filter @auction/web --parallel run dev",
+    "dev:shared": "pnpm --filter @auction/shared run dev",
     "build": "pnpm -r run build",
     "lint": "eslint .",
     "typecheck": "pnpm -r run typecheck",
@@ -19,6 +20,14 @@
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
     "infra:logs": "docker compose logs -f",
+    "mig": "pnpm --filter @auction/api run db:migrate",
+    "seed": "pnpm --filter @auction/api run db:seed",
+    "gen": "pnpm --filter @auction/api run db:generate",
+    "studio": "pnpm --filter @auction/api run db:studio",
+    "dbpush": "pnpm --filter @auction/api run db:push",
+    "up": "docker compose up -d",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f",
     "prepare": "husky"
   },
   "devDependencies": {

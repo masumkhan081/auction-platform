@@ -48,6 +48,7 @@ async function main() {
   console.log('[bootstrap] step 2/6: env files');
   ensureEnv('.env.example', '.env');
   ensureEnv('apps/api/.env.example', 'apps/api/.env');
+  ensureEnv('apps/web/.env.example', 'apps/web/.env.local');
 
   console.log('[bootstrap] step 3/6: docker compose up -d');
   await run('docker', ['compose', 'up', '-d']);
