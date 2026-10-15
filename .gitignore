@@ -9,6 +9,12 @@ build/
 out/
 *.tsbuildinfo
 
+docs
+docs/
+/docs.*
+*.7z
+*.zip
+
 # Env
 .env
 .env.local
