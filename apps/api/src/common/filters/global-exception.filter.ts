@@ -56,7 +56,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
         error: {
           code: 'internal_error',
-          message: 'An unexpected error occurred',
+          message:
+            process.env.NODE_ENV !== 'production' && exception instanceof Error
+              ? exception.message
+              : 'An unexpected error occurred',
         },
       },
     };

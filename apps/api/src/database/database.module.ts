@@ -15,8 +15,12 @@ class PgPoolHolder implements OnModuleDestroy {
   readonly pool: Pool;
 
   constructor(env: EnvService) {
+    const rawUrl = env.config.DATABASE_URL;
+    const isLocal = rawUrl.includes('localhost') || rawUrl.includes('127.0.0.1');
+    const cleanUrl = rawUrl.replace(/[?&]sslmode=[^&]+/, '');
     this.pool = new Pool({
-      connectionString: env.config.DATABASE_URL,
+      connectionString: cleanUrl,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
       max: 10,
     });
   }
