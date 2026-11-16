@@ -14,7 +14,7 @@ import {
 import { ZodQuery } from '../common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { RequestUser } from '../auth/auth.types';
-import { type NotificationsService } from './notifications.service';
+import { NotificationsService } from './notifications.service';
 
 const InboxQuerySchema = PaginationQuerySchema.extend({
   unread: z

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { type JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 import type { CookieOptions, Response } from 'express';
 import type { Role } from '@auction/shared';
-import { type EnvService } from '../../config/env.service';
+import { EnvService } from '../../config/env.service';
 import { AppException } from '../../common';
 import type { AccessTokenPayload, RefreshTokenPayload } from '../auth.types';
 

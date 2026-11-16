@@ -1,7 +1,7 @@
 import { Global, Inject, Injectable, Logger, Module, type OnModuleDestroy } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { type EnvService } from '../config/env.service';
+import { EnvService } from '../config/env.service';
 import { DRIZZLE, type DrizzleClient } from './database.tokens';
 import * as schema from './schema';
 

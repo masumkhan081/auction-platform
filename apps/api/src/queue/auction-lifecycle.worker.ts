@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { type Job, Worker } from 'bullmq';
 import type Redis from 'ioredis';
-import { type AuctionLifecycleService } from '../auctions/auction-lifecycle.service';
-import { type AuctionsRepository } from '../auctions/auctions.repository';
-import { type AuctionLifecycleQueue } from './auction-lifecycle.queue';
+import { AuctionLifecycleService } from '../auctions/auction-lifecycle.service';
+import { AuctionsRepository } from '../auctions/auctions.repository';
+import { AuctionLifecycleQueue } from './auction-lifecycle.queue';
 import {
   JOBS,
   QUEUES,

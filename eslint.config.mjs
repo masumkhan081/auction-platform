@@ -39,6 +39,14 @@ export default tseslint.config(
     },
   },
   {
+    files: ['apps/api/**/*.ts'],
+    rules: {
+      // NestJS dependency injection relies on emitDecoratorMetadata and runtime class constructor tokens.
+      // Enforcing type-only imports strips them from `design:paramtypes`, breaking DI.
+      '@typescript-eslint/consistent-type-imports': 'off',
+    },
+  },
+  {
     files: ['scripts/**/*.{js,mjs,cjs}', '**/*.config.{js,mjs,cjs}'],
     languageOptions: {
       globals: { ...globals.node },
