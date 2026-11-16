@@ -1,15 +1,15 @@
 'use client';
 
 import { toast } from 'sonner';
-import { ApiError, AuthError, TransportError, ValidationError } from '../api/errors';
+import { ApiError, TransportError, ValidationError } from '../api/errors';
 
 /**
  * Single funnel for caught errors → user feedback. Every catch site that
  * surfaces a UI message uses this; `console.error(err)` per-component is a
  * code smell.
  *
- * Auth errors deliberately don't toast — the consumer typically redirects
- * to /auth/login, and a transient toast on top of a redirect is noise.
+ * Backend error messages are rendered directly to guarantee accurate,
+ * consistent user feedback without message drift.
  */
 
 export type HandleOptions = {
@@ -22,21 +22,25 @@ export type HandleOptions = {
 export function handleError(err: unknown, opts: HandleOptions = {}): void {
   if (opts.silent) return;
 
-  if (err instanceof AuthError) {
-    // No toast — the caller redirects.
-    return;
+  if (err instanceof ValidationError && Array.isArray(err.details) && err.details.length > 0) {
+    const detailMessages = (err.details as Array<{ message?: string } | string>)
+      .map((d) => (typeof d === 'string' ? d : d?.message))
+      .filter(Boolean);
+    if (detailMessages.length > 0) {
+      toast.error(detailMessages.join(', '));
+      return;
+    }
   }
-  if (err instanceof ValidationError) {
-    toast.error(err.message || opts.fallback || 'Invalid input');
-    return;
-  }
+
   if (err instanceof ApiError) {
     toast.error(err.message || opts.fallback || 'Request failed');
     return;
   }
+
   if (err instanceof TransportError) {
-    toast.error(opts.fallback ?? 'Network error — please try again');
+    toast.error(err.message || opts.fallback || 'Network error — please try again');
     return;
   }
-  toast.error(opts.fallback ?? (err instanceof Error ? err.message : 'Something went wrong'));
+
+  toast.error(err instanceof Error ? err.message : (opts.fallback ?? 'Something went wrong'));
 }

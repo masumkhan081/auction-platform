@@ -42,6 +42,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
             </FormItem>
           )}
         />
+        {reset.isError && (
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            {reset.error instanceof Error ? reset.error.message : 'Reset failed'}
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={reset.isPending}>
           {reset.isPending ? 'Updating…' : 'Update password'}
         </Button>

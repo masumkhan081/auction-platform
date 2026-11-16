@@ -63,6 +63,12 @@ export function LoginForm({ next }: { next: string | null }) {
             </FormItem>
           )}
         />
+        {login.isError && (
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            {login.error instanceof Error ? login.error.message : 'Sign in failed'}
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={login.isPending}>
           {login.isPending ? 'Signing in…' : 'Sign in'}
         </Button>

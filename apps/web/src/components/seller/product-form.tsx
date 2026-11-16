@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useCategories } from '@/lib/categories/queries';
 import { useSignUpload, uploadToCloudinary } from '@/lib/uploads/mutations';
+import { handleError } from '@/lib/errors/handle-error';
+import { toast } from 'sonner';
 import { X, UploadCloud, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -41,7 +43,7 @@ export function ProductForm({ initialData, onSubmit, isPending }: ProductFormPro
     if (!file) return;
 
     if (images.length >= 8) {
-      alert('Maximum 8 images allowed');
+      toast.error('Maximum 8 images allowed');
       return;
     }
 
@@ -52,7 +54,7 @@ export function ProductForm({ initialData, onSubmit, isPending }: ProductFormPro
       form.setValue('images', [...images, uploadedImage], { shouldValidate: true });
     } catch (err) {
       console.error(err);
-      alert('Failed to upload image');
+      handleError(err, { fallback: 'Failed to upload image' });
     } finally {
       setUploading(false);
       // Reset input

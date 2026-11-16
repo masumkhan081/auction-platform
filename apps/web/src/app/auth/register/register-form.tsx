@@ -138,6 +138,12 @@ export function RegisterForm({ next }: { next: string | null }) {
           )}
         />
 
+        {register.isError && (
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            {register.error instanceof Error ? register.error.message : 'Registration failed'}
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={register.isPending}>
           {register.isPending ? 'Creating account…' : 'Create account'}
         </Button>

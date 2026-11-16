@@ -43,6 +43,12 @@ export function ForgotPasswordForm() {
             </FormItem>
           )}
         />
+        {forgot.isError && (
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            {forgot.error instanceof Error ? forgot.error.message : 'Request failed'}
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={forgot.isPending}>
           {forgot.isPending ? 'Sending…' : 'Send reset link'}
         </Button>

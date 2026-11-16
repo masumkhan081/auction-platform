@@ -78,6 +78,12 @@ export function VerifyEmailForm({
           )}
         />
 
+        {verify.isError && (
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            {verify.error instanceof Error ? verify.error.message : 'Verification failed'}
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={verify.isPending}>
           {verify.isPending ? 'Verifying…' : 'Verify email'}
         </Button>
