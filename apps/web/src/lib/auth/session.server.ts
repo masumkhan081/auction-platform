@@ -2,7 +2,6 @@ import 'server-only';
 import { cache } from 'react';
 import type { AuthSession } from '@auction/shared';
 import { apiFetchServer } from '../api/server';
-import { ApiError } from '../api/errors';
 
 /**
  * Reads the current session from the api using the request's cookies.
@@ -16,8 +15,9 @@ import { ApiError } from '../api/errors';
 export const getServerSession = cache(async (): Promise<AuthSession | null> => {
   try {
     return await apiFetchServer<AuthSession>('/auth/me');
-  } catch (err) {
-    if (err instanceof ApiError) return null; // 401, 403, etc → not authenticated
-    throw err; // genuine network/transport errors should bubble
+  } catch {
+    // If unauthenticated (401 ApiError) or backend is cold-starting / offline (TransportError),
+    // safely treat as unauthenticated rather than crashing the entire root layout.
+    return null;
   }
 });
