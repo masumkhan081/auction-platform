@@ -28,6 +28,10 @@ export const buildRequestInit = (init: RequestInitJson | undefined): RequestInit
  *   - `ApiError` (or subclass) for `{success:false}` envelopes
  */
 export async function unwrapEnvelope<T>(res: Response): Promise<T> {
+  if (res.status === 204 || (res.ok && res.headers.get('content-length') === '0')) {
+    return undefined as unknown as T;
+  }
+
   let payload: unknown;
   try {
     payload = await res.json();
