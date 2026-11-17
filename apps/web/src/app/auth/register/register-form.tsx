@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { RegisterRequestSchema } from '@auction/shared';
 import { Button } from '@/components/ui/button';
 import {
@@ -139,8 +140,19 @@ export function RegisterForm({ next }: { next: string | null }) {
         />
 
         {register.isError && (
-          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
-            {register.error instanceof Error ? register.error.message : 'Registration failed'}
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive space-y-1">
+            <p>{register.error instanceof Error ? register.error.message : 'Registration failed'}</p>
+            {((register.error as { code?: string })?.code === 'auth.user_already_exists' ||
+              (register.error instanceof Error && register.error.message.toLowerCase().includes('already exists'))) && (
+              <p className="pt-1">
+                <Link
+                  href={`/auth/login?email=${encodeURIComponent(form.getValues('email'))}`}
+                  className="font-semibold underline hover:opacity-80"
+                >
+                  Sign in to your account &rarr;
+                </Link>
+              </p>
+            )}
           </div>
         )}
 

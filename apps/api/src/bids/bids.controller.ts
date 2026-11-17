@@ -43,7 +43,6 @@ export class BidsController {
     return this.bids.listForAuction(id, query);
   }
 
-  @Roles('BIDDER')
   @Get('bids/me')
   listOwn(
     @CurrentUser() user: RequestUser,

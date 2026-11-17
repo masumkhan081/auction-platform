@@ -18,3 +18,17 @@ export function useAuctionBids(auctionId: string, page = 1, pageSize = 20) {
     staleTime: 5_000, // Short stale time to ensure freshness if sockets miss
   });
 }
+
+export function useMyBids(page = 1, pageSize = 20) {
+  return useQuery<Paginated<BidDto>>({
+    queryKey: qk.bids.mine({ page, pageSize }),
+    queryFn: () => {
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+      });
+      return apiFetch<Paginated<BidDto>>(`/bids/me?${params}`);
+    },
+    staleTime: 10_000,
+  });
+}

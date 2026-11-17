@@ -39,7 +39,7 @@ export function useLogin(redirectTo: string | null = '/') {
       router.replace(redirectTo ?? '/');
       router.refresh(); // re-runs RSC trees with the new cookie
     },
-    onError: (err) => handleError(err),
+    onError: (err) => handleError(err, { silent: true }),
   });
 }
 
@@ -66,7 +66,7 @@ export function useRegister(redirectTo = '/auth/verify-email') {
       router.replace(url.pathname + url.search);
       router.refresh(); // re-runs RSC trees with the new cookie
     },
-    onError: (err) => handleError(err),
+    onError: (err) => handleError(err, { silent: true }),
   });
 }
 
@@ -111,11 +111,10 @@ export function useVerifyEmail(redirectTo = '/') {
       apiFetch<void>('/auth/verify-email', { method: 'POST', json: input }),
     onSuccess: () => {
       session.invalidate(); // pull fresh session with emailVerified: true
-      toast.success('Email verified.');
       router.replace(redirectTo);
       router.refresh();
     },
-    onError: (err) => handleError(err),
+    onError: (err) => handleError(err, { silent: true }),
   });
 }
 
@@ -128,7 +127,7 @@ export function useForgotPassword() {
       // api's silent-throttle behaviour — never leak account existence.
       toast.success('If your email is registered, a reset link is on its way.');
     },
-    onError: (err) => handleError(err),
+    onError: (err) => handleError(err, { silent: true }),
   });
 }
 
@@ -142,6 +141,6 @@ export function useResetPassword(redirectTo = '/auth/login') {
       toast.success('Password updated. You can sign in now.');
       router.replace(redirectTo);
     },
-    onError: (err) => handleError(err),
+    onError: (err) => handleError(err, { silent: true }),
   });
 }

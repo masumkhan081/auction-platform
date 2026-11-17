@@ -62,7 +62,34 @@ export class AuthService {
   async register(input: RegisterRequest, ctx: RequestContext): Promise<AuthIssueResult> {
     const existing = await this.usersRepo.findByEmail(input.email);
     if (existing) {
-      throw AppException.conflict('auth.user_already_exists', 'An account with this email already exists');
+      if (existing.emailVerifiedAt !== null) {
+        throw AppException.conflict('auth.user_already_exists', 'An account with this email already exists');
+      }
+
+      // The email exists in DB but was NEVER verified (e.g. abandoned signup or typo).
+      // Allow the genuine inbox owner to claim it with their desired password & info.
+      const passwordHash = await this.password.hash(input.password);
+      await this.db
+        .update(users)
+        .set({
+          passwordHash,
+          role: input.role,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, existing.id));
+
+      await this.db
+        .update(profiles)
+        .set({
+          fullName: input.fullName,
+          ...(input.phone !== undefined ? { phone: input.phone } : {}),
+          updatedAt: new Date(),
+        })
+        .where(eq(profiles.userId, existing.id));
+
+      await this.sendEmailVerificationOtp(existing.id, existing.email);
+
+      return this.issueSession(existing, input.fullName, ctx);
     }
 
     const passwordHash = await this.password.hash(input.password);
@@ -124,6 +151,14 @@ export class AuthService {
 
     if (user.isLocked) {
       throw AppException.unauthorized('auth.locked', 'Account is locked');
+    }
+
+    if (!user.emailVerifiedAt) {
+      throw AppException.forbidden(
+        'auth.email_not_verified',
+        'Please verify your email address before signing in',
+        { email: user.email },
+      );
     }
 
     await this.lockout.clearOnSuccess(input.email, ctx.ipAddress);

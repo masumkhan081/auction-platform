@@ -57,4 +57,8 @@ export const qk = {
     list: (filters: { unread?: boolean; page: number; pageSize: number }) =>
       ['notifications', 'list', filters] as const,
   },
+
+  profile: {
+    me: () => ['profile', 'me'] as const,
+  },
 } as const;

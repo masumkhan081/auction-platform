@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { LoginRequestSchema } from '@auction/shared';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,8 +65,19 @@ export function LoginForm({ next }: { next: string | null }) {
           )}
         />
         {login.isError && (
-          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
-            {login.error instanceof Error ? login.error.message : 'Sign in failed'}
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive space-y-1">
+            <p>{login.error instanceof Error ? login.error.message : 'Sign in failed'}</p>
+            {((login.error as { code?: string })?.code === 'auth.email_not_verified' ||
+              (login.error instanceof Error && login.error.message.toLowerCase().includes('verify your email'))) && (
+              <p className="pt-1">
+                <Link
+                  href={`/auth/verify-email?email=${encodeURIComponent(form.getValues('email'))}`}
+                  className="font-semibold underline hover:opacity-80"
+                >
+                  Verify your email now &rarr;
+                </Link>
+              </p>
+            )}
           </div>
         )}
 

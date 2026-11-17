@@ -25,8 +25,8 @@ export const PUBLIC_NAV: readonly NavLink[] = [
 
 /** Shown only when authenticated (any role). */
 export const AUTH_NAV: readonly NavLink[] = [
-  { label: 'My bids', href: '/bids', placeholder: true },
-  { label: 'Notifications', href: '/notifications', placeholder: true },
+  { label: 'My bids', href: '/bids' },
+  { label: 'Notifications', href: '/notifications' },
 ];
 
 /** Seller-only links. */
@@ -42,6 +42,6 @@ export const ADMIN_NAV: readonly NavLink[] = [
 
 /** User dropdown items (authenticated). */
 export const USER_MENU_ITEMS: readonly NavLink[] = [
-  { label: 'Profile', href: '/profile', placeholder: true },
-  { label: 'Settings', href: '/settings', placeholder: true },
+  { label: 'Profile', href: '/profile' },
+  { label: 'Settings', href: '/settings' },
 ];

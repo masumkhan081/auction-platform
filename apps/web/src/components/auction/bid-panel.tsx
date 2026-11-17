@@ -131,12 +131,6 @@ export function BidPanel({ auction }: { auction: PublicAuctionDto }) {
               )}
             </div>
 
-            {placeBid.isError && (
-              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
-                {placeBid.error instanceof Error ? placeBid.error.message : 'Failed to place bid'}
-              </div>
-            )}
-
             <Button
               type="submit"
               className="w-full"
