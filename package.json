@@ -28,7 +28,7 @@
     "up": "docker compose up -d",
     "down": "docker compose down",
     "logs": "docker compose logs -f",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') try { require('child_process').execSync('husky', { stdio: 'inherit' }) } catch {}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
