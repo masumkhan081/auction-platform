@@ -31,7 +31,7 @@ export const EnvSchema = z.object({
 
   COOKIE_ACCESS_NAME: z.string().min(1).default('auction_at'),
   COOKIE_REFRESH_NAME: z.string().min(1).default('auction_rt'),
-  COOKIE_DOMAIN: z.string().min(1).default('localhost'),
+  COOKIE_DOMAIN: z.string().default(''),
   COOKIE_SECURE: z
     .string()
     .default('false')

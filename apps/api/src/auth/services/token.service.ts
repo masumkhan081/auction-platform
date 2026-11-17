@@ -89,11 +89,35 @@ export class TokenService {
   }
 
   private cookieOptions(path: string, maxAgeSeconds: number): CookieOptions {
+    const isProd = this.env.isProd;
+    const rawDomain = this.env.config.COOKIE_DOMAIN?.trim();
+    const cleanDomain = rawDomain
+      ? rawDomain
+          .replace(/^https?:\/\//i, '')
+          .replace(/[<>]/g, '')
+          .replace(/\/.*$/, '')
+          .replace(/:\d+$/, '')
+          .trim()
+      : undefined;
+
+    // RFC domain validation. If omitted, invalid, localhost, or onrender.com,
+    // omit the domain attribute so the browser creates a standard Host-Only cookie.
+    const DOMAIN_REGEX = /^([.]?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+    const validDomain =
+      cleanDomain &&
+      DOMAIN_REGEX.test(cleanDomain) &&
+      cleanDomain !== 'localhost' &&
+      !cleanDomain.endsWith('.onrender.com')
+        ? cleanDomain
+        : undefined;
+
     return {
       httpOnly: true,
-      secure: this.env.config.COOKIE_SECURE,
-      sameSite: this.env.isProd ? 'strict' : 'lax',
-      domain: this.env.config.COOKIE_DOMAIN,
+      secure: isProd ? true : this.env.config.COOKIE_SECURE,
+      // In production cross-site contexts (e.g. Vercel frontend -> Render backend),
+      // SameSite MUST be 'none' with secure: true, or browsers will reject/drop cookies on fetch.
+      sameSite: isProd ? 'none' : 'lax',
+      ...(validDomain ? { domain: validDomain } : {}),
       path,
       maxAge: maxAgeSeconds * 1000,
     };
